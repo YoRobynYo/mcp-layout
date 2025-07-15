@@ -1,0 +1,31 @@
+// Import variables first so other partials can use them
+@use '../src/modules/variables' as *;
+
+// Import panel styles (panels with see-through, blur, positions)
+@use '../src/modules/panel' as *;
+
+// Import other partials here, e.g. cube, controls, responsive, etc.
+// @use '../src/modules/cube' as *;
+// @use '../src/modules/controls' as *;
+// @use '../src/modules/responsive' as *;
+
+// Global HTML, body styles
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('../assets/images/background-1.png') no-repeat center center fixed;
+  background-size: cover;
+  color: #eee;
+}
+
+// Optional: global layout container
+.dashboard-layout {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  padding: 2rem;
+  overflow: hidden;
+}

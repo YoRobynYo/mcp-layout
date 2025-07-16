@@ -15,17 +15,20 @@ $border-color-dark: #6e5b32;
 $border-color-glow: #ffc34d;
 $border-color-center: #9f8045; // Center cube border (brass/golden-brown)
 
-// Sizes
-$cube-width: 300px;
-$cube-height: 300px;
+// Sizes / Optional for center panel, more explicit:
+$center-panel-width: 500px;
+$center-panel-height: 300px;
+
+$cube-width: 500px;
+$cube-height: 500px;
 $cube-depth: 150px; // half of width/height, used in translateZ
 
 // Font sizes
 $font-size-face: 36px;
 
 // Container size variables
-$cube-container-width: 320px;
-$cube-container-height: 320px;
+$cube-container-width: 800px;
+$cube-container-height: 550px;
 
 // Sizes for smaller cubes (e.g. screen 2)
 $cube-small: 180px;

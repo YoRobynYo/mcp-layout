@@ -1,8 +1,5 @@
-// Import variables first so other partials can use them
-@use '../src/modules/variables' as *;
-
-// Import panel styles (panels with see-through, blur, positions)
-@use '../src/modules/panel' as *;
+@use '../src/modules/variables' as vars;
+@use '../src/modules/panel' as panel;
 
 // Import other partials here, e.g. cube, controls, responsive, etc.
 // @use '../src/modules/cube' as *;

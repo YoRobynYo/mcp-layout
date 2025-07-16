@@ -7,8 +7,11 @@
   left: 50%;
   // transform: translate(-50%, -50%);
   transform: translate(-50%, calc(-50% - 100px)); // Changed this line
-  width: 600px;
-  height: 400px;
+  // width: 600px;
+  // height: 400px;
+  width: $center-panel-width;
+  height: $center-panel-height;
+
   background: #ffffff1a;
   border: 1.5px solid #9f8045;
   border-radius: 8px;

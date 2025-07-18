@@ -9,18 +9,22 @@
 </head>
 
 <body>
-  <div class="panel panel--transparent" id="center-panel">Center Panel</div>
+  <div id="center-panel" class="panel"></div>
   <div class="panel panel--transparent" id="screen-1">Panel 1</div>
   <div class="panel panel--transparent" id="screen-2">Panel 2</div>
   <div class="panel panel--transparent" id="screen-3">Panel 3</div>
   <div class="panel panel--transparent" id="screen-4">Panel 4</div>
   <div class="panel panel--transparent" id="screen-4a">Panel 4a</div>
   <div class="panel panel--transparent" id="screen-5">Panel 5</div>
-
-
-  <script src="./src/js/cube-controls.js"></script>
+  <script>
+    document.addEventListener("mousedown", (e) => {
+      console.log("Global mousedown event fired!");
+      console.log("Target element:", e.target);
+    });
+  </script>
+  <!-- 
+   <script src="./src/js/cube-controls.js"></script> -->
   <script src="./src/js/dragPanels.js"></script>
-
 </body>
 
 </html>

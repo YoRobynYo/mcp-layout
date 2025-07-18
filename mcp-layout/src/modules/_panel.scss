@@ -8,8 +8,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 220px;
-  min-height: 120px;
+  width: $panel-default-width;
+  height: $panel-default-height;
   background: transparent;
   border: 1.5px solid $border-color-main;
   border-radius: 14px;
@@ -20,34 +20,13 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   user-select: none;
   transition: box-shadow 0.2s ease;
+  z-index: 1;
 }
 
-// Panel layout based on your screenshot
-#screen-1 {
-  @extend .panel;
-  top: 50px;
-  left: 50px;
-}
-
-#screen-2 {
-  @extend .panel;
-  top: 240px;
-  left: 50px;
-}
-
-#screen-3 {
-  @extend .panel;
-  top: 430px;
-  left: 50px;
-}
-
+// panels 
 #center-panel {
-  @extend .panel;
-  top: 160px;
-  left: 460px;
-  width: 360px;
-  height: 240px;
-  z-index: 2;
+  width: $center-panel-width;
+  height: $center-panel-height;
   perspective: 1000px;
   perspective-origin: center center;
   display: flex;
@@ -56,20 +35,32 @@
   pointer-events: auto;
 }
 
-#screen-5 {
-  @extend .panel;
-  top: 440px;
-  left: 460px;
+#screen-1 {
+  width: $screen1-width;
+  height: $screen1-height;
 }
 
-#screen-4a {
-  @extend .panel;
-  top: 460px;
-  left: 880px;
+#screen-2 {
+  width: $screen2-width;
+  height: $screen2-height;
+}
+
+#screen-3 {
+  width: $screen3-width;
+  height: $screen3-height;
 }
 
 #screen-4 {
-  @extend .panel;
-  top: 580px;
-  left: 880px;
+  width: $screen4-width;
+  height: $screen4-height;
+}
+
+#screen-4a {
+  width: $screen4a-width;
+  height: $screen4a-height;
+}
+
+#screen-5 {
+  width: $screen5-width;
+  height: $screen5-height;
 }

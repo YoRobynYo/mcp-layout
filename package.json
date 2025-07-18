@@ -16,5 +16,8 @@
     "url": "https://github.com/YoRobynYo/Dashboard/issues"
   },
   "homepage": "https://github.com/YoRobynYo/Dashboard#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "electron-store": "^10.1.0"
+  }
 }

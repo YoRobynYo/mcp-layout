@@ -1,10 +1,19 @@
 @use '../src/modules/variables' as vars;
 @use '../src/modules/panel' as panel;
+// @use '../src/modules/cubes' as cubes;
 
 // Import other partials here, e.g. cube, controls, responsive, etc.
 // @use '../src/modules/cube' as *;
 // @use '../src/modules/controls' as *;
 // @use '../src/modules/responsive' as *;
+
+// @use 'modules/variables';   // Loads variables like colors, sizes, font sizes
+// @use 'modules/base';        // General reset + typography + body styles
+// @use 'modules/cube';        // 3D cube styling and face layouts
+// @use 'modules/controls';    // Styles for control panel, buttons, etc.
+// @use 'modules/status';      // The status display (current face + rotation)
+// @use 'modules/responsive';  // Media queries for mobile/tablet responsiveness
+
 
 // Global HTML, body styles
 html,

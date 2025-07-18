@@ -1,38 +1,6 @@
-# macOS system files
+node_modules/
+dist/
+*.log
+*.env
 .DS_Store
 
-# Node / npm
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Logs
-logs
-*.log
-
-# Environment files
-.env
-.env.*
-
-# Build output
-dist/
-build/
-
-# Electron packaging
-*.asar
-
-# Python (if used in any backend tooling)
-*.pyc
-__pycache__/
-
-# Databases
-*.sqlite3
-*.db
-
-# Vscode / JetBrains / system editors
-.vscode/
-.idea/
-
-# OS / misc
-Thumbs.db

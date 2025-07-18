@@ -1,5 +1,4 @@
 // src/modules/_variables.scss
-
 // Cube face colors
 $color-front: rgba(70, 130, 180, 0.9); // Steel blue
 $color-back: rgba(220, 20, 60, 0.9); // Crimson red
@@ -8,29 +7,36 @@ $color-left: rgba(255, 140, 0, 0.9); // Dark orange
 $color-top: rgba(147, 112, 219, 0.9); // Medium purple
 $color-bottom: rgba(255, 215, 0, 0.9); // Gold
 
-// src/modules/_variables.scss
+// Border colors
 $border-color-main: #9f8045;
 $border-color-light: #bfa368;
 $border-color-dark: #6e5b32;
 $border-color-glow: #ffc34d;
 $border-color-center: #9f8045; // Center cube border (brass/golden-brown)
 
-// Sizes / Optional for center panel, more explicit:
-$center-panel-width: 500px;
-$center-panel-height: 300px;
+// Default panel size
+$panel-default-width: 100px;
+$panel-default-height: 100px;
 
-$cube-width: 500px;
-$cube-height: 500px;
-$cube-depth: 150px; // half of width/height, used in translateZ
+// Center panel size
+$center-panel-width: 400px;
+$center-panel-height: 400px;
 
-// Font sizes
-$font-size-face: 36px;
+// Screen panel sizes
+$screen1-width: 100px;
+$screen1-height: 100px;
 
-// Container size variables
-$cube-container-width: 800px;
-$cube-container-height: 550px;
+$screen2-width: 100px;
+$screen2-height: 100px;
 
-// Sizes for smaller cubes (e.g. screen 2)
-$cube-small: 180px;
-$cube-small-depth: 90px; // half of 180px
-$font-size-small: 16px;
+$screen3-width: 100px;
+$screen3-height: 100px;
+
+$screen4-width: 100px; // e.g. AI assistant panel
+$screen4-height: 100px;
+
+$screen4a-width: 100px; // e.g. navigation buttons panel
+$screen4a-height: 100px;
+
+$screen5-width: 200px;
+$screen5-height: 100px;

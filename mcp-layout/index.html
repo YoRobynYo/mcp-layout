@@ -9,22 +9,21 @@
 </head>
 
 <body>
-  <div id="center-panel" class="panel"></div>
-  <div class="panel panel--transparent" id="screen-1">Panel 1</div>
-  <div class="panel panel--transparent" id="screen-2">Panel 2</div>
-  <div class="panel panel--transparent" id="screen-3">Panel 3</div>
-  <div class="panel panel--transparent" id="screen-4">Panel 4</div>
-  <div class="panel panel--transparent" id="screen-4a">Panel 4a</div>
-  <div class="panel panel--transparent" id="screen-5">Panel 5</div>
-  <script>
-    document.addEventListener("mousedown", (e) => {
-      console.log("Global mousedown event fired!");
-      console.log("Target element:", e.target);
-    });
-  </script>
-  <!-- 
-   <script src="./src/js/cube-controls.js"></script> -->
-  <script src="./src/js/dragPanels.js"></script>
+  <div class="cube-scene">
+    <div class="centreCube">
+      <div class="centreFront" id="centre-front">Front</div>
+      <div class="centreBack" id="centre-back">Back</div>
+      <div class="centreRight" id="centre-right">Right</div>
+      <div class="centreLeft" id="centre-left">Left</div>
+      <div class="centreTop" id="centre-top">Top</div>
+      <div class="centreBottom" id="centre-bottom">Bottom</div>
+    </div>
+  </div>
+
+  <!-- <script src="./src/js/cube-controls.js"></script> -->
+  <!-- <script src="./src/js/dragPanels.js"></script> -->
+  <script src="./src/js/dragCube.js"></script>
+  <script src="./src/js/buttonManger.js"></script>
 </body>
 
 </html>

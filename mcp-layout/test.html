@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Resize Test</title>
+  <style>
+    :root {
+      --panel-width: 300px;
+      --panel-height: 200px;
+    }
+
+    /* .panel {
+      position: absolute;
+      left: 50px;
+      top: 50px;
+      width: var(--panel-width);
+      height: var(--panel-height);
+      background: #3498db;
+      border-radius: 8px;
+      color: white;
+      user-select: none;
+      padding: 1rem;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    } */
+
+    .panel {
+      background-color: rgba(52, 152, 219, 0.8);
+      /* translucent blue */
+      border: 1px solid #2980b9;
+    }
+
+    .resize-handle {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 16px;
+      height: 16px;
+      background: #2c3e50;
+      cursor: se-resize;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="panel" id="test-panel">
+    Resize me
+    <div class="resize-handle"></div>
+  </div>
+
+  <script>
+    const panel = document.getElementById('test-panel');
+    const handle = panel.querySelector('.resize-handle');
+
+    let resizing = false;
+    let startX, startY, startWidth, startHeight;
+
+    handle.addEventListener('mousedown', e => {
+      e.preventDefault();
+      resizing = true;
+
+      const styles = getComputedStyle(panel);
+      startWidth = parseInt(styles.width, 10);
+      startHeight = parseInt(styles.height, 10);
+      startX = e.clientX;
+      startY = e.clientY;
+
+      document.documentElement.style.setProperty('--panel-width', `${startWidth}px`);
+      document.documentElement.style.setProperty('--panel-height', `${startHeight}px`);
+
+      console.log('Resize started');
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!resizing) return;
+
+      const newWidth = Math.max(100, startWidth + e.clientX - startX);
+      const newHeight = Math.max(80, startHeight + e.clientY - startY);
+
+      document.documentElement.style.setProperty('--panel-width', `${newWidth}px`);
+      document.documentElement.style.setProperty('--panel-height', `${newHeight}px`);
+
+      console.log(`Resizing to ${newWidth}px x ${newHeight}px`);
+    });
+
+    window.addEventListener('mouseup', e => {
+      if (resizing) {
+        resizing = false;
+        console.log('Resize stopped');
+      }
+    });
+  </script>
+
+</body>
+
+</html>

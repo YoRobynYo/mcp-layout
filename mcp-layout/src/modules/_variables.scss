@@ -14,6 +14,21 @@ $border-color-dark: #6e5b32;
 $border-color-glow: #ffc34d;
 $border-color-center: #9f8045; // Center cube border (brass/golden-brown)
 
+
+$cube-size: 200px;
+$cube-depth: 100px; // or half of $cube-size, adjust as needed
+
+$transition-slow: 0.5s ease;
+$transition-default: 0.3s ease;
+;
+
+$font-size-large: 1.5rem;
+
+$text-color-secondary: #ccc;
+
+$primary-color: #9f8045; // or use $border-color-center
+$secondary-color: #bfa368; // or $border-color-light
+
 // Default panel size
 $panel-default-width: 100px;
 $panel-default-height: 100px;

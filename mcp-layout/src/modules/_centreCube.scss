@@ -1,0 +1,137 @@
+// ============================================================================
+// CENTRE CUBE MODULE - FIXED VERSION
+// ============================================================================
+@use 'variables' as vars;
+@use 'sass:color';
+
+// Cube scene container - ENLARGED to allow full rotation
+.cube-scene {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 400px; // Increased from 200px
+  height: 400px; // Increased from 200px
+  perspective: 1000px;
+  z-index: 1000;
+  overflow: visible; // Ensure nothing gets clipped
+}
+
+// Main centre cube container - CENTERED in larger container
+.centreCube {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  margin-left: -100px; // Center the cube in the larger container
+  margin-top: -100px; // Center the cube in the larger container
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  // Hover effect only when NOT being manually rotated
+  &:hover:not(.manual-rotating) {
+    transform: rotateX(5deg) rotateY(5deg);
+    transition: vars.$transition-slow;
+  }
+}
+
+// NEW: Class to disable CSS interference during manual rotation
+.centreCube.manual-rotating {
+  transition: none !important;
+
+  &:hover {
+    transform: none !important;
+  }
+}
+
+// Base styles for all cube faces
+%cube-face-base {
+  position: absolute;
+  width: vars.$cube-size;
+  height: vars.$cube-size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: vars.$font-size-large;
+  font-weight: bold;
+  color: vars.$text-color-secondary;
+  text-align: center;
+  border: 2px solid vars.$primary-color;
+  border-radius: 8px;
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  transition: vars.$transition-default;
+}
+
+// Individual cube faces - FIXED transforms for proper 3D positioning
+.centreFront {
+  @extend %cube-face-base;
+  background: linear-gradient(135deg, vars.$color-front, color.scale(vars.$color-front, $lightness: -40%));
+  transform: translateZ(100px); // Use explicit value instead of calc
+}
+
+.centreBack {
+  @extend %cube-face-base;
+  background: linear-gradient(135deg, vars.$color-back, color.scale(vars.$color-back, $lightness: -40%));
+  transform: rotateY(180deg) translateZ(100px); // Use explicit value
+}
+
+.centreRight {
+  @extend %cube-face-base;
+  background: linear-gradient(135deg, vars.$color-right, color.scale(vars.$color-right, $lightness: -40%));
+  transform: rotateY(90deg) translateZ(100px); // Use explicit value
+}
+
+.centreLeft {
+  @extend %cube-face-base;
+  background: linear-gradient(135deg, vars.$color-left, color.scale(vars.$color-left, $lightness: -40%));
+  transform: rotateY(-90deg) translateZ(100px); // Use explicit value
+}
+
+.centreTop {
+  @extend %cube-face-base;
+  background: linear-gradient(135deg, vars.$color-top, color.scale(vars.$color-top, $lightness: -40%));
+  transform: rotateX(90deg) translateZ(100px); // Use explicit value
+}
+
+.centreBottom {
+  @extend %cube-face-base;
+  background: linear-gradient(135deg, vars.$color-bottom, color.scale(vars.$color-bottom, $lightness: -40%));
+  transform: rotateX(-90deg) translateZ(100px); // Use explicit value
+}
+
+// Animation classes for JavaScript control (these can work alongside manual rotation)
+.centreCube.rotating {
+  transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.centreCube.rotate-front {
+  transform: rotateX(0deg) rotateY(0deg);
+}
+
+.centreCube.rotate-back {
+  transform: rotateX(0deg) rotateY(180deg);
+}
+
+.centreCube.rotate-right {
+  transform: rotateX(0deg) rotateY(-90deg);
+}
+
+.centreCube.rotate-left {
+  transform: rotateX(0deg) rotateY(90deg);
+}
+
+.centreCube.rotate-top {
+  transform: rotateX(-90deg) rotateY(0deg);
+}
+
+.centreCube.rotate-bottom {
+  transform: rotateX(90deg) rotateY(0deg);
+}

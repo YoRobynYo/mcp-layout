@@ -1,11 +1,11 @@
 // src/modules/_variables.scss
 // Cube face colors
-$color-front: rgba(70, 130, 180, 0.9); // Steel blue
-$color-back: rgba(220, 20, 60, 0.9); // Crimson red
-$color-right: rgba(50, 205, 50, 0.9); // Lime green
-$color-left: rgba(255, 140, 0, 0.9); // Dark orange
-$color-top: rgba(147, 112, 219, 0.9); // Medium purple
-$color-bottom: rgba(255, 215, 0, 0.9); // Gold
+$color-front: #cccccc;
+$color-back: #cccccc;
+$color-right: #cccccc;
+$color-left: #cccccc;
+$color-top: #cccccc;
+$color-bottom: #cccccc;
 
 // Border colors
 $border-color-main: #9f8045;
@@ -15,8 +15,8 @@ $border-color-glow: #ffc34d;
 $border-color-center: #9f8045; // Center cube border (brass/golden-brown)
 
 
-$cube-size: 200px;
-$cube-depth: 100px; // or half of $cube-size, adjust as needed
+$cube-size: 250px;
+$cube-depth: 125px; // or half of $cube-size, adjust as needed
 
 $transition-slow: 0.5s ease;
 $transition-default: 0.3s ease;
@@ -34,8 +34,8 @@ $panel-default-width: 100px;
 $panel-default-height: 100px;
 
 // Center panel size
-$center-panel-width: 400px;
-$center-panel-height: 400px;
+$center-panel-width: 250px;
+$center-panel-height: 250px;
 
 // Screen panel sizes
 $screen1-width: 100px;

@@ -68,3 +68,9 @@
 //   width: $screen5-width;
 //   height: $screen5-height;
 // }
+
+.panel {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}

@@ -207,59 +207,7 @@ if (typeof PanelManager !== 'undefined') {
 }
 
 // Enhanced CubeDragger Integration Helper
-function enhanceCubeDragger() {
-    // This function can be called after CubeDragger initializes
-    const cube = document.querySelector('.centreCube');
-    if (!cube) return;
-    
-    // Add visual feedback for drag states
-    let dragIndicator = document.querySelector('.drag-indicator');
-    if (!dragIndicator) {
-        dragIndicator = document.createElement('div');
-        dragIndicator.className = 'drag-indicator';
-        dragIndicator.style.cssText = `
-            position: absolute;
-            top: -50px;
-            right: -20px;
-            padding: 5px 10px;
-            background: rgba(0, 255, 247, 0.2);
-            border: 1px solid rgba(0, 255, 247, 0.4);
-            border-radius: 12px;
-            color: #00fff7;
-            font-size: 11px;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 1001;
-        `;
-        dragIndicator.textContent = 'Dragging...';
-        
-        const cubeScene = cube.closest('.cube-scene');
-        if (cubeScene) {
-            cubeScene.appendChild(dragIndicator);
-        }
-    }
-    
-    // Monitor for drag states (this would integrate with actual CubeDragger)
-    let observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                const transform = cube.style.transform;
-                const isAnimating = cube.style.transition.includes('transform');
-                
-                if (transform && !isAnimating) {
-                    dragIndicator.style.opacity = '1';
-                    setTimeout(() => {
-                        dragIndicator.style.opacity = '0';
-                    }, 1000);
-                }
-            }
-        });
-    });
-    
-    observer.observe(cube, { attributes: true });
-}
+
 
 // Initialize the sync system
 const cubeSync = new CubeSync();
@@ -271,8 +219,6 @@ window.cubeSync = cubeSync;
 function initializeEnhancedCubeSystem() {
     // Wait a bit for other systems to fully load
     setTimeout(() => {
-        enhanceCubeDragger();
-        
         // Sync initial state
         cubeSync.syncStates();
         

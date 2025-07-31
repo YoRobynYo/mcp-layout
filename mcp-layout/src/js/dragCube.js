@@ -30,9 +30,9 @@ class CubeDragger {
     this.initializePanels();
 
     cubeScene.style.cssText = 'position:absolute;z-index:10';
-    this.createDragHandle(cubeScene);
+    const dragHandle = this.createDragHandle(cubeScene);
     await this.restorePosition(cubeScene);
-    this.addEventListeners(cubeScene);
+    this.addEventListeners(dragHandle, cubeScene);
 
     // Show correct panel on start
     this.updateVisiblePanel();
@@ -82,10 +82,22 @@ class CubeDragger {
           });
           console.log("Position restored:", pos);
         }
+
+        const savedRotation = await window.electronAPI.getItem('cube-rotation');
+        if (savedRotation) {
+          const rotation = typeof savedRotation === 'string' ? JSON.parse(savedRotation) : savedRotation;
+          this.state.rotationX = rotation.x;
+          this.state.rotationY = rotation.y;
+          this.centreCube.style.transform = `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
+        }
       }
     } catch (err) {
       console.warn("Could not restore cube position", err);
     }
+
+    // Make the cube visible after restoring its position
+    cubeScene.style.visibility = 'visible';
+    cubeScene.style.opacity = 1;
   }
 
   createDragHandle(cubeScene) {
@@ -114,55 +126,41 @@ class CubeDragger {
     });
 
     cubeScene.appendChild(handle);
+    return handle;
   }
 
-  addEventListeners(cubeScene) {
+  addEventListeners(dragHandle, cubeScene) {
     const events = {
       start: ['mousedown', 'touchstart'],
       move: ['mousemove', 'touchmove'],
       stop: ['mouseup', 'touchend']
     };
 
-    events.start.forEach(event => cubeScene.addEventListener(event, this.startInteraction.bind(this)));
+    events.start.forEach(event => dragHandle.addEventListener(event, this.startDrag.bind(this, cubeScene)));
     events.move.forEach(event => document.addEventListener(event, this.move.bind(this)));
     events.stop.forEach(event => document.addEventListener(event, this.stopInteraction.bind(this)));
     this.centreCube.addEventListener("contextmenu", e => e.preventDefault());
+    this.centreCube.addEventListener('mousedown', this.startRotate.bind(this, cubeScene));
+    this.centreCube.addEventListener('touchstart', this.startRotate.bind(this, cubeScene));
   }
 
-  startInteraction(e) {
-    const cubeScene = e.target.closest('.cube-scene');
-    if (!cubeScene) return;
-
+  startDrag(cubeScene, e) {
     e.preventDefault();
-    const isCentre = e.target.closest('.centreCube');
-    const isDragHandle = e.target.closest('.cube-drag-handle');
-    const isShiftPressed = e.shiftKey;
-
-    console.log("Interaction:", { isCentre: !!isCentre, isDragHandle: !!isDragHandle, isShiftPressed });
-
-    if (isDragHandle || isShiftPressed || !isCentre) {
-      this.startDrag(e, cubeScene);
-    } else {
-      this.startRotate(e, cubeScene);
-    }
-  }
-
-  startDrag(e, cubeScene) {
     this.state.isDragging = true;
     this.state.draggedCube = cubeScene;
     const dragHandle = cubeScene.querySelector('.cube-drag-handle');
     if (dragHandle) dragHandle.style.cursor = 'grabbing';
 
-    const rect = cubeScene.getBoundingClientRect();
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
     this.state.offset = {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: clientX - cubeScene.offsetLeft,
+      y: clientY - cubeScene.offsetTop
     };
   }
 
-  startRotate(e, cubeScene) {
+  startRotate(cubeScene, e) {
+    e.preventDefault();
     this.state.isRotating = true;
     this.state.draggedCube = cubeScene;
     const clientX = e.clientX || e.touches?.[0]?.clientX;
@@ -172,6 +170,20 @@ class CubeDragger {
     this.centreCube.style.cssText += 'transition:none;cursor:grabbing';
   }
 
+  setCubeRotation(rotationX, rotationY, transition = 'none') {
+    this.state.rotationX = rotationX;
+    this.state.rotationY = rotationY;
+    this.centreCube.style.transition = transition;
+    this.centreCube.style.transform = `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
+
+    // Counter-rotate the labels
+    const labels = document.querySelectorAll('.face-label');
+    labels.forEach(label => {
+      label.style.transition = transition;
+      label.style.transform = `rotateY(${-this.state.rotationY}deg) rotateX(${-this.state.rotationX}deg)`;
+    });
+  }
+
   move(e) {
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
@@ -179,18 +191,14 @@ class CubeDragger {
     if (this.state.isDragging) {
       const newX = clientX - this.state.offset.x;
       const newY = clientY - this.state.offset.y;
-      const maxX = window.innerWidth - this.state.draggedCube.offsetWidth;
-      const maxY = window.innerHeight - this.state.draggedCube.offsetHeight;
-      const boundedX = Math.max(0, Math.min(newX, maxX));
-      const boundedY = Math.max(0, Math.min(newY, maxY));
-      this.state.draggedCube.style.left = `${boundedX}px`;
-      this.state.draggedCube.style.top = `${boundedY}px`;
+      this.state.draggedCube.style.left = `${newX}px`;
+      this.state.draggedCube.style.top = `${newY}px`;
     } else if (this.state.isRotating) {
       const deltaX = clientX - this.state.startX;
       const deltaY = clientY - this.state.startY;
-      this.state.rotationY += deltaX * 0.5;
-      this.state.rotationX -= deltaY * 0.5;
-      this.centreCube.style.transform = `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
+      const newRotationX = this.state.rotationX - deltaY * 0.5;
+      const newRotationY = this.state.rotationY + deltaX * 0.5;
+      this.setCubeRotation(newRotationX, newRotationY);
       this.state.startX = clientX;
       this.state.startY = clientY;
 
@@ -223,6 +231,34 @@ class CubeDragger {
     }
   }
 
+  snapToFace() {
+    const snapAngle = 90;
+    const snapThreshold = 45;
+
+    // Normalize angles to be within -180 to 180
+    let normRotationX = this.state.rotationX % 360;
+    let normRotationY = this.state.rotationY % 360;
+
+    // Snap X rotation
+    let targetX = Math.round(normRotationX / snapAngle) * snapAngle;
+
+    // Snap Y rotation
+    let targetY = Math.round(normRotationY / snapAngle) * snapAngle;
+
+    // Apply a smooth transition
+    this.setCubeRotation(targetX, targetY, 'transform 0.5s ease-out');
+
+    // Update the visible panel after snapping
+    setTimeout(() => {
+      this.updateVisiblePanel();
+      // Reset label transition after snap
+      const labels = document.querySelectorAll('.face-label');
+      labels.forEach(label => {
+        label.style.transition = 'none';
+      });
+    }, 500);
+  }
+
   async stopInteraction() {
     if (this.state.isDragging) {
       this.state.isDragging = false;
@@ -247,6 +283,21 @@ class CubeDragger {
     if (this.state.isRotating) {
       this.state.isRotating = false;
       this.centreCube.style.cursor = 'grab';
+      this.snapToFace();
+
+      const rotation = {
+        x: this.state.rotationX,
+        y: this.state.rotationY
+      };
+
+      try {
+        if (window.electronAPI?.setItem) {
+          await window.electronAPI.setItem('cube-rotation', rotation);
+          console.log("Rotation saved:", rotation);
+        }
+      } catch (err) {
+        console.warn("Could not save cube rotation", err);
+      }
     }
 
     this.state.draggedCube = null;
@@ -254,3 +305,11 @@ class CubeDragger {
 }
 
 document.addEventListener('DOMContentLoaded', () => new CubeDragger());
+
+
+// Ensure cubeDragger is globally available for sync
+let cubeDragger;
+document.addEventListener('DOMContentLoaded', () => {
+    cubeDragger = new CubeDragger();
+    window.cubeDragger = cubeDragger;
+});

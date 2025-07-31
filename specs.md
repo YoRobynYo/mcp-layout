@@ -16,6 +16,35 @@ then install Electron browser for this project
 npm install electron --save-dev (to add Electron)
 you need to add "start": "electron ." in the package.json
 
+
+adding in a new ai that runs on ollama 
+in the terminal || or vs terminal ...
+ollama pull qwen2.5-coder:7b 
+this will install qwen (lower free version)
+
+another extension in the terminal || vs code type 
+Gemini ... 
+that will start up that AI 
+│ Run npm install -g @google/gemini-cli to update  
+when out of code go to 
+ollama pull qwen2.5-coder:7b so using qwen in vs code 
+if that runs out use 
+ollama run deepseek-r1:7b
+
+here we are choosing qwen - 
+in the terminal - ollama run qwen2.5-coder:7b
+
+otherwise go back too Claude (which has very quick limits)
+and Manus  (which also has very quick limits)
+using these two AI always runs out of credits very quickly 
+but they are also very good.
+
+but so far using (type Gemini) in the terminal of vs 
+actually on command goes into the code and updates it 
+without any human help. This is crazy good blows me away!
+
+
+ok back to the destop app :: 
 here is an updated version of package.json 
 {
   "name": "dashboard-project",

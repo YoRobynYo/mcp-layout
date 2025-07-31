@@ -271,9 +271,13 @@ if (typeof PanelManager === 'undefined') {
             this.isPanelDragging = false;
             this.selectedCube = 'center';
             this.currentRotation = { x: 0, y: 0 };
+            this.cubeDragger = window.cubeDragger;
             this.init();
         }
         init() {
+            if (window.panelManagerInitialized) return;
+            window.panelManagerInitialized = true;
+
             this.addGlobalListeners();
             this.createPanel('screen-4', 'AI Panel', 100, 100, this.createAIContent.bind(this));
             this.createPanel('screen-4a', 'Button Controls', 450, 100, this.createButtonControls.bind(this));
@@ -284,7 +288,7 @@ if (typeof PanelManager === 'undefined') {
                     this.handlePanelMove.bind(this) : this.stopPanelDrag.bind(this));
             });
         }
-        createPanel(id, title, left, top, contentFn) {
+        async createPanel(id, title, defaultLeft, defaultTop, contentFn) {
             let panel = document.getElementById(id);
             if (panel) {
                 if (!panel.dataset.initialized) {
@@ -293,22 +297,40 @@ if (typeof PanelManager === 'undefined') {
                 }
                 return;
             }
+
             panel = Object.assign(document.createElement('div'), {
                 id,
                 className: 'panel',
                 innerHTML: `<h3 style="margin:0 0 20px 0;color:#fff;font-size:16px;text-align:center;pointer-events:none">${title}</h3>`
             });
-            panel.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:210px;height:220px;
-                background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;
-                box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);
-                user-select:none;transition:box-shadow 0.2s ease;z-index:10;cursor:grab;
-                display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
-                backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)`;
+
+            // Hide panel initially
+            panel.style.visibility = 'hidden';
+            panel.style.opacity = 0;
+
+            // Get saved position
+            const savedPos = await window.electronAPI.getItem(`${id}-position`);
+            const left = savedPos ? savedPos.left : `${defaultLeft}px`;
+            const top = savedPos ? savedPos.top : `${defaultTop}px`;
+
+            panel.style.cssText += `position:absolute;left:${left};top:${top};width:210px;height:220px;` +
+                `background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;` +
+                `box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);` +
+                `user-select:none;transition:box-shadow 0.2s ease, opacity 0.3s ease-in-out;z-index:10;cursor:grab;` +
+                `display:flex;flex-direction:column;justify-content:flex-start;align-items:center;` +
+                `backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)`;
+
             contentFn(panel);
             document.body.appendChild(panel);
             this.addPanelListeners(panel);
             panel.dataset.initialized = 'true';
             console.log(`Created panel: ${id}`);
+
+            // Fade in the panel
+            requestAnimationFrame(() => {
+                panel.style.visibility = 'visible';
+                panel.style.opacity = 1;
+            });
         }
         createButton(text, className, special = false) {
             const btn = Object.assign(document.createElement('button'), {
@@ -493,10 +515,22 @@ if (typeof PanelManager === 'undefined') {
             this.draggedPanel.style.left = `${newX}px`;
             this.draggedPanel.style.top = `${newY}px`;
         }
-        stopPanelDrag() {
+        async stopPanelDrag() {
             if (!this.isPanelDragging || !this.draggedPanel) return;
-            this.draggedPanel.style.cursor = 'grab';
-            this.draggedPanel.style.zIndex = 10;
+
+            const panel = this.draggedPanel;
+            panel.style.cursor = 'grab';
+            panel.style.zIndex = 10;
+
+            const position = { left: panel.style.left, top: panel.style.top };
+
+            try {
+                await window.electronAPI.setItem(`${panel.id}-position`, position);
+                console.log(`Saved position for panel ${panel.id}:`, position);
+            } catch (err) {
+                console.error(`Failed to save position for panel ${panel.id}:`, err);
+            }
+
             this.draggedPanel = null;
             this.isPanelDragging = false;
         }

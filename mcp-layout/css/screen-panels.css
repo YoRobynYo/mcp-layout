@@ -1,0 +1,25 @@
+
+/* screen-panels.css */
+.screen-panel {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: auto;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.screen-panel h2 {
+  margin-top: 0;
+}
+
+.screen-panel iframe {
+  border: none;
+  width: 100%;
+  height: calc(100% - 50px); /* Adjust height to fit panel */
+}
+
+#system-info p {
+  margin: 5px 0;
+}

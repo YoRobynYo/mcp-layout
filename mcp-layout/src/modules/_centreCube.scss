@@ -7,13 +7,17 @@
 // Cube scene container - ENLARGED to allow full rotation
 .cube-scene {
   position: absolute;
-  top: 50px;
-  left: 50px;
-  width: 400px; // Increased from 200px
-  height: 400px; // Increased from 200px
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: vars.$center-panel-width;
+  height: vars.$center-panel-height;
   perspective: 1000px;
   z-index: 1000;
   overflow: visible; // Ensure nothing gets clipped
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out; /* Add for smooth fade-in */
 }
 
 // Main centre cube container - CENTERED in larger container
@@ -21,12 +25,12 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 400px;
-  height: 400px;
+  width: vars.$cube-size;
+  height: vars.$cube-size;
   transform-style: preserve-3d;
   transform-origin: center center;
-  margin-left: -200px; // Center the cube in the larger container
-  margin-top: -200px; // Center the cube in the larger container
+  margin-left: calc(vars.$cube-size / -2); // Center the cube in the larger container
+  margin-top: calc(vars.$cube-size / -2); // Center the cube in the larger container
   cursor: grab;
 
   &:active {
@@ -34,10 +38,7 @@
   }
 
   // Hover effect only when NOT being manually rotated
-  &:hover:not(.manual-rotating) {
-    transform: rotateX(5deg) rotateY(5deg);
-    transition: vars.$transition-slow;
-  }
+  
 }
 
 // NEW: Class to disable CSS interference during manual rotation
@@ -55,9 +56,10 @@
   width: vars.$cube-size;
   height: vars.$cube-size;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: vars.$font-size-large;
+  align-items: flex-start; /* Align to top */
+  justify-content: flex-start; /* Align to left */
+  padding: 10px; /* Add some padding */
+  font-size: 1rem; /* Reduce font size */
   font-weight: bold;
   color: vars.$text-color-secondary;
   text-align: center;
@@ -68,43 +70,56 @@
     inset 0 0 20px rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(5px);
   transition: vars.$transition-default;
+  transform-style: preserve-3d; /* Enable 3D space for children */
+}
+
+.face-label-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  transform-style: preserve-3d;
+}
+
+.face-label {
+  display: block;
+  transform-style: preserve-3d;
 }
 
 // Individual cube faces - FIXED transforms for proper 3D positioning
 .centreFront {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-front, color.scale(vars.$color-front, $lightness: -40%));
-  transform: translateZ(200px); // Updated from 100px to match new cube size
+  transform: translateZ(vars.$cube-depth); // Updated from 100px to match new cube size
 }
 
 .centreBack {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-back, color.scale(vars.$color-back, $lightness: -40%));
-  transform: rotateY(180deg) translateZ(200px); // Updated from 100px
+  transform: rotateY(180deg) translateZ(vars.$cube-depth); // Updated from 100px
 }
 
 .centreRight {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-right, color.scale(vars.$color-right, $lightness: -40%));
-  transform: rotateY(90deg) translateZ(200px); // Updated from 100px
+  transform: rotateY(90deg) translateZ(vars.$cube-depth); // Updated from 100px
 }
 
 .centreLeft {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-left, color.scale(vars.$color-left, $lightness: -40%));
-  transform: rotateY(-90deg) translateZ(200px); // Updated from 100px
+  transform: rotateY(-90deg) translateZ(vars.$cube-depth); // Updated from 100px
 }
 
 .centreTop {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-top, color.scale(vars.$color-top, $lightness: -40%));
-  transform: rotateX(90deg) translateZ(200px); // Updated from 100px
+  transform: rotateX(90deg) translateZ(vars.$cube-depth); // Updated from 100px
 }
 
 .centreBottom {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-bottom, color.scale(vars.$color-bottom, $lightness: -40%));
-  transform: rotateX(-90deg) translateZ(200px); // Updated from 100px
+  transform: rotateX(-90deg) translateZ(vars.$cube-depth); // Updated from 100px
 }
 
 // Animation classes for JavaScript control (these can work alongside manual rotation)

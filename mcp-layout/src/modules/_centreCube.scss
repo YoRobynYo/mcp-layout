@@ -21,12 +21,12 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 200px;
-  height: 200px;
+  width: 400px;
+  height: 400px;
   transform-style: preserve-3d;
   transform-origin: center center;
-  margin-left: -100px; // Center the cube in the larger container
-  margin-top: -100px; // Center the cube in the larger container
+  margin-left: -200px; // Center the cube in the larger container
+  margin-top: -200px; // Center the cube in the larger container
   cursor: grab;
 
   &:active {
@@ -74,37 +74,37 @@
 .centreFront {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-front, color.scale(vars.$color-front, $lightness: -40%));
-  transform: translateZ(100px); // Use explicit value instead of calc
+  transform: translateZ(200px); // Updated from 100px to match new cube size
 }
 
 .centreBack {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-back, color.scale(vars.$color-back, $lightness: -40%));
-  transform: rotateY(180deg) translateZ(100px); // Use explicit value
+  transform: rotateY(180deg) translateZ(200px); // Updated from 100px
 }
 
 .centreRight {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-right, color.scale(vars.$color-right, $lightness: -40%));
-  transform: rotateY(90deg) translateZ(100px); // Use explicit value
+  transform: rotateY(90deg) translateZ(200px); // Updated from 100px
 }
 
 .centreLeft {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-left, color.scale(vars.$color-left, $lightness: -40%));
-  transform: rotateY(-90deg) translateZ(100px); // Use explicit value
+  transform: rotateY(-90deg) translateZ(200px); // Updated from 100px
 }
 
 .centreTop {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-top, color.scale(vars.$color-top, $lightness: -40%));
-  transform: rotateX(90deg) translateZ(100px); // Use explicit value
+  transform: rotateX(90deg) translateZ(200px); // Updated from 100px
 }
 
 .centreBottom {
   @extend %cube-face-base;
   background: linear-gradient(135deg, vars.$color-bottom, color.scale(vars.$color-bottom, $lightness: -40%));
-  transform: rotateX(-90deg) translateZ(100px); // Use explicit value
+  transform: rotateX(-90deg) translateZ(200px); // Updated from 100px
 }
 
 // Animation classes for JavaScript control (these can work alongside manual rotation)

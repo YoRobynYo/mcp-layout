@@ -3,6 +3,7 @@
 @use '../src/modules/buttons' as buttons;
 @use 'sass:color';
 
+
 // Import other partials here, e.g. cube, controls, responsive, etc.
 // @use '../src/modules/cube' as *;
 // @use '../src/modules/controls' as *;
@@ -39,3 +40,80 @@ body {
   padding: 2rem;
   overflow: hidden;
 }
+
+// updated extended panel 
+.extended-panel {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(200px + 100px); // assuming cube face width is 200px, +300px longer
+  height: 500px;
+  margin-left: 10px; // pushes the panel 10px to the right (outside the cube face)
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.extended-panel.left {
+  margin-left: initial; // reset
+  margin-right: 10px; // offset on the left side
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.panel-visible {
+  display: flex;
+}
+
+
+// .extended-panel {
+//   position: absolute;
+//   top: 0;
+//   left: 50%;
+//   transform: translateX(-50%);
+//   width: 500px; // 300px longer than cube face
+//   height: 200px;
+//   background: rgba(255, 255, 255, 0.1);
+//   border: 1px solid rgba(255, 255, 255, 0.2);
+//   border-radius: 12px;
+//   color: white;
+//   display: none;
+//   align-items: center;
+//   justify-content: center;
+//   font-size: 1.5rem;
+//   backdrop-filter: blur(5px);
+//   -webkit-backdrop-filter: blur(5px);
+//   pointer-events: none;
+//   z-index: 5;
+// }
+
+// #panel-front {
+//   transform: translate(-50%, 0) rotateY(0deg);
+// }
+
+// #panel-back {
+//   transform: translate(-50%, 0) rotateY(180deg);
+// }
+
+// #panel-left {
+//   transform: translate(-50%, 0) rotateY(-90deg);
+// }
+
+// #panel-right {
+//   transform: translate(-50%, 0) rotateY(90deg);
+// }
+
+// .panel-visible {
+//   display: flex;
+// }

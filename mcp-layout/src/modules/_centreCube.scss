@@ -1,17 +1,15 @@
 // ============================================================================
 // CENTRE CUBE MODULE - FIXED VERSION
 // ============================================================================
-@use 'variables' as vars;
+@use './variables' as vars;
 @use 'sass:color';
 
 // Cube scene container - ENLARGED to allow full rotation
 .cube-scene {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: vars.$center-panel-width;
-  height: vars.$center-panel-height;
+  transform: none;
+  width: vars.$overall-cube-size; /* Overall width of the 2x2 structure */
+  height: vars.$overall-cube-size; /* Overall height of the 2x2 structure */
   perspective: 1000px;
   z-index: 1000;
   overflow: visible; // Ensure nothing gets clipped
@@ -20,17 +18,28 @@
   transition: opacity 0.3s ease-in-out; /* Add for smooth fade-in */
 }
 
-// Main centre cube container - CENTERED in larger container
+#cube-scene-main {
+  top: auto;
+  bottom: 20px;
+  left: 20px;
+}
+
+#cube-scene-secondary {
+  top: 20px;
+  left: 20px;
+}
+
+// Main centre cube container - POSITIONED in top-left of its scene container
 .centreCube {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: vars.$cube-size;
-  height: vars.$cube-size;
+  width: vars.$overall-cube-size; /* Overall width of the 2x2 structure */
+  height: vars.$overall-cube-size; /* Overall height of the 2x2 structure */
   transform-style: preserve-3d;
   transform-origin: center center;
-  margin-left: calc(vars.$cube-size / -2); // Center the cube in the larger container
-  margin-top: calc(vars.$cube-size / -2); // Center the cube in the larger container
+  margin-left: vars.$overall-cube-margin; /* Center the overall structure */
+  margin-top: vars.$overall-cube-margin; /* Center the overall structure */
   cursor: grab;
 
   &:active {
@@ -50,76 +59,93 @@
   }
 }
 
-// Base styles for all cube faces
-%cube-face-base {
+// Styles for individual small cubes within the 2x2x2 structure
+.small-cube {
   position: absolute;
-  width: vars.$cube-size;
-  height: vars.$cube-size;
+  width: vars.$small-cube-size;
+  height: vars.$small-cube-size;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+/* Positioning for each of the 8 small cubes */
+.top-left-front {
+  transform: translate3d(vars.$tlf-translate);
+}
+.top-right-front {
+  transform: translate3d(vars.$trf-translate);
+}
+.bottom-left-front {
+  transform: translate3d(vars.$blf-translate);
+}
+.bottom-right-front {
+  transform: translate3d(vars.$brf-translate);
+}
+.top-left-back {
+  transform: translate3d(vars.$tlb-translate);
+}
+.top-right-back {
+  transform: translate3d(vars.$trb-translate);
+}
+.bottom-left-back {
+  transform: translate3d(vars.$blb-translate);
+}
+.bottom-right-back {
+  transform: translate3d(vars.$brb-translate);
+}
+
+// Base styles for all faces of the small cubes
+.face {
+  position: absolute;
+  width: vars.$small-cube-size;
+  height: vars.$small-cube-size;
   display: flex;
-  align-items: flex-start; /* Align to top */
-  justify-content: flex-start; /* Align to left */
-  padding: 10px; /* Add some padding */
-  font-size: 1rem; /* Reduce font size */
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
   font-weight: bold;
   color: vars.$text-color-secondary;
   text-align: center;
-  border: 2px solid vars.$primary-color;
-  border-radius: 8px;
+  border: 2px solid vars.$border-color-main;
+  border-radius: 12px; /* Softer corners */
   box-shadow:
-    0 0 20px rgba(0, 0, 0, 0.3),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
+    0 0 15px rgba(0, 0, 0, 0.2), /* Softer shadow */
+    inset 0 0 10px rgba(255, 255, 255, 0.05); /* Lighter inner glow */
+  backdrop-filter: blur(8px); /* Increased blur */
   transition: vars.$transition-default;
   transform-style: preserve-3d; /* Enable 3D space for children */
+  backface-visibility: hidden;
 }
 
-.face-label-container {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  transform-style: preserve-3d;
+/* Individual face transformations for small cubes */
+.face.front {
+  background: linear-gradient(135deg, vars.$color-front, color.scale(vars.$color-front, $lightness: -20%)); /* Softer gradient */
+  transform: translateZ(vars.$face-translateZ);
 }
 
-.face-label {
-  display: block;
-  transform-style: preserve-3d;
+.face.back {
+  background: linear-gradient(135deg, vars.$color-back, color.scale(vars.$color-back, $lightness: -20%));
+  transform: rotateY(180deg) translateZ(vars.$face-translateZ);
 }
 
-// Individual cube faces - FIXED transforms for proper 3D positioning
-.centreFront {
-  @extend %cube-face-base;
-  background: linear-gradient(135deg, vars.$color-front, color.scale(vars.$color-front, $lightness: -40%));
-  transform: translateZ(vars.$cube-depth); // Updated from 100px to match new cube size
+.face.right {
+  background: linear-gradient(135deg, vars.$color-right, color.scale(vars.$color-right, $lightness: -20%));
+  transform: rotateY(90deg) translateZ(vars.$face-translateZ);
 }
 
-.centreBack {
-  @extend %cube-face-base;
-  background: linear-gradient(135deg, vars.$color-back, color.scale(vars.$color-back, $lightness: -40%));
-  transform: rotateY(180deg) translateZ(vars.$cube-depth); // Updated from 100px
+.face.left {
+  background: linear-gradient(135deg, vars.$color-left, color.scale(vars.$color-left, $lightness: -20%));
+  transform: rotateY(-90deg) translateZ(vars.$face-translateZ);
 }
 
-.centreRight {
-  @extend %cube-face-base;
-  background: linear-gradient(135deg, vars.$color-right, color.scale(vars.$color-right, $lightness: -40%));
-  transform: rotateY(90deg) translateZ(vars.$cube-depth); // Updated from 100px
+.face.top {
+  background: linear-gradient(135deg, vars.$color-top, color.scale(vars.$color-top, $lightness: -20%));
+  transform: rotateX(90deg) translateZ(vars.$face-translateZ);
 }
 
-.centreLeft {
-  @extend %cube-face-base;
-  background: linear-gradient(135deg, vars.$color-left, color.scale(vars.$color-left, $lightness: -40%));
-  transform: rotateY(-90deg) translateZ(vars.$cube-depth); // Updated from 100px
-}
-
-.centreTop {
-  @extend %cube-face-base;
-  background: linear-gradient(135deg, vars.$color-top, color.scale(vars.$color-top, $lightness: -40%));
-  transform: rotateX(90deg) translateZ(vars.$cube-depth); // Updated from 100px
-}
-
-.centreBottom {
-  @extend %cube-face-base;
-  background: linear-gradient(135deg, vars.$color-bottom, color.scale(vars.$color-bottom, $lightness: -40%));
-  transform: rotateX(-90deg) translateZ(vars.$cube-depth); // Updated from 100px
+.face.bottom {
+  background: linear-gradient(135deg, vars.$color-bottom, color.scale(vars.$color-bottom, $lightness: -20%));
+  transform: rotateX(-90deg) translateZ(vars.$face-translateZ);
 }
 
 // Animation classes for JavaScript control (these can work alongside manual rotation)

@@ -1,28 +1,35 @@
 .cube-scene {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 250px;
-  height: 250px;
+  transform: none;
+  width: 125px; /* Overall width of the 2x2 structure */
+  height: 125px; /* Overall height of the 2x2 structure */
   perspective: 1000px;
   z-index: 1000;
   overflow: visible;
-  visibility: hidden;
-  opacity: 0;
   transition: opacity 0.3s ease-in-out; /* Add for smooth fade-in */
+}
+
+#cube-scene-main {
+  top: auto;
+  bottom: 20px;
+  left: 20px;
+}
+
+#cube-scene-secondary {
+  top: 20px;
+  left: 20px;
 }
 
 .centreCube {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 250px;
-  height: 250px;
+  width: 125px; /* Overall width of the 2x2 structure */
+  height: 125px; /* Overall height of the 2x2 structure */
   transform-style: preserve-3d;
   transform-origin: center center;
-  margin-left: -125px;
-  margin-top: -125px;
+  margin-left: -62.5px; /* Center the overall structure */
+  margin-top: -62.5px; /* Center the overall structure */
   cursor: grab;
 }
 .centreCube:active {
@@ -36,15 +43,55 @@
   transform: none !important;
 }
 
-.centreBottom, .centreTop, .centreLeft, .centreRight, .centreBack, .centreFront {
+.small-cube {
   position: absolute;
-  width: 250px;
-  height: 250px;
+  width: 62.5px;
+  height: 62.5px;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+/* Positioning for each of the 8 small cubes */
+.top-left-front {
+  transform: translate3d(-31.25px, -31.25px, 31.25px);
+}
+
+.top-right-front {
+  transform: translate3d(31.25px, -31.25px, 31.25px);
+}
+
+.bottom-left-front {
+  transform: translate3d(-31.25px, 31.25px, 31.25px);
+}
+
+.bottom-right-front {
+  transform: translate3d(31.25px, 31.25px, 31.25px);
+}
+
+.top-left-back {
+  transform: translate3d(-31.25px, -31.25px, -31.25px);
+}
+
+.top-right-back {
+  transform: translate3d(31.25px, -31.25px, -31.25px);
+}
+
+.bottom-left-back {
+  transform: translate3d(-31.25px, 31.25px, -31.25px);
+}
+
+.bottom-right-back {
+  transform: translate3d(31.25px, 31.25px, -31.25px);
+}
+
+.face {
+  position: absolute;
+  width: 62.5px;
+  height: 62.5px;
   display: flex;
-  align-items: flex-start; /* Align to top */
-  justify-content: flex-start; /* Align to left */
-  padding: 10px; /* Add some padding */
-  font-size: 1rem; /* Reduce font size */
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
   font-weight: bold;
   color: #ccc;
   text-align: center;
@@ -54,48 +101,38 @@
   backdrop-filter: blur(5px);
   transition: 0.3s ease;
   transform-style: preserve-3d; /* Enable 3D space for children */
+  backface-visibility: hidden;
 }
 
-.face-label-container {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  transform-style: preserve-3d;
-}
-
-.face-label {
-  display: block;
-  transform-style: preserve-3d;
-}
-
-.centreFront {
+/* Individual face transformations for small cubes */
+.face.front {
   background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
-  transform: translateZ(125px);
+  transform: translateZ(31.25px);
 }
 
-.centreBack {
+.face.back {
   background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
-  transform: rotateY(180deg) translateZ(125px);
+  transform: rotateY(180deg) translateZ(31.25px);
 }
 
-.centreRight {
+.face.right {
   background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
-  transform: rotateY(90deg) translateZ(125px);
+  transform: rotateY(90deg) translateZ(31.25px);
 }
 
-.centreLeft {
+.face.left {
   background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
-  transform: rotateY(-90deg) translateZ(125px);
+  transform: rotateY(-90deg) translateZ(31.25px);
 }
 
-.centreTop {
+.face.top {
   background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
-  transform: rotateX(90deg) translateZ(125px);
+  transform: rotateX(90deg) translateZ(31.25px);
 }
 
-.centreBottom {
+.face.bottom {
   background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
-  transform: rotateX(-90deg) translateZ(125px);
+  transform: rotateX(-90deg) translateZ(31.25px);
 }
 
 .centreCube.rotating {
@@ -321,5 +358,3 @@ body {
 .panel-visible {
   display: flex;
 }
-
-/*# sourceMappingURL=style.css.map */

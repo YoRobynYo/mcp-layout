@@ -2,7 +2,7 @@
 console.log("dragCube.js loaded");
 
 class CubeDragger {
-  constructor() {
+  constructor(cubeSceneElement) {
     this.state = {
       draggedCube: null,
       offset: { x: 0, y: 0 },
@@ -13,29 +13,26 @@ class CubeDragger {
       rotationX: 0,
       rotationY: 0
     };
-    this.centreCube = null;
-    this.panels = {}; // Panel references
+    this.cubeScene = cubeSceneElement; // Store the specific cubeScene element
+    this.centreCube = this.cubeScene.querySelector('.centreCube');
+    if (!this.cubeScene || !this.centreCube) {
+      console.warn("Cube elements not found for this instance");
+      return;
+    }
     this.init();
   }
 
   async init() {
-    const cubeScene = document.querySelector('.cube-scene');
-    this.centreCube = document.querySelector('.centreCube');
-    if (!cubeScene || !this.centreCube) {
-      console.warn("Cube elements not found");
-      return;
-    }
+    this.cubeScene.style.cssText = 'position:absolute;z-index:10';
+    const dragHandle = this.createDragHandle(this.cubeScene);
+    await this.restorePosition(this.cubeScene, `cube-scene-position-${this.cubeScene.id}`);
+    this.addEventListeners(dragHandle, this.cubeScene, 'cube');
 
-    // Initialize panels after DOM ready
+    // Only the main cube controls the content screen
+    // if (this.cubeScene.id === 'cube-scene-main') {
+    //   this.updateMainContentScreen();
+    // }
     this.initializePanels();
-
-    cubeScene.style.cssText = 'position:absolute;z-index:10';
-    const dragHandle = this.createDragHandle(cubeScene);
-    await this.restorePosition(cubeScene);
-    this.addEventListeners(dragHandle, cubeScene);
-
-    // Show correct panel on start
-    this.updateVisiblePanel();
   }
 
   initializePanels() {
@@ -131,38 +128,39 @@ class CubeDragger {
 
   addEventListeners(dragHandle, cubeScene) {
     const events = {
-      start: ['mousedown', 'touchstart'],
       move: ['mousemove', 'touchmove'],
       stop: ['mouseup', 'touchend']
     };
 
-    events.start.forEach(event => dragHandle.addEventListener(event, this.startDrag.bind(this, cubeScene)));
+    dragHandle.addEventListener('mousedown', this.startDrag.bind(this));
+    dragHandle.addEventListener('touchstart', this.startDrag.bind(this));
+    this.centreCube.addEventListener('mousedown', this.startRotate.bind(this));
+    this.centreCube.addEventListener('touchstart', this.startRotate.bind(this));
+
     events.move.forEach(event => document.addEventListener(event, this.move.bind(this)));
     events.stop.forEach(event => document.addEventListener(event, this.stopInteraction.bind(this)));
     this.centreCube.addEventListener("contextmenu", e => e.preventDefault());
-    this.centreCube.addEventListener('mousedown', this.startRotate.bind(this, cubeScene));
-    this.centreCube.addEventListener('touchstart', this.startRotate.bind(this, cubeScene));
   }
 
-  startDrag(cubeScene, e) {
+  startDrag(e) {
     e.preventDefault();
     this.state.isDragging = true;
-    this.state.draggedCube = cubeScene;
-    const dragHandle = cubeScene.querySelector('.cube-drag-handle');
+    this.state.draggedCube = this.cubeScene;
+    const dragHandle = this.cubeScene.querySelector('.cube-drag-handle');
     if (dragHandle) dragHandle.style.cursor = 'grabbing';
 
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
     this.state.offset = {
-      x: clientX - cubeScene.offsetLeft,
-      y: clientY - cubeScene.offsetTop
+      x: clientX - this.cubeScene.offsetLeft,
+      y: clientY - this.cubeScene.offsetTop
     };
   }
 
-  startRotate(cubeScene, e) {
+  startRotate(e) {
     e.preventDefault();
     this.state.isRotating = true;
-    this.state.draggedCube = cubeScene;
+    this.state.draggedCube = this.cubeScene;
     const clientX = e.clientX || e.touches?.[0]?.clientX;
     const clientY = e.clientY || e.touches?.[0]?.clientY;
     this.state.startX = clientX;
@@ -304,12 +302,9 @@ class CubeDragger {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => new CubeDragger());
-
-
-// Ensure cubeDragger is globally available for sync
-let cubeDragger;
 document.addEventListener('DOMContentLoaded', () => {
-    cubeDragger = new CubeDragger();
-    window.cubeDragger = cubeDragger;
+    const cubeScenes = document.querySelectorAll('.cube-scene');
+    cubeScenes.forEach(cubeScene => {
+        new CubeDragger(cubeScene);
+    });
 });

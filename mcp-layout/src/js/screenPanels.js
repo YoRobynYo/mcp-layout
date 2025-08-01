@@ -65,4 +65,4 @@ class ScreenPanels {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => new ScreenPanels());
+

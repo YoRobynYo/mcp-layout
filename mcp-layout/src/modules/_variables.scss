@@ -1,26 +1,42 @@
 // src/modules/_variables.scss
 // Cube face colors
-$color-front: #cccccc;
-$color-back: #cccccc;
-$color-right: #cccccc;
-$color-left: #cccccc;
-$color-top: #cccccc;
-$color-bottom: #cccccc;
+$color-front: #f0e68c; // Khaki
+$color-back: #b0c4de; // LightSteelBlue
+$color-right: #98fb98; // PaleGreen
+$color-left: #add8e6; // LightBlue
+$color-top: #d8bfd8; // Thistle
+$color-bottom: #ffb6c1; // LightPink
 
 // Border colors
-$border-color-main: #9f8045;
-$border-color-light: #bfa368;
-$border-color-dark: #6e5b32;
-$border-color-glow: #ffc34d;
-$border-color-center: #9f8045; // Center cube border (brass/golden-brown)
+$border-color-main: #8b4513; // SaddleBrown
+$border-color-light: #a0522d; // Sienna
+$border-color-dark: #5a2d0c; // Darker brown
+$border-color-glow: #ffd700; // Gold
+$border-color-center: #8b4513; // Center cube border (SaddleBrown)
 
+@use 'sass:math';
 
-$cube-size: 250px;
-$cube-depth: 125px; // or half of $cube-size, adjust as needed
+$small-cube-size: 62.5px;
+$small-cube-depth: math.div($small-cube-size, 2); // or half of $small-cube-size, adjust as needed
+
+$overall-cube-size: 2 * $small-cube-size;
+$overall-cube-margin: math.div(-$overall-cube-size, 2);
+
+// Pre-calculated translate3d values for small cubes
+$tlf-translate: math.div(-$small-cube-size, 2), math.div(-$small-cube-size, 2), math.div($small-cube-size, 2); // top-left-front
+$trf-translate: math.div($small-cube-size, 2), math.div(-$small-cube-size, 2), math.div($small-cube-size, 2); // top-right-front
+$blf-translate: math.div(-$small-cube-size, 2), math.div($small-cube-size, 2), math.div($small-cube-size, 2); // bottom-left-front
+$brf-translate: math.div($small-cube-size, 2), math.div($small-cube-size, 2), math.div($small-cube-size, 2); // bottom-right-front
+$tlb-translate: math.div(-$small-cube-size, 2), math.div(-$small-cube-size, 2), math.div(-$small-cube-size, 2); // top-left-back
+$trb-translate: math.div($small-cube-size, 2), math.div(-$small-cube-size, 2), math.div(-$small-cube-size, 2); // top-right-back
+$blb-translate: math.div(-$small-cube-size, 2), math.div($small-cube-size, 2), math.div(-$small-cube-size, 2); // bottom-left-back
+$brb-translate: math.div($small-cube-size, 2), math.div($small-cube-size, 2), math.div(-$small-cube-size, 2); // bottom-right-back
+
+// Pre-calculated translateZ for faces
+$face-translateZ: math.div($small-cube-size, 2);
 
 $transition-slow: 0.5s ease;
 $transition-default: 0.3s ease;
-;
 
 $font-size-large: 1.5rem;
 
@@ -34,8 +50,8 @@ $panel-default-width: 100px;
 $panel-default-height: 100px;
 
 // Center panel size
-$center-panel-width: 250px;
-$center-panel-height: 250px;
+$center-panel-width: 250px; // Overall width of the 2x2 cube face
+$center-panel-height: 250px; // Overall height of the 2x2 cube face
 
 // Screen panel sizes
 $screen1-width: 100px;

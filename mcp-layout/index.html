@@ -10,22 +10,149 @@
 </head>
 
 <body>
-  <div class="cube-scene">
+  <div class="cube-scene" id="cube-scene-main">
     <div class="centreCube">
-      <div class="centreFront" id="centre-front"></div>
-      <div class="centreBack" id="centre-back"></div>
-      <div class="centreRight" id="centre-right"></div>
-      <div class="centreLeft" id="centre-left"></div>
-      <div class="centreTop" id="centre-top"></div>
-      <div class="centreBottom" id="centre-bottom"></div>
+      <!-- Top Layer -->
+      <div class="small-cube top-left-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube top-right-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-left-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-right-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <!-- Bottom Layer -->
+      <div class="small-cube top-left-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube top-right-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-left-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-right-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
     </div>
-
-    <!-- New outside the cube panels -->
-    <!-- <div class="extended-panel front">Front Panel Content</div>
-    <div class="extended-panel back">Back Panel Content</div>
-    <div class="extended-panel left">Left Panel Content</div>
-    <div class="extended-panel right">Right Panel Content</div> -->
   </div>
+
+  <div class="cube-scene" id="cube-scene-secondary">
+    <div class="centreCube">
+      <!-- Top Layer -->
+      <div class="small-cube top-left-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube top-right-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-left-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-right-front">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <!-- Bottom Layer -->
+      <div class="small-cube top-left-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube top-right-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-left-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+      <div class="small-cube bottom-right-back">
+        <div class="face front"></div>
+        <div class="face back"></div>
+        <div class="face right"></div>
+        <div class="face left"></div>
+        <div class="face top"></div>
+        <div class="face bottom"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-content-screen"></div>
 
   <!-- <script src="./src/js/cube-controls.js"></script> -->
   <!-- <script src="./src/js/dragPanels.js"></script> -->

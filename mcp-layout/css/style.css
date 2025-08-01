@@ -349,16 +349,4 @@ body {
   z-index: 5;
 }
 
-.extended-panel.left {
-  margin-left: initial;
-  margin-right: 10px;
-  left: auto;
-  right: 50%;
-  transform: translateX(50%);
-}
-
-.panel-visible {
-  display: flex;
-}
-
 /*# sourceMappingURL=style.css.map */

@@ -117,7 +117,7 @@ class CubeDragger {
     });
 
     handle.style.cssText = `
-      position:absolute;top:-30px;left:50%;transform:translateX(-50%);
+      position:absolute;top:-25px;left:50%;transform:translateX(-50%);
       width:50px;height:20px;background:linear-gradient(145deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));
       border:1px solid rgba(255,255,255,0.2);border-radius:10px 10px 3px 3px;
       color:rgba(255,255,255,0.6);font-size:12px;display:flex;align-items:center;
@@ -206,9 +206,15 @@ class CubeDragger {
       const newX = clientX - this.state.offset.x;
       const newY = clientY - this.state.offset.y;
 
-      const padding = 5; // Small padding to keep grab handle visible
-      const boundedX = Math.max(padding, Math.min(newX, window.innerWidth - this.state.draggedCube.offsetWidth - padding));
-      const boundedY = Math.max(padding, Math.min(newY, window.innerHeight - this.state.draggedCube.offsetHeight - padding));
+      const topPadding = 5; // Ensures grab handle is visible (cube top >= 5px)
+      const sidePadding = 5;
+      const bottomPadding = 5;
+
+      const boundedX = Math.max(sidePadding, Math.min(newX, window.innerWidth - this.state.draggedCube.offsetWidth - sidePadding));
+      const boundedY = Math.max(topPadding, Math.min(newY, window.innerHeight - this.state.draggedCube.offsetHeight - bottomPadding));
+
+      console.log(`move: newX=${newX}, newY=${newY}, boundedX=${boundedX}, boundedY=${boundedY}`);
+      console.log(`move: window.innerWidth=${window.innerWidth}, window.innerHeight=${window.innerHeight}`);
 
       this.state.draggedCube.style.left = `${boundedX}px`;
       this.state.draggedCube.style.top = `${boundedY}px`;

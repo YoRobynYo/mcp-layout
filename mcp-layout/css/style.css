@@ -6,6 +6,8 @@
   perspective: 1000px;
   z-index: 1000;
   overflow: visible;
+  visibility: hidden;
+  opacity: 0;
   transition: opacity 0.3s ease-in-out; /* Add for smooth fade-in */
 }
 
@@ -95,10 +97,10 @@
   font-weight: bold;
   color: #ccc;
   text-align: center;
-  border: 2px solid #9f8045;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(5px);
+  border: 2px solid #8b4513;
+  border-radius: 12px; /* Softer corners */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(255, 255, 255, 0.05); /* Lighter inner glow */
+  backdrop-filter: blur(8px); /* Increased blur */
   transition: 0.3s ease;
   transform-style: preserve-3d; /* Enable 3D space for children */
   backface-visibility: hidden;
@@ -106,32 +108,32 @@
 
 /* Individual face transformations for small cubes */
 .face.front {
-  background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
+  background: linear-gradient(135deg, #f0e68c, rgb(231.2307692308, 215.3846153846, 72.7692307692)); /* Softer gradient */
   transform: translateZ(31.25px);
 }
 
 .face.back {
-  background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
+  background: linear-gradient(135deg, #b0c4de, rgb(119.8535714286, 154.0678571429, 198.5464285714));
   transform: rotateY(180deg) translateZ(31.25px);
 }
 
 .face.right {
-  background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
+  background: linear-gradient(135deg, #98fb98, rgb(74.4130841121, 247.9869158879, 74.4130841121));
   transform: rotateY(90deg) translateZ(31.25px);
 }
 
 .face.left {
-  background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
+  background: linear-gradient(135deg, #add8e6, rgb(111.2317757009, 186.6224299065, 211.1682242991));
   transform: rotateY(-90deg) translateZ(31.25px);
 }
 
 .face.top {
-  background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
+  background: linear-gradient(135deg, #d8bfd8, rgb(185.1786407767, 140.4213592233, 185.1786407767));
   transform: rotateX(90deg) translateZ(31.25px);
 }
 
 .face.bottom {
-  background: linear-gradient(135deg, #cccccc, rgb(122.4, 122.4, 122.4));
+  background: linear-gradient(135deg, #ffb6c1, rgb(255, 94.6, 118.7698630137));
   transform: rotateX(-90deg) translateZ(31.25px);
 }
 
@@ -358,3 +360,5 @@ body {
 .panel-visible {
   display: flex;
 }
+
+/*# sourceMappingURL=style.css.map */

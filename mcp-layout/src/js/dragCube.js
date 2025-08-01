@@ -3,6 +3,7 @@ console.log("dragCube.js loaded");
 
 class CubeDragger {
   constructor(cubeSceneElement) {
+    console.log(`CubeDragger constructor called for #${cubeSceneElement.id}`);
     this.state = {
       draggedCube: null,
       offset: { x: 0, y: 0 },
@@ -23,10 +24,11 @@ class CubeDragger {
   }
 
   async init() {
+    console.log(`init() called for #${this.cubeScene.id}`);
     this.cubeScene.style.cssText = 'position:absolute;z-index:10';
     const dragHandle = this.createDragHandle(this.cubeScene);
     await this.restorePosition(this.cubeScene, `cube-scene-position-${this.cubeScene.id}`);
-    this.addEventListeners(dragHandle, this.cubeScene, 'cube');
+    this.addEventListeners(dragHandle, this.cubeScene);
 
     // Only the main cube controls the content screen
     // if (this.cubeScene.id === 'cube-scene-main') {
@@ -56,16 +58,19 @@ class CubeDragger {
     }, 100);
   }
 
-  async restorePosition(cubeScene) {
+  async restorePosition(cubeScene, storageKey) {
+    console.log(`restorePosition() called for #${cubeScene.id} with key ${storageKey}`);
     try {
       let attempts = 0;
       while (!window.electronAPI?.getItem && attempts < 50) {
+        console.log("Waiting for electronAPI.getItem...");
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
       }
 
       if (window.electronAPI?.getItem) {
-        const savedPos = await window.electronAPI.getItem('cube-scene-position');
+        console.log("electronAPI.getItem is available.");
+        const savedPos = await window.electronAPI.getItem(storageKey);
         if (savedPos) {
           const pos = typeof savedPos === 'string' ? JSON.parse(savedPos) : savedPos;
           const setPos = () => {
@@ -78,6 +83,8 @@ class CubeDragger {
             setTimeout(setPos, 500);
           });
           console.log("Position restored:", pos);
+        } else {
+          console.log("No saved position found for key:", storageKey);
         }
 
         const savedRotation = await window.electronAPI.getItem('cube-rotation');
@@ -86,10 +93,15 @@ class CubeDragger {
           this.state.rotationX = rotation.x;
           this.state.rotationY = rotation.y;
           this.centreCube.style.transform = `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
+          console.log("Rotation restored:", rotation);
+        } else {
+          console.log("No saved rotation found.");
         }
+      } else {
+        console.warn("window.electronAPI.getItem not available after attempts.");
       }
     } catch (err) {
-      console.warn("Could not restore cube position", err);
+      console.error("Error in restorePosition:", err);
     }
 
     // Make the cube visible after restoring its position
@@ -98,6 +110,7 @@ class CubeDragger {
   }
 
   createDragHandle(cubeScene) {
+    console.log(`createDragHandle() called for #${cubeScene.id}`);
     const handle = Object.assign(document.createElement('div'), {
       className: 'cube-drag-handle',
       innerHTML: '⋮⋮⋮'
@@ -127,6 +140,7 @@ class CubeDragger {
   }
 
   addEventListeners(dragHandle, cubeScene) {
+    console.log(`addEventListeners() called for #${cubeScene.id}`);
     const events = {
       move: ['mousemove', 'touchmove'],
       stop: ['mouseup', 'touchend']
@@ -143,6 +157,7 @@ class CubeDragger {
   }
 
   startDrag(e) {
+    console.log(`startDrag() called for #${this.cubeScene.id}`);
     e.preventDefault();
     this.state.isDragging = true;
     this.state.draggedCube = this.cubeScene;
@@ -158,6 +173,7 @@ class CubeDragger {
   }
 
   startRotate(e) {
+    console.log(`startRotate() called for #${this.cubeScene.id}`);
     e.preventDefault();
     this.state.isRotating = true;
     this.state.draggedCube = this.cubeScene;
@@ -189,8 +205,13 @@ class CubeDragger {
     if (this.state.isDragging) {
       const newX = clientX - this.state.offset.x;
       const newY = clientY - this.state.offset.y;
-      this.state.draggedCube.style.left = `${newX}px`;
-      this.state.draggedCube.style.top = `${newY}px`;
+
+      const padding = 5; // Small padding to keep grab handle visible
+      const boundedX = Math.max(padding, Math.min(newX, window.innerWidth - this.state.draggedCube.offsetWidth - padding));
+      const boundedY = Math.max(padding, Math.min(newY, window.innerHeight - this.state.draggedCube.offsetHeight - padding));
+
+      this.state.draggedCube.style.left = `${boundedX}px`;
+      this.state.draggedCube.style.top = `${boundedY}px`;
     } else if (this.state.isRotating) {
       const deltaX = clientX - this.state.startX;
       const deltaY = clientY - this.state.startY;
@@ -258,6 +279,7 @@ class CubeDragger {
   }
 
   async stopInteraction() {
+    console.log(`stopInteraction() called for #${this.cubeScene.id}`);
     if (this.state.isDragging) {
       this.state.isDragging = false;
       const dragHandle = this.state.draggedCube?.querySelector('.cube-drag-handle');
@@ -270,11 +292,13 @@ class CubeDragger {
 
       try {
         if (window.electronAPI?.setItem) {
-          await window.electronAPI.setItem('cube-scene-position', position);
+          await window.electronAPI.setItem(`cube-scene-position-${this.cubeScene.id}`, position);
           console.log("Position saved:", position);
+        } else {
+          console.warn("window.electronAPI.setItem not available for saving position.");
         }
       } catch (err) {
-        console.warn("Could not save cube position", err);
+        console.error("Could not save cube position:", err);
       }
     }
 
@@ -292,9 +316,11 @@ class CubeDragger {
         if (window.electronAPI?.setItem) {
           await window.electronAPI.setItem('cube-rotation', rotation);
           console.log("Rotation saved:", rotation);
+        } else {
+          console.warn("window.electronAPI.setItem not available for saving rotation.");
         }
       } catch (err) {
-        console.warn("Could not save cube rotation", err);
+        console.error("Could not save cube rotation:", err);
       }
     }
 
@@ -303,8 +329,11 @@ class CubeDragger {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded event fired.");
     const cubeScenes = document.querySelectorAll('.cube-scene');
+    console.log(`Found ${cubeScenes.length} cube scenes.`);
     cubeScenes.forEach(cubeScene => {
+        console.log(`Initializing CubeDragger for #${cubeScene.id}`);
         new CubeDragger(cubeScene);
     });
 });

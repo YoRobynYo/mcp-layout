@@ -1,4 +1,5 @@
-// dragCube.js setting
+// buttonManagerjs setting
+
 // console.log("Independent Panel System loaded!");
 
 // if (typeof PanelManager === 'undefined') {
@@ -316,7 +317,7 @@ if (typeof PanelManager === 'undefined') {
             panel.style.cssText += `position:absolute;left:${left};top:${top};width:210px;height:220px;` +
                 `background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;` +
                 `box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);` +
-                `user-select:none;transition:box-shadow 0.2s ease, opacity 0.3s ease-in-out;z-index:10;cursor:grab;` +
+                `user-select:none;transition:box-shadow 0.2s ease, opacity 0.3s ease-in-out;z-index:2000;cursor:grab;` +
                 `display:flex;flex-direction:column;justify-content:flex-start;align-items:center;` +
                 `backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)`;
 
@@ -376,7 +377,7 @@ if (typeof PanelManager === 'undefined') {
             });
             screenSelector.appendChild(screenLabel);
 
-            ['center', '1', '2', '3'].forEach((screen, i) => {
+            ['1', '2', 'centre'].forEach((screen, i) => {
                 const btn = this.createButton(screen, 'screen-btn');
                 btn.dataset.screen = screen;
                 if (i === 0) btn.classList.add('active');
@@ -432,30 +433,48 @@ if (typeof PanelManager === 'undefined') {
                 const btn = e.target.closest('button');
                 if (!btn) return;
                 e.stopPropagation();
+
+                console.log('Before click handling - Panel display:', panel.style.display, 'visibility:', panel.style.visibility);
+
                 if (btn.classList.contains('rotate-btn')) {
                     this.rotateCube(btn.dataset.direction);
                 } else if (btn.classList.contains('screen-btn')) {
-                    if (btn.dataset.screen !== 'center') {
-                        console.log(`Screen ${btn.dataset.screen} not available yet`);
-                        return;
-                    }
                     panel.querySelectorAll('.screen-btn').forEach(b => {
                         b.classList.toggle('active', b === btn);
                         b.style.cssText += b === btn ?
                             'background:linear-gradient(145deg,rgba(0,255,247,0.15),rgba(0,255,247,0.08));color:#00fff7;border-color:rgba(0,255,247,0.2)' :
                             'background:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));color:#e8f0f0;border-color:rgba(255,255,255,0.25)';
                     });
-                    this.selectedCube = btn.dataset.screen;
+                    const screen = btn.dataset.screen;
+
+                    const youtubeViewer = document.getElementById('youtube-viewer-container');
+                    const rotationControls = panel.querySelector('.rotation-controls');
+
+                    if (screen === 'centre') {
+                        youtubeViewer.style.display = 'block';
+                    } else {
+                        youtubeViewer.style.display = 'none';
+                    }
+                    // Rotation controls always stay visible - no hiding logic
+
+                    if (screen === '1') {
+                        this.selectedCube = 'centre-cube-main';
+                    } else if (screen === '2') {
+                        this.selectedCube = 'centre-cube-secondary';
+                    } else if (screen === 'centre') {
+                        this.selectedCube = 'youtube-viewer-container';
+                    }
                 } else if (btn.id === 'apply-btn') {
                     console.log(`✅ Applied cube state - Face: ${this.getCurrentFace().name}`);
                 } else if (btn.id === 'reset-btn') {
                     this.resetCube();
                 }
+                console.log('After click handling - Panel display:', panel.style.display, 'visibility:', panel.style.visibility);
             });
         }
         rotateCube(direction) {
-            const cube = document.querySelector('.centreCube');
-            if (!cube) return console.warn('No .centreCube found');
+            const cube = document.querySelector(`#${this.selectedCube}`);
+            if (!cube) return console.warn(`No #${this.selectedCube} found`);
             const rotations = { left: [0, -90], right: [0, 90], up: [-90, 0], down: [90, 0] };
             const [x, y] = rotations[direction];
             this.currentRotation.x += x;
@@ -478,7 +497,7 @@ if (typeof PanelManager === 'undefined') {
             return faces[`${x},${y}`] || { name: 'Unknown', topic: 'Mixed View' };
         }
         resetCube() {
-            const cube = document.querySelector('.centreCube');
+            const cube = document.querySelector(`#${this.selectedCube}`);
             if (!cube) return;
             this.currentRotation = { x: 0, y: 0 };
             cube.style.transform = 'rotateX(0deg) rotateY(0deg)';
@@ -491,6 +510,7 @@ if (typeof PanelManager === 'undefined') {
         }
         startPanelDrag(e) {
             const panel = e.target.closest('.panel');
+            console.log('startPanelDrag called. Panel found:', panel);
             if (!panel) return;
             // Avoid dragging on buttons or inputs inside panel
             if (e.target.matches('button, input') || e.target.closest('button, input, .chat-input, .rotation-controls, .action-controls, .screen-selector')) return;

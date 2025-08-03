@@ -1,0 +1,33 @@
+/* CSS for highlighting selected cube faces */
+.face.face-selected {
+  box-shadow: 0 0 20px 5px rgba(0, 255, 255, 0.7);
+  /* Cyan glow */
+  border: 2px solid cyan;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+}
+
+/* CSS for highlighting active buttons */
+.button-active {
+  background-color: #007bff !important;
+  /* Blue background */
+  color: white !important;
+  border-color: #0056b3 !important;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* Additional styling for rotate buttons */
+.rotate-btn {
+  transition: all 0.3s ease;
+}
+
+.rotate-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+/* Ensure face elements have proper positioning for highlighting */
+.face {
+  position: relative;
+  transition: all 0.3s ease;
+}

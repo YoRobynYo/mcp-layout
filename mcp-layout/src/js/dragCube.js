@@ -12,7 +12,8 @@ class CubeDragger {
       startX: 0,
       startY: 0,
       rotationX: 0,
-      rotationY: 0
+      rotationY: 0,
+      selectedFace: 'front' // Initialize selected face
     };
     this.cubeScene = cubeSceneElement; // Store the specific cubeScene element
     this.centreCube = this.cubeScene.querySelector('.centreCube');
@@ -30,32 +31,26 @@ class CubeDragger {
     await this.restorePosition(this.cubeScene, `cube-scene-position-${this.cubeScene.id}`);
     this.addEventListeners(dragHandle, this.cubeScene);
 
-    // Only the main cube controls the content screen
-    // if (this.cubeScene.id === 'cube-scene-main') {
-    //   this.updateMainContentScreen();
-    // }
-    this.initializePanels();
+    await this.initializePanels();
+    this.updateFaceHighlight(this.state.selectedFace); // Initial highlight
   }
 
   initializePanels() {
-    // Delay to ensure DOM is ready and panels exist
-    setTimeout(() => {
-      this.panels = {
-        front: document.querySelector(".extended-panel.front"),
-        back: document.querySelector(".extended-panel.back"),
-        left: document.querySelector(".extended-panel.left"),
-        right: document.querySelector(".extended-panel.right")
-      };
-      console.log("Panels initialized:", this.panels);
-
-      // Set panel heights equal to cube height
-      const cubeHeight = this.centreCube.offsetHeight;
-      Object.values(this.panels).forEach(panel => {
-        if (panel) panel.style.height = `${cubeHeight}px`;
-      });
-
-      this.updateVisiblePanel(); // Update visibility after initialization
-    }, 100);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this.panels = {
+          front: this.centreCube.querySelector(".face.front"),
+          back: this.centreCube.querySelector(".face.back"),
+          left: this.centreCube.querySelector(".face.left"),
+          right: this.centreCube.querySelector(".face.right"),
+          top: this.centreCube.querySelector(".face.top"),
+          bottom: this.centreCube.querySelector(".face.bottom")
+        };
+        console.log("Panels initialized:", this.panels);
+        this.updateVisiblePanel();
+        resolve();
+      }, 100);
+    });
   }
 
   async restorePosition(cubeScene, storageKey) {
@@ -104,7 +99,6 @@ class CubeDragger {
       console.error("Error in restorePosition:", err);
     }
 
-    // Make the cube visible after restoring its position
     cubeScene.style.visibility = 'visible';
     cubeScene.style.opacity = 1;
   }
@@ -117,12 +111,12 @@ class CubeDragger {
     });
 
     handle.style.cssText = `
-      position:absolute;top:5px;left:50%;transform:translateX(-50%);
+      position:absolute;top:-30px;left:50%;transform:translateX(-50%);
       width:50px;height:20px;background:linear-gradient(145deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));
       border:1px solid rgba(255,255,255,0.2);border-radius:10px 10px 3px 3px;
       color:rgba(255,255,255,0.6);font-size:12px;display:flex;align-items:center;
       justify-content:center;cursor:grab;backdrop-filter:blur(5px);user-select:none;
-      z-index:1000;transition:all 0.2s ease;
+      z-index:1001;transition:all 0.2s ease;display:block;
     `;
 
     ['mouseenter', 'mouseleave'].forEach((event, i) => {
@@ -141,19 +135,16 @@ class CubeDragger {
 
   addEventListeners(dragHandle, cubeScene) {
     console.log(`addEventListeners() called for #${cubeScene.id}`);
-    const events = {
-      move: ['mousemove', 'touchmove'],
-      stop: ['mouseup', 'touchend']
-    };
 
     dragHandle.addEventListener('mousedown', this.startDrag.bind(this));
     dragHandle.addEventListener('touchstart', this.startDrag.bind(this));
     this.centreCube.addEventListener('mousedown', this.startRotate.bind(this));
     this.centreCube.addEventListener('touchstart', this.startRotate.bind(this));
 
-    events.move.forEach(event => document.addEventListener(event, this.move.bind(this)));
-    events.stop.forEach(event => document.addEventListener(event, this.stopInteraction.bind(this)));
     this.centreCube.addEventListener("contextmenu", e => e.preventDefault());
+
+    // Add click listener for opening content
+    this.centreCube.addEventListener('click', this.openFaceContent.bind(this));
   }
 
   startDrag(e) {
@@ -170,6 +161,11 @@ class CubeDragger {
       x: clientX - this.cubeScene.offsetLeft,
       y: clientY - this.cubeScene.offsetTop
     };
+
+    document.addEventListener('mousemove', this.move.bind(this));
+    document.addEventListener('touchmove', this.move.bind(this));
+    document.addEventListener('mouseup', this.stopInteraction.bind(this));
+    document.addEventListener('touchend', this.stopInteraction.bind(this));
   }
 
   startRotate(e) {
@@ -182,6 +178,11 @@ class CubeDragger {
     this.state.startX = clientX;
     this.state.startY = clientY;
     this.centreCube.style.cssText += 'transition:none;cursor:grabbing';
+
+    document.addEventListener('mousemove', this.move.bind(this));
+    document.addEventListener('touchmove', this.move.bind(this));
+    document.addEventListener('mouseup', this.stopInteraction.bind(this));
+    document.addEventListener('touchend', this.stopInteraction.bind(this));
   }
 
   setCubeRotation(rotationX, rotationY, transition = 'none') {
@@ -190,7 +191,6 @@ class CubeDragger {
     this.centreCube.style.transition = transition;
     this.centreCube.style.transform = `rotateX(${this.state.rotationX}deg) rotateY(${this.state.rotationY}deg)`;
 
-    // Counter-rotate the labels
     const labels = document.querySelectorAll('.face-label');
     labels.forEach(label => {
       label.style.transition = transition;
@@ -203,16 +203,18 @@ class CubeDragger {
     const clientY = e.clientY || e.touches?.[0]?.clientY;
 
     if (this.state.isDragging) {
+      if (!this.state.draggedCube) return; // Add this null check
+
       const newX = clientX - this.state.offset.x;
       const newY = clientY - this.state.offset.y;
 
-      const maxX = window.innerWidth - this.state.draggedCube.offsetWidth;
-      const maxY = window.innerHeight - this.state.draggedCube.offsetHeight;
-      const constrainedX = Math.max(0, Math.min(newX, maxX));
-      const constrainedY = Math.max(0, Math.min(newY, maxY));
+      const maxX = window.innerWidth - this.state.draggedCube.offsetWidth - 10;
+      const maxY = window.innerHeight - this.state.draggedCube.offsetHeight - 10;
+      const constrainedX = Math.max(10, Math.min(newX, maxX));
+      const constrainedY = Math.max(40, Math.min(newY, maxY));
 
-      this.state.draggedCube.style.left = `${constrainedX}px`;
-      this.state.draggedCube.style.top = `${constrainedY}px`;
+      this.state.draggedCube.style.left = constrainedX + 'px';
+      this.state.draggedCube.style.top = constrainedY + 'px';
     } else if (this.state.isRotating) {
       const deltaX = clientX - this.state.startX;
       const deltaY = clientY - this.state.startY;
@@ -227,51 +229,109 @@ class CubeDragger {
   }
 
   updateVisiblePanel() {
-    if (!this.panels.front) return; // Panels not initialized yet
+    if (!this.panels.front) return;
 
     const normalizedY = ((this.state.rotationY % 360) + 360) % 360;
+    const normalizedX = ((this.state.rotationX % 360) + 360) % 360;
 
-    // Hide all panels first
+    // Remove panel-visible from all faces
     Object.values(this.panels).forEach(p => {
       if (p) p.classList.remove("panel-visible");
     });
 
-    if ((normalizedY >= 315 || normalizedY < 45)) {
-      this.panels.front?.classList.add("panel-visible");
-      console.log("Showing front panel");
-    } else if (normalizedY >= 45 && normalizedY < 135) {
-      this.panels.right?.classList.add("panel-visible");
-      console.log("Showing right panel");
-    } else if (normalizedY >= 135 && normalizedY < 225) {
-      this.panels.back?.classList.add("panel-visible");
-      console.log("Showing back panel");
-    } else if (normalizedY >= 225 && normalizedY < 315) {
-      this.panels.left?.classList.add("panel-visible");
-      console.log("Showing left panel");
+    // Determine which face is most visible based on rotation
+    let currentVisibleFace = '';
+    if (normalizedX === 0) { // Horizontal faces (front, back, left, right)
+      if ((normalizedY >= 315 || normalizedY < 45)) {
+        currentVisibleFace = 'front';
+      } else if (normalizedY >= 45 && normalizedY < 135) {
+        currentVisibleFace = 'right';
+      } else if (normalizedY >= 135 && normalizedY < 225) {
+        currentVisibleFace = 'back';
+      } else if (normalizedY >= 225 && normalizedY < 315) {
+        currentVisibleFace = 'left';
+      }
+    } else if (normalizedY === 0 || normalizedY === 180) { // Vertical faces (top, bottom)
+      if (normalizedX >= 45 && normalizedX < 135) {
+        currentVisibleFace = 'bottom';
+      } else if (normalizedX >= 225 && normalizedX < 315) {
+        currentVisibleFace = 'top';
+      }
+    }
+
+    if (this.panels[currentVisibleFace]) {
+      this.panels[currentVisibleFace].classList.add("panel-visible");
+      console.log(`Showing ${currentVisibleFace} panel`);
+    }
+  }
+
+  updateFaceHighlight(faceName) {
+    if (!this.panels.front) return; // Panels not initialized yet
+
+    // Remove highlight from all faces
+    Object.values(this.panels).forEach(p => {
+      if (p) p.classList.remove("face-selected");
+    });
+
+    // Add highlight to the selected face
+    if (this.panels[faceName]) {
+      this.panels[faceName].classList.add("face-selected");
+      this.state.selectedFace = faceName; // Update internal state
+      console.log(`Highlighted face: ${faceName}`);
+    }
+  }
+
+  openFaceContent() {
+    console.log(`Cube clicked! Opening content for selected face: ${this.state.selectedFace}`);
+    // This is where you'd implement the logic to open content based on this.state.selectedFace
+    // For example:
+        if (this.cubeScene.id === 'cube-1') {
+      switch (this.state.selectedFace) {
+        case 'front':
+          alert('Opening YouTube clone!');
+          // Load YouTube clone content
+          break;
+        case 'back':
+          alert('Opening Netflix interface!');
+          // Load Netflix content
+          break;
+        case 'left':
+          alert('Opening Music player!');
+          // Load Music player content
+          break;
+        case 'right':
+          alert('Opening Games hub!');
+          // Load Games hub content
+          break;
+        case 'top':
+          alert('Opening Settings!');
+          // Load Settings content
+          break;
+        case 'bottom':
+          alert('Opening File browser!');
+          // Load File browser content
+          break;
+        default:
+          alert('No content defined for this face.');
+      }
+    } else {
+      alert(`This is a secondary cube (${this.cubeScene.id}). Content for face: ${this.state.selectedFace}`);
     }
   }
 
   snapToFace() {
     const snapAngle = 90;
-    const snapThreshold = 45;
 
-    // Normalize angles to be within -180 to 180
     let normRotationX = this.state.rotationX % 360;
     let normRotationY = this.state.rotationY % 360;
 
-    // Snap X rotation
     let targetX = Math.round(normRotationX / snapAngle) * snapAngle;
-
-    // Snap Y rotation
     let targetY = Math.round(normRotationY / snapAngle) * snapAngle;
 
-    // Apply a smooth transition
     this.setCubeRotation(targetX, targetY, 'transform 0.5s ease-out');
 
-    // Update the visible panel after snapping
     setTimeout(() => {
       this.updateVisiblePanel();
-      // Reset label transition after snap
       const labels = document.querySelectorAll('.face-label');
       labels.forEach(label => {
         label.style.transition = 'none';
@@ -280,6 +340,11 @@ class CubeDragger {
   }
 
   async stopInteraction() {
+    document.removeEventListener('mousemove', this.move.bind(this));
+    document.removeEventListener('touchmove', this.move.bind(this));
+    document.removeEventListener('mouseup', this.stopInteraction.bind(this));
+    document.removeEventListener('touchend', this.stopInteraction.bind(this));
+
     console.log(`stopInteraction() called for #${this.cubeScene.id}`);
     if (this.state.isDragging) {
       this.state.isDragging = false;
@@ -329,12 +394,17 @@ class CubeDragger {
   }
 }
 
+window.cubeDraggers = {}; // Expose dragger instances globally
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded event fired.");
     const cubeScenes = document.querySelectorAll('.cube-scene');
     console.log(`Found ${cubeScenes.length} cube scenes.`);
     cubeScenes.forEach(cubeScene => {
         console.log(`Initializing CubeDragger for #${cubeScene.id}`);
-        new CubeDragger(cubeScene);
+        const dragger = new CubeDragger(cubeScene);
+        window.cubeDraggers[cubeScene.id] = dragger; // Store instance
     });
 });
+
+

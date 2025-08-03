@@ -1,4 +1,4 @@
-console.log("Combined dragCube.js script loaded!");
+console.log("Combined dragPanel.js script loaded!");
 console.log("TEST: This log should always appear for cube!");
 
 if (typeof CubeDragger === 'undefined') {

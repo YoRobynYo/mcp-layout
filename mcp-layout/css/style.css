@@ -306,6 +306,67 @@
   min-width: 60px;
 }
 
+.cube-scene {
+  position: absolute;
+  transform: none;
+  width: 125px;
+  /* Overall width of the 2x2 structure */
+  height: 125px;
+  /* Overall height of the 2x2 structure */
+  perspective: 1000px;
+  z-index: 1000;
+  overflow: visible;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  /* Add for smooth fade-in */
+}
+
+#cube-1 {
+  top: auto;
+  bottom: 20px;
+  left: 20px;
+}
+
+#cube-2 {
+  top: 20px;
+  left: 20px;
+}
+
+.extended-panel {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 500px;
+  margin-left: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.extended-panel.left {
+  margin-left: initial;
+  margin-right: 10px;
+  left: auto;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.panel-visible {
+  display: flex;
+}
+
 html,
 body {
   position: relative;
@@ -330,14 +391,17 @@ body {
 .cube-scene {
   position: absolute;
   transform: none;
-  width: 125px; /* Overall width of the 2x2 structure */
-  height: 125px; /* Overall height of the 2x2 structure */
+  width: 125px;
+  /* Overall width of the 2x2 structure */
+  height: 125px;
+  /* Overall height of the 2x2 structure */
   perspective: 1000px;
   z-index: 1000;
   overflow: visible;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.3s ease-in-out; /* Add for smooth fade-in */
+  transition: opacity 0.3s ease-in-out;
+  /* Add for smooth fade-in */
 }
 
 #cube-1 {

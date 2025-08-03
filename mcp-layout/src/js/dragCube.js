@@ -283,33 +283,40 @@ class CubeDragger {
 
   openFaceContent() {
     console.log(`Cube clicked! Opening content for selected face: ${this.state.selectedFace}`);
-    // This is where you'd implement the logic to open content based on this.state.selectedFace
-    // For example:
-        if (this.cubeScene.id === 'cube-1') {
+
+    const welcomeScreen = document.getElementById('welcome-screen-container');
+    const youtubePlayer = document.getElementById('youtube-player-container');
+    const videoGrid = document.getElementById('videoGrid'); // Assuming videoGrid still exists from previous context
+
+    // Hide all content containers first
+    if (welcomeScreen) welcomeScreen.style.display = 'none';
+    if (youtubePlayer) youtubePlayer.style.display = 'none';
+    if (videoGrid) videoGrid.style.display = 'none';
+
+    if (this.cubeScene.id === 'cube-1') {
       switch (this.state.selectedFace) {
         case 'front':
-          alert('Opening YouTube clone!');
-          // Load YouTube clone content
+          if (welcomeScreen) {
+            welcomeScreen.style.display = 'block';
+            console.log('Showing Welcome Screen!');
+          }
           break;
         case 'back':
-          alert('Opening Netflix interface!');
-          // Load Netflix content
+          alert('Opening UI-Builder interface!');
           break;
         case 'left':
           alert('Opening Music player!');
-          // Load Music player content
           break;
         case 'right':
-          alert('Opening Games hub!');
-          // Load Games hub content
+          if (youtubePlayer) {
+            youtubePlayer.style.display = 'block';
+          }
           break;
         case 'top':
           alert('Opening Settings!');
-          // Load Settings content
           break;
         case 'bottom':
           alert('Opening File browser!');
-          // Load File browser content
           break;
         default:
           alert('No content defined for this face.');

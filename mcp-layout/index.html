@@ -156,8 +156,12 @@
 
   
 
-  <div id="youtube-viewer-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80vw; height: 80vh; z-index: 100; display: none;">
-    <div class="netflix-ui-placeholder"></div>
+  <div id="welcome-screen-container" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: rgba(0,0,0,0.8); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+    <h2>Welcome to Front Screen!</h2>
+  </div>
+
+  <div id="youtube-player-container" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: black; padding: 10px; border-radius: 10px;">
+    <iframe id="youtube-iframe" width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 
   <!-- <script src="./src/js/cube-controls.js"></script> -->

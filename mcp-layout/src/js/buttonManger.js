@@ -263,6 +263,7 @@
 
 
 // 
+
 console.log("Independent Panel System loaded!");
 if (typeof PanelManager === 'undefined') {
     class PanelManager {
@@ -272,7 +273,7 @@ if (typeof PanelManager === 'undefined') {
             this.isPanelDragging = false;
             this.selectedCube = 'center';
             this.currentRotation = { x: 0, y: 0 };
-            this.cubeDragger = window.cubeDragger;
+            
             this.init();
         }
         init() {
@@ -437,6 +438,7 @@ if (typeof PanelManager === 'undefined') {
                 console.log('Before click handling - Panel display:', panel.style.display, 'visibility:', panel.style.visibility);
 
                 if (btn.classList.contains('rotate-btn')) {
+                    console.log(`Rotate button clicked. Direction: ${btn.dataset.direction}, Selected Cube: ${this.selectedCube}`);
                     this.rotateCube(btn.dataset.direction);
                 } else if (btn.classList.contains('screen-btn')) {
                     panel.querySelectorAll('.screen-btn').forEach(b => {
@@ -447,25 +449,23 @@ if (typeof PanelManager === 'undefined') {
                     });
                     const screen = btn.dataset.screen;
 
-                    const youtubeViewer = document.getElementById('youtube-viewer-container');
-                    const rotationControls = panel.querySelector('.rotation-controls');
-
-                    if (screen === 'centre') {
-                        youtubeViewer.style.display = 'block';
-                    } else {
-                        youtubeViewer.style.display = 'none';
-                    }
-                    // Rotation controls always stay visible - no hiding logic
-
                     if (screen === '1') {
-                        this.selectedCube = 'centre-cube-main';
+                        this.selectedCube = 'cube-1';
                     } else if (screen === '2') {
-                        this.selectedCube = 'centre-cube-secondary';
+                        this.selectedCube = 'cube-2';
                     } else if (screen === 'centre') {
-                        this.selectedCube = 'youtube-viewer-container';
+                        console.log("'centre' screen button clicked. Functionality disabled for now.");
+                        // Do nothing for now
                     }
+                    console.log(`Selected cube: ${this.selectedCube}`);
                 } else if (btn.id === 'apply-btn') {
-                    console.log(`✅ Applied cube state - Face: ${this.getCurrentFace().name}`);
+                    const dragger = window.cubeDraggers[this.selectedCube];
+                    if (dragger) {
+                        dragger.setCubeRotation(this.currentRotation.x, this.currentRotation.y, 'transform 0.5s ease');
+                        console.log(`✅ Applied cube state - Face: ${this.getCurrentFace().name}`);
+                    } else {
+                        console.warn(`CubeDragger instance not found for #${this.selectedCube}`);
+                    }
                 } else if (btn.id === 'reset-btn') {
                     this.resetCube();
                 }
@@ -473,16 +473,25 @@ if (typeof PanelManager === 'undefined') {
             });
         }
         rotateCube(direction) {
-            const cube = document.querySelector(`#${this.selectedCube}`);
-            if (!cube) return console.warn(`No #${this.selectedCube} found`);
-            const rotations = { left: [0, -90], right: [0, 90], up: [-90, 0], down: [90, 0] };
-            const [x, y] = rotations[direction];
-            this.currentRotation.x += x;
-            this.currentRotation.y += y;
-            cube.style.transform = `rotateX(${this.currentRotation.x}deg) rotateY(${this.currentRotation.y}deg)`;
-            cube.style.transition = 'transform 0.5s ease';
-            console.log(`🔄 Current face: ${this.getCurrentFace().name} (${this.getCurrentFace().topic})`);
+        console.log(`rotateCube called. Selected Cube: ${this.selectedCube}`);
+        console.log("window.cubeDraggers:", window.cubeDraggers);
+
+        const dragger = window.cubeDraggers[this.selectedCube];
+        if (!dragger) {
+            return console.warn(`CubeDragger instance not found for #${this.selectedCube}`);
         }
+
+        const rotations = { left: [0, -90], right: [0, 90], up: [-90, 0], down: [90, 0] };
+        const [deltaX, deltaY] = rotations[direction];
+
+        this.currentRotation.x += deltaX;
+        this.currentRotation.y += deltaY;
+
+        dragger.setCubeRotation(this.currentRotation.x, this.currentRotation.y, 'transform 0.5s ease');
+
+        console.log(`🔄 Current face: ${this.getCurrentFace().name} (${this.getCurrentFace().topic})`);
+        }
+
         getCurrentFace() {
             const x = ((this.currentRotation.x % 360) + 360) % 360;
             const y = ((this.currentRotation.y % 360) + 360) % 360;
@@ -497,11 +506,13 @@ if (typeof PanelManager === 'undefined') {
             return faces[`${x},${y}`] || { name: 'Unknown', topic: 'Mixed View' };
         }
         resetCube() {
-            const cube = document.querySelector(`#${this.selectedCube}`);
-            if (!cube) return;
+            const dragger = window.cubeDraggers[this.selectedCube];
+            if (!dragger) {
+                return console.warn(`CubeDragger instance not found for #${this.selectedCube}`);
+            }
+
             this.currentRotation = { x: 0, y: 0 };
-            cube.style.transform = 'rotateX(0deg) rotateY(0deg)';
-            cube.style.transition = 'transform 0.5s ease';
+            dragger.setCubeRotation(0, 0, 'transform 0.5s ease');
             console.log('🔄 Cube reset to Front face');
         }
         addPanelListeners(panel) {

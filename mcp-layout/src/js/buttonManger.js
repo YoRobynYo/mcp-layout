@@ -496,12 +496,12 @@ if (typeof PanelManager === 'undefined') {
             const x = ((this.currentRotation.x % 360) + 360) % 360;
             const y = ((this.currentRotation.y % 360) + 360) % 360;
             const faces = {
-                '0,0': { name: 'Front', topic: 'Dashboard/Home' },
-                '0,90': { name: 'Right', topic: 'News Feed' },
-                '0,180': { name: 'Back', topic: 'Bitcoin/Crypto' },
-                '0,270': { name: 'Left', topic: 'Blog Posts' },
-                '90,0': { name: 'Top', topic: 'Weather' },
-                '270,0': { name: 'Bottom', topic: 'Social Media' }
+                '0,0': { name: 'F', topic: 'Dashboard/Home' },
+                '0,90': { name: 'R', topic: 'News Feed' },
+                '0,180': { name: 'B', topic: 'Bitcoin/Crypto' },
+                '0,270': { name: 'L', topic: 'Blog Posts' },
+                '90,0': { name: 'T', topic: 'Weather' },
+                '270,0': { name: 'B', topic: 'Social Media' }
             };
             return faces[`${x},${y}`] || { name: 'Unknown', topic: 'Mixed View' };
         }

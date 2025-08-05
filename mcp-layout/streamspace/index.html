@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StreamSpace</title>
+  <link rel="stylesheet" href="dist/main.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="left-section">
+      <button class="menu-btn" data-action="hide-streamspace">☰</button>
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <span class="logo-text">StreamSpace</span>
+      </div>
+    </div>
+    <div class="center-section">
+      <input type="text" class="search-input" placeholder="Search" />
+      <button class="search-btn"></button>
+    </div>
+    <div class="right-section">
+      <button class="icon-btn"></button>
+      <button class="icon-btn"></button>
+      <div class="profile">RM</div>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <ul>
+      <li><span></span>Home</li>
+      <li><span></span>Shorts</li>
+      <li><span></span>Subscriptions</li>
+      <li><span></span>Library</li>
+      <li><span></span>History</li>
+      <li><span></span>Your videos</li>
+      <li><span>⏰</span>Watch later</li>
+      <li><span></span>Liked videos</li>
+      <li><span></span>Trending</li>
+      <li><span></span>Music</li>
+      <li><span></span>Gaming</li>
+    </ul>
+  </aside>
+
+  <main class="content">
+    <div class="youtube-player-section" style="margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;">
+      <input type="text" id="youtube-url-input" placeholder="Paste YouTube URL here" style="width: 80%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #333; background-color: #222; color: white;">
+      <button id="load-video-btn" style="padding: 10px 20px; background-color: #ff0000; color: white; border: none; border-radius: 5px; cursor: pointer;">Load Video</button>
+      <div id="player" style="width: 640px; height: 360px; background-color: black; margin-top: 20px;"></div>
+    </div>
+
+    <div class="category-bar">
+      <button class="category selected">All</button>
+      <button class="category">Music</button>
+      <button class="category">Gaming</button>
+      <button class="category">News</button>
+      <button class="category">Sports</button>
+      <button class="category">Technology</button>
+      <button class="category">Comedy</button>
+      <button class="category">Entertainment</button>
+    </div>
+
+    <section class="video-section">
+      <div class="video-card">
+        <div class="video-thumbnail"></div>
+        <div class="video-info">
+          <h4>Amazing Tech Review - Latest Gadgets 2025</h4>
+          <p>TechReviewer</p>
+          <p>1.2M views • 2 days ago</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

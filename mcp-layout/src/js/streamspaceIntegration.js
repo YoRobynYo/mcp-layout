@@ -1,0 +1,144 @@
+// This file will contain logic for integrating StreamSpace with cube interactions.
+// It will handle dynamic loading of StreamSpace content into a central display area
+// based on cube face hovers.
+
+(function() {
+  const streamspaceContainer = document.getElementById('streamspace-display-container');
+  const streamspaceIframe = document.getElementById('streamspace-iframe');
+  const streamspaceCloseBtn = document.getElementById('streamspace-close-btn');
+  const streamspaceDragHandle = document.getElementById('streamspace-drag-handle');
+  const streamspaceOverlay = document.getElementById('streamspace-overlay');
+
+  let isDraggingStreamspace = false;
+  let offsetX, offsetY;
+  let animationFrameId = null;
+  let originalTransition = '';
+
+  window.streamspaceIntegration = {
+    showStreamspace: function(smallCubeId, faceName) {
+      if (streamspaceContainer && streamspaceIframe) {
+        let contentPath = '';
+
+        // Logic to determine content based on smallCubeId and faceName
+        if ((smallCubeId === 'cube-1-top-left-front' && faceName === 'front') ||
+            (smallCubeId === 'cube-1-top-left-front' && faceName === 'bottom')) {
+          contentPath = './streamspace/index.html';
+        } else if (smallCubeId.startsWith('cube-1-') && faceName === 'front') {
+          // Other small cubes on cube-1's front face
+          contentPath = './streamspace/waiting.html';
+        } else if (smallCubeId.startsWith('cube-2-') && faceName === 'front') {
+          // All small cubes on cube-2's front face
+          contentPath = './streamspace/waiting.html';
+        } else {
+          // Default for other faces/cubes if needed, or just hide
+          contentPath = './streamspace/waiting.html'; // Or leave empty to show nothing
+        }
+
+        if (contentPath) {
+          streamspaceIframe.src = contentPath;
+          streamspaceContainer.style.display = 'block';
+        } else {
+          streamspaceContainer.style.display = 'none';
+          streamspaceIframe.src = '';
+        }
+      }
+    },
+
+    hideStreamspace: function() {
+      console.log('Hiding StreamSpace');
+      if (streamspaceContainer && streamspaceIframe) {
+        streamspaceContainer.style.display = 'none';
+        streamspaceIframe.src = ''; // Clear the iframe content
+      }
+    }
+  };
+
+  // Add a global click listener to hide StreamSpace when clicking outside
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    // Check if the click was outside the streamspace container and not on a cube face or the close/drag handle
+    if (streamspaceContainer.style.display === 'block' &&
+        !streamspaceContainer.contains(target) &&
+        !target.closest('.face') &&
+        !target.closest('.panel') &&
+        target.id !== 'streamspace-close-btn' &&
+        target.id !== 'streamspace-drag-handle') {
+      window.streamspaceIntegration.hideStreamspace();
+    }
+  });
+
+  // Add click listener for the close button
+  if (streamspaceCloseBtn) {
+    streamspaceCloseBtn.addEventListener('click', () => {
+      window.streamspaceIntegration.hideStreamspace();
+    });
+  }
+
+  // Dragging functionality for StreamSpace container
+  if (streamspaceDragHandle && streamspaceContainer) {
+    streamspaceDragHandle.addEventListener('mousedown', (e) => {
+      isDraggingStreamspace = true;
+      offsetX = e.clientX - streamspaceContainer.getBoundingClientRect().left;
+      offsetY = e.clientY - streamspaceContainer.getBoundingClientRect().top;
+      streamspaceContainer.style.cursor = 'grabbing';
+      e.stopPropagation(); // Prevent event from bubbling up
+
+      // Store original transition and disable it for smooth dragging
+      originalTransition = streamspaceContainer.style.transition;
+      streamspaceContainer.style.transition = 'none';
+
+      // Show overlay to capture mouse events over iframe
+      if (streamspaceOverlay) {
+        streamspaceOverlay.style.display = 'block';
+      }
+    });
+
+    streamspaceDragHandle.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent click event from bubbling up
+    });
+
+    const animateDrag = () => {
+      if (!isDraggingStreamspace) return;
+
+      const newX = mouseX - offsetX;
+      const newY = mouseY - offsetY;
+
+      // Optional: Constrain movement within window bounds
+      const maxX = window.innerWidth - streamspaceContainer.offsetWidth;
+      const maxY = window.innerHeight - streamspaceContainer.offsetHeight;
+
+      streamspaceContainer.style.left = `${Math.max(0, Math.min(newX, maxX))}px`;
+      streamspaceContainer.style.top = `${Math.max(0, Math.min(newY, maxY))}px`;
+
+      animationFrameId = requestAnimationFrame(animateDrag);
+    };
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!isDraggingStreamspace) return;
+      if (!animationFrameId) {
+        animationFrameId = requestAnimationFrame(animateDrag);
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDraggingStreamspace = false;
+      streamspaceContainer.style.cursor = 'grab';
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+      // Restore original transition
+      streamspaceContainer.style.transition = originalTransition;
+
+      // Hide overlay
+      if (streamspaceOverlay) {
+        streamspaceOverlay.style.display = 'none';
+      }
+    });
+  }
+})();

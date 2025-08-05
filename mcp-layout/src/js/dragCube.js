@@ -138,13 +138,25 @@ class CubeDragger {
 
     dragHandle.addEventListener('mousedown', this.startDrag.bind(this));
     dragHandle.addEventListener('touchstart', this.startDrag.bind(this));
-    this.centreCube.addEventListener('mousedown', this.startRotate.bind(this));
-    this.centreCube.addEventListener('touchstart', this.startRotate.bind(this));
 
     this.centreCube.addEventListener("contextmenu", e => e.preventDefault());
 
-    // Add click listener for opening content
-    this.centreCube.addEventListener('click', this.openFaceContent.bind(this));
+    this.addFaceInteractionListeners();
+  }
+
+  addFaceInteractionListeners() {
+    const faces = this.centreCube.querySelectorAll('.face');
+    faces.forEach(face => {
+      face.addEventListener('click', (e) => {
+        const faceElement = e.target.closest('.face');
+        const faceName = faceElement ? faceElement.dataset.face : 'unknown';
+        const smallCubeElement = e.target.closest('.small-cube');
+        const smallCubeId = smallCubeElement ? smallCubeElement.dataset.smallCubeId : 'unknown';
+        if (window.streamspaceIntegration) {
+          window.streamspaceIntegration.showStreamspace(smallCubeId, faceName);
+        }
+      });
+    });
   }
 
   startDrag(e) {
@@ -278,51 +290,6 @@ class CubeDragger {
       this.panels[faceName].classList.add("face-selected");
       this.state.selectedFace = faceName; // Update internal state
       console.log(`Highlighted face: ${faceName}`);
-    }
-  }
-
-  openFaceContent() {
-    console.log(`Cube clicked! Opening content for selected face: ${this.state.selectedFace}`);
-
-    const welcomeScreen = document.getElementById('welcome-screen-container');
-    const youtubePlayer = document.getElementById('youtube-player-container');
-    const videoGrid = document.getElementById('videoGrid'); // Assuming videoGrid still exists from previous context
-
-    // Hide all content containers first
-    if (welcomeScreen) welcomeScreen.style.display = 'none';
-    if (youtubePlayer) youtubePlayer.style.display = 'none';
-    if (videoGrid) videoGrid.style.display = 'none';
-
-    if (this.cubeScene.id === 'cube-1') {
-      switch (this.state.selectedFace) {
-        case 'front':
-          if (welcomeScreen) {
-            welcomeScreen.style.display = 'block';
-            console.log('Showing Welcome Screen!');
-          }
-          break;
-        case 'back':
-          alert('Opening UI-Builder interface!');
-          break;
-        case 'left':
-          alert('Opening Music player!');
-          break;
-        case 'right':
-          if (youtubePlayer) {
-            youtubePlayer.style.display = 'block';
-          }
-          break;
-        case 'top':
-          alert('Opening Settings!');
-          break;
-        case 'bottom':
-          alert('Opening File browser!');
-          break;
-        default:
-          alert('No content defined for this face.');
-      }
-    } else {
-      alert(`This is a secondary cube (${this.cubeScene.id}). Content for face: ${this.state.selectedFace}`);
     }
   }
 

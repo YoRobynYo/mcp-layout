@@ -20,8 +20,18 @@
         let contentPath = '';
 
         // Logic to determine content based on smallCubeId and faceName
-        if ((smallCubeId === 'cube-1-top-left-front' && faceName === 'front') ||
-            (smallCubeId === 'cube-1-top-left-front' && faceName === 'bottom')) {
+        if (smallCubeId === 'cube-1-top-right-front' && faceName === 'front') {
+          if (window.electronAPI && window.electronAPI.openSystemMonitor) {
+            window.electronAPI.openSystemMonitor();
+            streamspaceContainer.style.display = 'none'; // Hide the iframe container
+            streamspaceIframe.src = ''; // Clear the iframe content
+          } else {
+            console.warn("Electron API for System Monitor not available. Falling back to waiting screen.");
+            streamspaceIframe.src = './streamspace/waiting.html'; // Fallback to waiting screen
+            streamspaceContainer.style.display = 'block';
+          }
+        } else if ((smallCubeId === 'cube-1-top-left-front' && faceName === 'front') ||
+                   (smallCubeId === 'cube-1-top-left-front' && faceName === 'bottom')) {
           contentPath = './streamspace/index.html';
         } else if (smallCubeId.startsWith('cube-1-') && faceName === 'front') {
           // Other small cubes on cube-1's front face
@@ -69,7 +79,8 @@
 
   // Add click listener for the close button
   if (streamspaceCloseBtn) {
-    streamspaceCloseBtn.addEventListener('click', () => {
+    streamspaceCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent click from bubbling up to global listener
       window.streamspaceIntegration.hideStreamspace();
     });
   }
@@ -141,4 +152,17 @@
       }
     });
   }
+
+  // Listen for messages from the iframe (StreamSpace app)
+  window.addEventListener('message', (event) => {
+    // Ensure the message is from a trusted origin if deployed to production
+    // For local development, 'event.origin' might be 'file://' or similar
+    if (event.data && event.data.type === 'open-youtube-video') {
+      if (window.electronAPI && window.electronAPI.openYoutubeVideo) {
+        window.electronAPI.openYoutubeVideo(event.data.url);
+      } else {
+        console.warn("Electron API not available in main renderer process to open video.");
+      }
+    }
+  });
 })();

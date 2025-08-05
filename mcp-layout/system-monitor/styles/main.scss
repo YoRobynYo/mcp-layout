@@ -1,0 +1,47 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #2c3e50; /* Dark blue-grey */
+    color: #ecf0f1; /* Light grey */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+.monitor-container {
+    background-color: #34495e; /* Slightly lighter blue-grey */
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 80%;
+    max-width: 400px;
+}
+
+h1 {
+    color: #f1c40f; /* Yellow */
+    margin-bottom: 25px;
+    font-size: 2em;
+}
+
+.metric {
+    margin-bottom: 15px;
+    text-align: left; /* Align text to the left within each metric */
+    padding-left: 10%; /* Add some padding for better readability */
+}
+
+.metric p {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    color: #bdc3c7; /* Muted grey */
+}
+
+.metric span {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #2ecc71; /* Green */
+    display: inline-block; /* Ensure span respects padding/margin */
+    margin-right: 10px; /* Space between values if multiple spans */
+}

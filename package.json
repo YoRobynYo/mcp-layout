@@ -18,6 +18,7 @@
   "homepage": "https://github.com/YoRobynYo/Dashboard#readme",
   "description": "",
   "dependencies": {
-    "electron-store": "^10.1.0"
+    "electron-store": "^10.1.0",
+    "systeminformation": "^5.27.7"
   }
 }

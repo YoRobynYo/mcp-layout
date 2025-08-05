@@ -147,13 +147,25 @@ class CubeDragger {
   addFaceInteractionListeners() {
     const faces = this.centreCube.querySelectorAll('.face');
     faces.forEach(face => {
-      face.addEventListener('click', (e) => {
+      face.addEventListener('click', async (e) => {
         const faceElement = e.target.closest('.face');
         const faceName = faceElement ? faceElement.dataset.face : 'unknown';
         const smallCubeElement = e.target.closest('.small-cube');
         const smallCubeId = smallCubeElement ? smallCubeElement.dataset.smallCubeId : 'unknown';
-        if (window.streamspaceIntegration) {
-          window.streamspaceIntegration.showStreamspace(smallCubeId, faceName);
+
+        if (smallCubeId === 'cube-1-top-left-front' && faceName === 'front') {
+          // Directly open YouTube video in a new window
+          const youtubeUrl = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'; // Hardcoded YouTube URL
+          if (window.electronAPI && window.electronAPI.openYoutubeVideo) {
+            window.electronAPI.openYoutubeVideo(youtubeUrl);
+          } else {
+            console.warn("Electron API not available to open YouTube video.");
+          }
+        } else {
+          // Open StreamSpace for other faces
+          if (window.streamspaceIntegration) {
+            window.streamspaceIntegration.showStreamspace(smallCubeId, faceName);
+          }
         }
       });
     });

@@ -150,6 +150,16 @@ class CubeDragger {
                     } else {
                         console.warn("Electron API not available to open YouTube video.");
                     }
+                } else if (smallCubeId === 'cube-1-top-right-front' && faceName === 'front') {
+                    if (window.electronAPI && window.electronAPI.openSystemMonitor) {
+                        window.electronAPI.openSystemMonitor();
+                    } else {
+                        console.warn("Electron API for System Monitor not available.");
+                    }
+                } else {
+                    if (window.streamspaceIntegration) {
+                        window.streamspaceIntegration.showStreamspace(smallCubeId, faceName);
+                    }
                 }
             });
         });

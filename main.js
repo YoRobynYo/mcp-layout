@@ -1,54 +1,27 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
-const os = require('os'); // Import the os module
-const si = require('systeminformation'); // Import systeminformation
+const os = require('os');
+const si = require('systeminformation');
 const StoreImport = require('electron-store');
 const Store = StoreImport.default || StoreImport;
 const store = new Store();
+const url = require('url');
 
-// Global references to windows
 let monitorWindow = null;
-let isCreatingMonitorWindow = false; // Flag to prevent multiple creations
-let youtubeVideoWindow = null; // Global reference for YouTube video window
+let isCreatingMonitorWindow = false;
+let youtubeVideoWindow = null;
 
-// Register IPC handlers as early as possible
 ipcMain.handle('get-item', (event, key) => store.get(key));
 ipcMain.handle('set-item', (event, key, value) => store.set(key, value));
 
-ipcMain.handle('open-youtube-video', (event, videoUrl) => {
-  if (youtubeVideoWindow && !youtubeVideoWindow.isDestroyed()) {
-    youtubeVideoWindow.focus();
-    // Optionally, load the new video URL into the existing window
-    youtubeVideoWindow.loadURL(videoUrl);
-    console.log('Main process: YouTube video window already open, focusing and loading new URL.');
-    return;
+ipcMain.handle('open-youtube-video', async (event, videoUrl) => {
+  try {
+    const urlToOpen = new URL(videoUrl);
+    await shell.openExternal(urlToOpen.href);
+    console.log(`Opened ${urlToOpen.href} in default browser.`);
+  } catch (error) {
+    console.error(`Failed to open URL: ${videoUrl}`, error);
   }
-
-  console.log('Main process: Attempting to create YouTube video window.');
-  youtubeVideoWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      autoplay: true,
-      accelerometer: true,
-      "clipboard-write": true,
-      "encrypted-media": true,
-      gyroscope: true,
-      "picture-in-picture": true,
-      "web-share": true,
-      webSecurity: false
-    },
-  });
-  youtubeVideoWindow.loadURL(videoUrl);
-
-  youtubeVideoWindow.on('closed', () => {
-    youtubeVideoWindow = null;
-    console.log('Main process: YouTube video window closed, reference cleared.');
-  });
-
-  console.log('Main process: YouTube video window creation initiated.');
 });
 
 ipcMain.handle('get-system-info', async () => {

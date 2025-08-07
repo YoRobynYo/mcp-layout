@@ -1,39 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ghibli System Monitor</title>
+    <title>Systems Status</title>
     <link rel="stylesheet" href="dist/main.css">
+    <link rel="stylesheet" href="../css/screen-panels.css">
+    <style>
+        body {
+            background-image: url('../assets/images/ghibli-landscape.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #2c3e50 !important;
+            /* Ensure blue background */
+        }
+    </style>
 </head>
+
 <body>
     <div class="monitor-container">
-        <h1>System Monitor</h1>
-        <div class="metric">
-            <p>CPU Usage:</p>
-            <span id="cpu-usage">--%</span>
-        </div>
-        <div class="metric">
-            <p>Free RAM:</p>
-            <span id="free-ram">-- GB</span>
-        </div>
-        <div class="metric">
-            <p>Total RAM:</p>
-            <span id="total-ram">-- GB</span>
-        </div>
-        <div class="metric">
-            <p>Uptime:</p>
-            <span id="uptime">--</span>
-        </div>
-        <div class="metric">
-            <p>Network (Rx/Tx):</p>
-            <span id="net-rx">-- KB/s</span> / <span id="net-tx">-- KB/s</span>
-        </div>
-        <div class="metric">
-            <p>Disk Used/Total:</p>
-            <span id="disk-used">-- GB</span> / <span id="disk-total">-- GB</span>
+        <div class="scrollable-content">
+            <div class="metric">
+                <p>CPU Usage:</p>
+                <span id="cpu-usage">--%</span>
+            </div>
+            <div class="metric">
+                <p>Free RAM:</p>
+                <span id="free-ram">-- GB</span>
+            </div>
+            <div class="metric">
+                <p>Total RAM:</p>
+                <span id="total-ram">-- GB</span>
+            </div>
+            <div class="metric">
+                <p>Uptime:</p>
+                <span id="uptime">--</span>
+            </div>
+            <div class="metric">
+                <p>Network (Rx/Tx):</p>
+                <span id="net-rx">-- KB/s</span> <br />
+                <span id="net-tx">-- KB/s</span>
+            </div>
+            <div class="metric">
+                <p>Disk Used/Total:</p>
+                <span id="disk-used">-- GB</span> <br />
+                <span id="disk-total">-- GB</span>
+            </div>
+
+            <h2>Wi-Fi Settings</h2>
+            <div class="metric">
+                <p>SSID:</p>
+                <span id="wifi-ssid">--</span>
+            </div>
+            <div class="metric">
+                <p>Signal Strength:</p>
+                <span id="wifi-signal">-- dBm</span>
+            </div>
+            <div class="metric">
+                <p>IP Address:</p>
+                <span id="wifi-ip">--</span>
+            </div>
+            <div class="metric">
+                <p>MAC Address:</p>
+                <span id="wifi-mac">--</span>
+            </div>
+            <div class="metric">
+                <p>Connection Speed:</p>
+                <span id="wifi-speed">-- Mbps</span>
+            </div>
+            <div class="metric">
+                <p>Frequency:</p>
+                <span id="wifi-frequency">-- GHz</span>
+            </div>
+            <div class="metric">
+                <p>Security:</p>
+                <span id="wifi-security">--</span>
+            </div>
+            <div class="metric">
+                <p>Gateway:</p>
+                <span id="wifi-gateway">--</span>
+            </div>
+            <div class="metric">
+                <p>DNS Servers:</p>
+                <span id="wifi-dns">--</span>
+            </div>
         </div>
     </div>
     <script src="js/app.js"></script>
 </body>
+
+</html>
+
 </html>

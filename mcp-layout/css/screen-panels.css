@@ -1,3 +1,9 @@
+@font-face {
+    font-family: 'Helvetica';
+    src: url('../assets/Fonts/Helvetica-Font-Family2/Helvetica.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
 
 /* screen-panels.css */
 .screen-panel {
@@ -17,9 +23,92 @@
 .screen-panel iframe {
   border: none;
   width: 100%;
-  height: calc(100% - 50px); /* Adjust height to fit panel */
+  height: calc(100% - 50px);
+  /* Adjust height to fit panel */
 }
 
 #system-info p {
   margin: 5px 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #2c3e50 !important;
+  /* Force the blue background color */
+  overflow: hidden;
+  font-family: 'Verdana', Geneva, sans-serif;
+}
+
+.monitor-container {
+  position: relative;
+  width: 100%;
+  /* Take full width of the body */
+  height: 100%;
+  /* Take full height of the body */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent !important;
+  /* Ensure it's transparent to show body background */
+}
+
+.scrollable-content {
+  position: absolute;
+  /* These values are estimates. You might need to adjust them based on your image. */
+  top: calc(30% - 40px);
+  /* Adjust to align with the top of the screen in your image */
+  left: 40px;
+  /* Adjust to align with the left of the screen in your image */
+  width: 85%;
+  /* Adjust to match the width of the screen in your image */
+  height: 464.5px;
+  /* Adjust to match the height of the screen in your image */
+  overflow-y: auto;
+  /* Enable vertical scrolling for content within the screen */
+  padding: 15px;
+  /* Adjust padding to fit content within the screen */
+  box-sizing: border-box;
+  background-color: transparent;
+  /* Make background transparent to show image */
+  color: #e0e0e0;
+  /* Adjust text color for readability on the screen */
+  font-size: 1.1em;
+  /* Slightly smaller font for fitting more content */
+}
+
+.monitor-container h1,
+.monitor-container h2 {
+  color: #00CC66;
+  text-align: center;
+  margin-bottom: 10px;
+  /* Reduced margin */
+  font-size: 1.2em;
+  /* Slightly smaller heading */
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  gap: 0px; /* Reduced gap to bring text closer */
+  padding: 5px 0;
+  /* Reduced padding */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  /* Lighter border */
+}
+
+.metric p {
+  margin: 0;
+  font-weight: normal;
+  /* Less bold */
+  color: white;
+  font-family: 'Helvetica', sans-serif;
+}
+
+.metric span {
+  color: #FFD700;
+  font-size: 1em;
 }

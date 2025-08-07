@@ -72,6 +72,30 @@ ipcMain.handle('get-system-info', async () => {
   };
 });
 
+ipcMain.handle('get-wifi-info', async () => {
+  try {
+    const wifi = await si.wifiConnections();
+    if (wifi.length > 0) {
+      return wifi[0]; // Return details of the first connected Wi-Fi network
+    } else {
+      return null;
+    }
+  } catch (e) {
+    console.error("Error getting Wi-Fi info:", e);
+    return null;
+  }
+});
+
+ipcMain.handle('get-battery-info', async () => {
+  try {
+    const battery = await si.battery();
+    return battery;
+  } catch (e) {
+    console.error("Error getting battery info:", e);
+    return null;
+  }
+});
+
 ipcMain.handle('open-system-monitor', () => {
   if (monitorWindow && !monitorWindow.isDestroyed()) {
     monitorWindow.focus();

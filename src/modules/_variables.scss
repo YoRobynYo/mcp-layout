@@ -1,0 +1,33 @@
+// src/modules/_variables.scss
+
+// Cube face colors
+$color-front: rgba(70, 130, 180, 0.9); // Steel blue
+$color-back: rgba(220, 20, 60, 0.9); // Crimson red
+$color-right: rgba(50, 205, 50, 0.9); // Lime green
+$color-left: rgba(255, 140, 0, 0.9); // Dark orange
+$color-top: rgba(147, 112, 219, 0.9); // Medium purple
+$color-bottom: rgba(255, 215, 0, 0.9); // Gold
+
+// src/modules/_variables.scss
+$border-color-main: #9f8045;
+$border-color-light: #bfa368;
+$border-color-dark: #6e5b32;
+$border-color-glow: #ffc34d;
+$border-color-center: #9f8045; // Center cube border (brass/golden-brown)
+
+// Sizes
+$cube-width: 300px;
+$cube-height: 300px;
+$cube-depth: 150px; // half of width/height, used in translateZ
+
+// Font sizes
+$font-size-face: 36px;
+
+// Container size variables
+$cube-container-width: 320px;
+$cube-container-height: 320px;
+
+// Sizes for smaller cubes (e.g. screen 2)
+$cube-small: 180px;
+$cube-small-depth: 90px; // half of 180px
+$font-size-small: 16px;

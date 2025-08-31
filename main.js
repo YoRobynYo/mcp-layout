@@ -9,19 +9,51 @@ const url = require('url');
 
 let monitorWindow = null;
 let isCreatingMonitorWindow = false;
-let youtubeVideoWindow = null;
+let youtubeWindow = null;
 
 ipcMain.handle('get-item', (event, key) => store.get(key));
 ipcMain.handle('set-item', (event, key, value) => store.set(key, value));
 
 ipcMain.handle('open-youtube-video', async (event, videoUrl) => {
-  try {
-    const urlToOpen = new URL(videoUrl);
-    await shell.openExternal(urlToOpen.href);
-    console.log(`Opened ${urlToOpen.href} in default browser.`);
-  } catch (error) {
-    console.error(`Failed to open URL: ${videoUrl}`, error);
+  console.log('�� Opening YouTube in 900x650 container...');
+  
+  if (youtubeWindow && !youtubeWindow.isDestroyed()) {
+    youtubeWindow.focus();
+    youtubeWindow.loadURL(videoUrl);
+    return;
   }
+
+  // 🎯 EXACT 900x650 SIZE
+  youtubeWindow = new BrowserWindow({
+    parent: BrowserWindow.getFocusedWindow(),
+    modal: false,
+    width: 900,        // 🎯 Perfect YouTube width
+    height: 650,       // 🎯 Perfect YouTube height
+    minWidth: 600,     // 🎯 Prevent too small
+    minHeight: 400,    // 🎯 Prevent too small
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+    },
+  });
+
+  // Set user agent to avoid 403 errors
+  youtubeWindow.webContents.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+  youtubeWindow.loadURL(videoUrl);
+  
+  youtubeWindow.once('ready-to-show', () => {
+    youtubeWindow.show();
+    console.log('🎉 YouTube container opened at 900x650!');
+  });
+
+  youtubeWindow.on('closed', () => {
+    youtubeWindow = null;
+    console.log('🔒 YouTube container closed');
+  });
 });
 
 ipcMain.handle('get-system-info', async () => {

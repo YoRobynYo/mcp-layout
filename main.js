@@ -23,14 +23,14 @@ ipcMain.handle('open-youtube-video', async (event, videoUrl) => {
     return;
   }
 
-  // 🎯 EXACT 900x650 SIZE
+  // 🎯 EVEN SMALLER: 300x200 for music
   youtubeWindow = new BrowserWindow({
     parent: BrowserWindow.getFocusedWindow(),
     modal: false,
-    width: 900,        // 🎯 Perfect YouTube width
-    height: 650,       // 🎯 Perfect YouTube height
-    minWidth: 600,     // 🎯 Prevent too small
-    minHeight: 400,    // 🎯 Prevent too small
+    width: 300,        // 🎯 Much smaller for music
+    height: 200,       // 🎯 Much smaller for music
+    minWidth: 200,     // 🎯 Allow very small resizing
+    minHeight: 150,    // 🎯 Allow very small resizing
     show: false,
     webPreferences: {
       nodeIntegration: false,
@@ -47,7 +47,7 @@ ipcMain.handle('open-youtube-video', async (event, videoUrl) => {
   
   youtubeWindow.once('ready-to-show', () => {
     youtubeWindow.show();
-    console.log('🎉 YouTube container opened at 900x650!');
+    console.log('🎉 YouTube container opened at 300x200!');
   });
 
   youtubeWindow.on('closed', () => {
@@ -94,6 +94,8 @@ ipcMain.handle('get-system-info', async () => {
 
   return {
     cpuUsage: cpuUsage,
+    cpuLoad: os.loadavg()[0], // Add CPU load
+    cpuTemp: 0, // CPU temp not available on macOS by default
     totalRam: totalMem,
     freeRam: freeMem,
     uptime: uptime,
@@ -106,9 +108,37 @@ ipcMain.handle('get-system-info', async () => {
 
 ipcMain.handle('get-wifi-info', async () => {
   try {
-    const wifi = await si.wifiConnections();
-    if (wifi.length > 0) {
-      return wifi[0]; // Return details of the first connected Wi-Fi network
+    // Get WiFi connections
+    const wifiConnections = await si.wifiConnections();
+    
+    // Get network interfaces for additional info
+    const networkInterfaces = await si.networkInterfaces();
+    
+    // Get default gateway
+    const defaultGateway = await si.networkGatewayDefault();
+    
+    if (wifiConnections.length > 0) {
+      const wifi = wifiConnections[0];
+      
+      // Find the corresponding network interface
+      const wifiInterface = networkInterfaces.find(iface => 
+        iface.iface === wifi.iface || iface.iface === 'en0' || iface.iface === 'en1'
+      );
+      
+      const result = {
+        ssid: wifi.ssid || 'Unknown',
+        signal: wifi.signalLevel || -50, // Signal strength in dBm
+        ip: wifiInterface?.ip4 || 'Unknown', // IP from network interface
+        mac: wifiInterface?.mac || 'Unknown', // MAC from network interface
+        speed: wifi.txRate || 'Unknown', // Transmission rate in Mbps
+        frequency: (wifi.frequency / 1000).toFixed(1) || '2.4', // Convert MHz to GHz
+        security: Array.isArray(wifi.security) ? wifi.security.join(', ') : 'Unknown',
+        gateway: defaultGateway || 'Unknown',
+        dns: '8.8.8.8, 8.8.4.4', // Default DNS servers
+        iface: wifi.iface || 'Unknown'
+      };
+      
+      return result;
     } else {
       return null;
     }
@@ -143,14 +173,16 @@ ipcMain.handle('open-system-monitor', () => {
   isCreatingMonitorWindow = true;
   console.log('Main process: Attempting to create System Monitor window.');
   monitorWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
+    parent: BrowserWindow.getFocusedWindow(), // 🎯 This makes it stay within the browser
+    modal: false,
+    width: 700,
+    height: 500,
     show: false, // Don't show until ready
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false, // Allow local file access and other permissions
-      preload: path.join(__dirname, 'preload.js'), // Attach preload script
+      // Removed preload script since contextIsolation is false
     },
   });
 

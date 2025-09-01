@@ -282,7 +282,7 @@ if (typeof PanelManager === 'undefined') {
 
             this.addGlobalListeners();
             this.createPanel('screen-4', 'AI Panel', 100, 100, this.createAIContent.bind(this));
-            this.createPanel('screen-4a', 'Button Controls', 450, 100, this.createButtonControls.bind(this));
+            this.createPanel('screen-4a', 'Button Controls', 350, 100, this.createButtonControls.bind(this));
         }
         addGlobalListeners() {
             ['mousemove', 'mouseup', 'touchmove', 'touchend'].forEach(event => {
@@ -315,7 +315,7 @@ if (typeof PanelManager === 'undefined') {
             const left = savedPos ? savedPos.left : `${defaultLeft}px`;
             const top = savedPos ? savedPos.top : `${defaultTop}px`;
 
-            panel.style.cssText += `position:absolute;left:${left};top:${top};width:210px;height:220px;` +
+            panel.style.cssText += `position:absolute;left:${left};top:${top};width:350px;height:220px;` +
                 `background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;` +
                 `box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);` +
                 `user-select:none;transition:box-shadow 0.2s ease, opacity 0.3s ease-in-out;z-index:2000;cursor:grab;` +

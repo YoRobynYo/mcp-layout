@@ -10,6 +10,7 @@ const url = require('url');
 let monitorWindow = null;
 let isCreatingMonitorWindow = false;
 let youtubeWindow = null;
+let aiWindow = null;
 
 ipcMain.handle('get-item', (event, key) => store.get(key));
 ipcMain.handle('set-item', (event, key, value) => store.set(key, value));
@@ -54,6 +55,215 @@ ipcMain.handle('open-youtube-video', async (event, videoUrl) => {
     youtubeWindow = null;
     console.log('🔒 YouTube container closed');
   });
+});
+
+// Simple preset for a "coming soon" internal view (700x500), stays inside the app
+ipcMain.handle('open-coming-soon', async () => {
+  try {
+    const targetFile = path.join(__dirname, 'mcp-layout', 'streamspace', 'waiting.html');
+    const parent = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+    const win = new BrowserWindow({
+      parent,
+      modal: false,
+      width: 300,
+      height: 300,
+      minWidth: 200,
+      minHeight: 200,
+      title: 'Coming Soon',
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        webSecurity: false,
+        allowRunningInsecureContent: true,
+      },
+    });
+
+    win.webContents.setWindowOpenHandler(({ url: newUrl }) => {
+      const child = new BrowserWindow({
+        parent: win,
+        modal: false,
+        width: 270,
+        height: 270,
+        show: false,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true,
+          webSecurity: false,
+          allowRunningInsecureContent: true,
+        },
+      });
+      child.webContents.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      child.loadURL(newUrl);
+      child.once('ready-to-show', () => child.show());
+      return { action: 'deny' };
+    });
+
+    win.loadFile(targetFile);
+    win.once('ready-to-show', () => win.show());
+    return true;
+  } catch (err) {
+    console.error('open-coming-soon failed:', err);
+    return false;
+  }
+});
+
+// AI Companion: ensure window exists and is ready
+async function ensureAIWindow() {
+  const aiPath = path.join(__dirname, 'mcp-layout', 'ai-companion', 'index.html');
+  const parent = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+  if (!aiWindow || aiWindow.isDestroyed()) {
+    aiWindow = new BrowserWindow({
+      parent,
+      modal: false,
+      width: 360,
+      height: 520,
+      minWidth: 320,
+      minHeight: 420,
+      title: 'AI Companion',
+      show: false,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+        webSecurity: true,
+      },
+    });
+    aiWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    await aiWindow.loadFile(aiPath);
+    await new Promise((resolve) => aiWindow.once('ready-to-show', resolve));
+    aiWindow.on('closed', () => { aiWindow = null; });
+  }
+  if (!aiWindow.isVisible()) aiWindow.show();
+  aiWindow.focus();
+  return aiWindow;
+}
+
+// AI Companion window (animated avatar + speech), opens at 400x400
+ipcMain.handle('open-ai-companion', async (_event, text) => {
+  try {
+    const win = await ensureAIWindow();
+    if (typeof text === 'string' && text.length > 0) {
+      win.webContents.send('ai-companion-message', text);
+    }
+    return true;
+  } catch (err) {
+    console.error('open-ai-companion failed:', err);
+    return false;
+  }
+});
+
+// Send message to AI Companion (ensures window exists first)
+ipcMain.handle('ai-companion-send', async (_event, text) => {
+  try {
+    const win = await ensureAIWindow();
+    win.webContents.send('ai-companion-message', text || '');
+    return true;
+  } catch (e) {
+    console.error('ai-companion-send failed:', e);
+    return false;
+  }
+});
+
+// Open AI Companion with an image and custom size (e.g., 736x1177)
+ipcMain.handle('open-ai-companion-image', async (_event, payload) => {
+  try {
+    const { src, width = 736, height = 1177 } = payload || {};
+    if (!src) throw new Error('open-ai-companion-image: missing src');
+    const win = await ensureAIWindow();
+    // Resize window to requested dimensions (with some sane limits)
+    const clampedW = Math.max(300, Math.min(1400, Math.round(width)));
+    const clampedH = Math.max(300, Math.min(1800, Math.round(height)));
+    win.setMinimumSize(300, 300);
+    win.setSize(clampedW, clampedH);
+    win.webContents.send('ai-set-image', { src, width: clampedW, height: clampedH });
+    return true;
+  } catch (e) {
+    console.error('open-ai-companion-image failed:', e);
+    return false;
+  }
+});
+
+// Generic content opener for LRBF faces (keeps everything inside the app)
+ipcMain.handle('open-content', async (event, payload) => {
+  try {
+    const {
+      kind = 'url',              // 'url' | 'file'
+      target,                    // string URL or absolute/relative file path
+      width = 800,
+      height = 600,
+      minWidth = 300,
+      minHeight = 200,
+      title = 'Content',
+      reuseKey                   // optional key to reuse same window instance
+    } = payload || {};
+
+    // Optional reuse: store windows by key
+    if (!global.__contentWindows) global.__contentWindows = {};
+    if (reuseKey && global.__contentWindows[reuseKey] && !global.__contentWindows[reuseKey].isDestroyed()) {
+      const win = global.__contentWindows[reuseKey];
+      win.setSize(width, height);
+      win.focus();
+      if (kind === 'url') win.loadURL(target);
+      else if (kind === 'file') win.loadFile(target);
+      return true;
+    }
+
+    const parent = BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+    const win = new BrowserWindow({
+      parent,
+      modal: false,
+      width,
+      height,
+      minWidth,
+      minHeight,
+      title,
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        webSecurity: false,
+        allowRunningInsecureContent: true,
+      },
+    });
+
+    // Keep all window.open/_blank inside Electron as child windows
+    win.webContents.setWindowOpenHandler(({ url: newUrl }) => {
+      const child = new BrowserWindow({
+        parent: win,
+        modal: false,
+        width: Math.round(width * 0.9),
+        height: Math.round(height * 0.9),
+        show: false,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true,
+          webSecurity: false,
+          allowRunningInsecureContent: true,
+        },
+      });
+      child.webContents.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      child.loadURL(newUrl);
+      child.once('ready-to-show', () => child.show());
+      return { action: 'deny' };
+    });
+
+    // UA spoofing helps with some providers (e.g., YouTube)
+    win.webContents.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+    if (kind === 'url') win.loadURL(target);
+    else if (kind === 'file') win.loadFile(target);
+
+    win.once('ready-to-show', () => win.show());
+    win.on('closed', () => {
+      if (reuseKey && global.__contentWindows) delete global.__contentWindows[reuseKey];
+    });
+
+    if (reuseKey) global.__contentWindows[reuseKey] = win;
+    return true;
+  } catch (err) {
+    console.error('open-content failed:', err);
+    return false;
+  }
 });
 
 ipcMain.handle('get-system-info', async () => {
@@ -248,6 +458,27 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, 'mcp-layout', 'index.html'));
+
+  // Ensure links stay inside the app from the main window too
+  mainWindow.webContents.setWindowOpenHandler(({ url: newUrl }) => {
+    const child = new BrowserWindow({
+      parent: mainWindow,
+      modal: false,
+      width: 900,
+      height: 650,
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        webSecurity: false,
+        allowRunningInsecureContent: true,
+      },
+    });
+    child.webContents.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    child.loadURL(newUrl);
+    child.once('ready-to-show', () => child.show());
+    return { action: 'deny' };
+  });
 }
 
 app.whenReady().then(() => {

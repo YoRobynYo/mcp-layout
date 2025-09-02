@@ -8,6 +8,15 @@
   const streamspaceCloseBtn = document.getElementById('streamspace-close-btn');
   const streamspaceDragHandle = document.getElementById('streamspace-drag-handle');
   const streamspaceOverlay = document.getElementById('streamspace-overlay');
+  // Ensure the drag handle never shows; remove it and normalize iframe spacing
+  if (streamspaceDragHandle) {
+    try { streamspaceDragHandle.remove(); } catch (e) { /* ignore */ }
+    if (streamspaceIframe) {
+      streamspaceIframe.style.marginTop = '0px';
+      streamspaceIframe.style.height = '100%';
+    }
+  }
+
 
   let isDraggingStreamspace = false;
   let offsetX, offsetY;
@@ -47,8 +56,10 @@
         if (contentPath) {
           streamspaceIframe.src = contentPath;
           streamspaceContainer.style.display = 'block';
+          streamspaceContainer.style.pointerEvents = 'auto';
         } else {
           streamspaceContainer.style.display = 'none';
+          streamspaceContainer.style.pointerEvents = 'none';
           streamspaceIframe.src = '';
         }
       }
@@ -58,6 +69,7 @@
       console.log('Hiding StreamSpace');
       if (streamspaceContainer && streamspaceIframe) {
         streamspaceContainer.style.display = 'none';
+        streamspaceContainer.style.pointerEvents = 'none';
         streamspaceIframe.src = ''; // Clear the iframe content
       }
     }
@@ -86,7 +98,7 @@
   }
 
   // Dragging functionality for StreamSpace container
-  if (streamspaceDragHandle && streamspaceContainer) {
+  if (false && streamspaceDragHandle && streamspaceContainer) {
     streamspaceDragHandle.addEventListener('mousedown', (e) => {
       isDraggingStreamspace = true;
       offsetX = e.clientX - streamspaceContainer.getBoundingClientRect().left;

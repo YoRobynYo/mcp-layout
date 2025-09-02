@@ -315,7 +315,7 @@ if (typeof PanelManager === 'undefined') {
             const left = savedPos ? savedPos.left : `${defaultLeft}px`;
             const top = savedPos ? savedPos.top : `${defaultTop}px`;
 
-            panel.style.cssText += `position:absolute;left:${left};top:${top};width:350px;height:220px;` +
+            panel.style.cssText += `position:absolute;left:${left};top:${top};width:200px;height:220px;` +
                 `background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;` +
                 `box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);` +
                 `user-select:none;transition:box-shadow 0.2s ease, opacity 0.3s ease-in-out;z-index:2000;cursor:grab;` +
@@ -374,7 +374,7 @@ if (typeof PanelManager === 'undefined') {
             const screenSelector = container.querySelector('.screen-selector');
             const screenLabel = Object.assign(document.createElement('div'), {
                 textContent: 'Screen',
-                style: 'font-size:14px;color:#f0f0f0;font-weight:500;position:absolute;top:-20px;left:0'
+                style: 'font-size:14px;color:#f0f0f0;font-weight:500;position:absolute;top:-20px;left:8px'
             });
             screenSelector.appendChild(screenLabel);
 
@@ -406,21 +406,51 @@ if (typeof PanelManager === 'undefined') {
         }
         createAIContent(panel) {
             panel.innerHTML += `
-                <div class="ai-interface" style="display:flex;flex-direction:column;gap:15px;width:100%;height:100%;pointer-events:auto">
-                    <div style="display:flex;align-items:center;gap:8px;padding:10px;background:rgba(0,255,136,0.1);border-radius:8px;border:1px solid rgba(0,255,136,0.2)">
+                <div class="ai-interface" style="display:flex;flex-direction:column;gap:10px;width:100%;height:100%;pointer-events:auto">
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,255,136,0.1);border-radius:8px;border:1px solid rgba(0,255,136,0.2)">
                         <div style="width:8px;height:8px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite"></div>
                         <span style="color:#00ff88;font-size:12px;font-weight:500">AI Ready</span>
                     </div>
-                    <div style="display:flex;flex-direction:column;gap:10px;flex:1;pointer-events:auto">
-                        <div class="chat-messages" style="flex:1;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.1);overflow-y:auto;max-height:150px">
-                            <div style="padding:8px;background:rgba(0,255,247,0.1);border-radius:6px;font-size:12px;color:#00fff7">Hello! I'm ready to help with your cube controls.</div>
+                    <div style="display:flex;flex-direction:column;gap:8px;flex:1;pointer-events:auto">
+                        <div class="chat-messages" style="flex:1;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.1);overflow-y:auto;max-height:140px">
+                            <div style="padding:6px;background:rgba(0,255,247,0.1);border-radius:6px;font-size:12px;color:#00fff7">Hello! I'm ready to help.</div>
                         </div>
                         <div style="display:flex;gap:8px">
-                            <input type="text" placeholder="Ask me anything..." style="flex:1;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:#fff;font-size:12px">
-                            ${this.createButton('Send', 'send-btn').outerHTML}
+                            <input id="ai-input" type="text" placeholder="Type a message..." style="flex:1;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:#fff;font-size:12px">
+                            <button id="ai-send-btn" class="glassy-btn send-btn" style="padding:8px 12px;background:linear-gradient(145deg,rgba(0,153,255,0.15),rgba(0,153,255,0.05));border-radius:12px;border:1px solid rgba(0,153,255,0.3);color:#66b3ff;font-weight:500;font-size:12px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s ease;box-shadow:6px 6px 12px rgba(0,0,0,0.25),-6px -6px 12px rgba(255,255,255,0.05);pointer-events:auto;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center">Send</button>
                         </div>
                     </div>
                 </div>`;
+            // Bind direct click handler to avoid delegation issues
+            const sendBtn = panel.querySelector('#ai-send-btn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    console.log('AI Send (direct) clicked in panel', panel.id);
+                    const inputEl = panel.querySelector('#ai-input') || panel.querySelector('input[type="text"]');
+                    const text = inputEl ? inputEl.value.trim() : '';
+                    if (window.electronAPI?.openAICompanion) {
+                        const p = window.electronAPI.openAICompanion(text);
+                        if (p && typeof p.then === 'function') {
+                            p.then(res => console.log('openAICompanion resolve (direct):', res)).catch(err => console.error('openAICompanion error (direct):', err));
+                        }
+                    }
+                    if (text && window.electronAPI?.aiSend) {
+                        window.electronAPI.aiSend(text);
+                    }
+                });
+                // Enter-to-send
+                const inputEl = panel.querySelector('#ai-input');
+                if (inputEl) {
+                    inputEl.addEventListener('keydown', (ev) => {
+                        if (ev.key === 'Enter') {
+                            ev.preventDefault();
+                            sendBtn.click();
+                        }
+                    });
+                }
+            }
+            // No extra open button in panel; all controls live inside AI Companion now.
             if (!document.querySelector('style[data-pulse]')) {
                 const style = Object.assign(document.createElement('style'), {
                     textContent: '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}'
@@ -468,6 +498,18 @@ if (typeof PanelManager === 'undefined') {
                     }
                 } else if (btn.id === 'reset-btn') {
                     this.resetCube();
+                } else if (btn.id === 'ai-send-btn') {
+                    console.log('AI Send clicked in panel', panel.id);
+                    const inputEl = panel.querySelector('#ai-input') || panel.querySelector('input[type="text"]');
+                    const text = inputEl ? inputEl.value.trim() : '';
+                    if (window.electronAPI?.openAICompanion) {
+                        const p = window.electronAPI.openAICompanion(text);
+                        if (p && typeof p.then === 'function') {
+                            p.then(res => console.log('openAICompanion resolve:', res)).catch(err => console.error('openAICompanion error:', err));
+                        }
+                    } else {
+                        console.warn('electronAPI.openAICompanion not available');
+                    }
                 }
                 console.log('After click handling - Panel display:', panel.style.display, 'visibility:', panel.style.visibility);
             });
@@ -518,6 +560,18 @@ if (typeof PanelManager === 'undefined') {
         addPanelListeners(panel) {
             ['mousedown', 'touchstart'].forEach(event =>
                 panel.addEventListener(event, this.startPanelDrag.bind(this)));
+            // Delegated fallback for AI send in case direct binding missed after reload
+            panel.addEventListener('click', (ev) => {
+                const t = ev.target;
+                if (t && t.id === 'ai-send-btn') {
+                    console.log('AI Send (delegated) clicked in panel', panel.id);
+                    const inputEl = panel.querySelector('#ai-input') || panel.querySelector('input[type="text"]');
+                    const text = inputEl ? inputEl.value.trim() : '';
+                    if (window.electronAPI?.openAICompanion) {
+                        window.electronAPI.openAICompanion(text);
+                    }
+                }
+            });
         }
         startPanelDrag(e) {
             const panel = e.target.closest('.panel');

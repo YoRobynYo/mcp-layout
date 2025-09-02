@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Companion</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.0);
+    }
+
+    .avatar {
+      width: 200px;
+      height: 200px;
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      -webkit-clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(90px 90px at 50% 40%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      position: relative;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35), inset 0 0 28px rgba(255, 255, 255, 0.06);
+      contain: content;
+    }
+
+    .avatar img {
+      width: 170px;
+      height: 170px;
+      object-fit: cover;
+      animation: breath 3s ease-in-out infinite;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+      display: none;
+    }
+
+    @keyframes breath {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+    }
+
+    /* Animated gradient ring */
+    .avatar::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      padding: 3px;
+      background: conic-gradient(from 0deg, #7f8cff, #58d5ff, #7fffd4, #ffc36b, #7f8cff);
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      clip-path: inherit;
+      -webkit-clip-path: inherit;
+      animation: spin 8s linear infinite;
+      opacity: 0.7;
+    }
+
+    /* Soft inner glow that pulses when speaking */
+    .avatar::after {
+      content: '';
+      position: absolute;
+      inset: 10px;
+      background: radial-gradient(100px 100px at 50% 40%, rgba(120, 180, 255, 0.10), rgba(120, 180, 255, 0.02));
+      filter: blur(4px);
+      clip-path: inherit;
+      -webkit-clip-path: inherit;
+      animation: innerPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes innerPulse {
+
+      0%,
+      100% {
+        opacity: 0.5;
+      }
+
+      50% {
+        opacity: 0.85;
+      }
+    }
+
+    /* Canvas fills avatar */
+    #viz {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Orbiting particles */
+    .orb {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, rgba(255, 255, 255, 0.2));
+      box-shadow: 0 0 10px rgba(120, 200, 255, 0.9);
+      opacity: 0.8;
+      animation: orbit 6s linear infinite;
+      transform-origin: -50% -50%;
+      top: 50%;
+      left: 50%;
+    }
+
+    .orb.o2 {
+      width: 8px;
+      height: 8px;
+      animation-duration: 8s;
+      opacity: 0.7;
+    }
+
+    .orb.o3 {
+      width: 6px;
+      height: 6px;
+      animation-duration: 10s;
+      opacity: 0.6;
+    }
+
+    @keyframes orbit {
+      0% {
+        transform: rotate(0deg) translateX(70px) rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg) translateX(70px) rotate(-360deg);
+      }
+    }
+
+    .fallback {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7f8cff, #58d5ff);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 72px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      animation: breath 3s ease-in-out infinite;
+    }
+
+    .log {
+      display: none;
+    }
+
+    .log .me {
+      color: #9fd3ff;
+    }
+
+    .log .ai {
+      color: #b2f0c2;
+    }
+
+    .tts {
+      padding: 6px;
+      text-align: center;
+      color: #e6f2ff;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    /* Voice controls */
+    .voice-controls {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      align-items: center;
+      padding: 2px 8px;
+      color: #e6f2ff;
+      font-size: 11px;
+    }
+
+    .voice-controls select,
+    .voice-controls input[type="range"],
+    .voice-controls button {
+      background: rgba(255, 255, 255, 0.06);
+      color: #e6f2ff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 4px 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    /* Portrait mode (for custom tall images) */
+    .portrait {
+      width: 60%;
+      height: 50%;
+      max-width: 95vmin;
+      max-height: 95vmin;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      display: none;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: radial-gradient(50% 35% at 50% 10%, rgba(127, 200, 255, 0.12), rgba(127, 200, 255, 0.02));
+    }
+
+    .portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.02);
+      filter: contrast(1.03) saturate(1.06);
+    }
+
+    .portrait::after {
+      content: '';
+      position: absolute;
+      inset: -8% -4%;
+      pointer-events: none;
+      background: radial-gradient(40% 25% at 50% 0%, rgba(120, 180, 255, 0.25), rgba(120, 180, 255, 0));
+      animation: floatGlow 6s ease-in-out infinite;
+    }
+
+    @keyframes floatGlow {
+
+      0%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.55;
+      }
+
+      50% {
+        transform: translateY(-10px);
+        opacity: 0.95;
+      }
+    }
+
+    /* Layout: avatar + conversation side by side */
+    .main-row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      /* Fixed left column so avatar never drifts off */
+      align-items: center;
+      gap: 16px;
+      padding: 10px 18px;
+      /* extra horizontal padding so right side isn't flush */
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .avatar-wrap {
+      width: 220px;
+      height: 220px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      /* hard constraint */
+    }
+
+    .conversation {
+      width: 320px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-right: 8px;
+      /* space from the window edge */
+    }
+
+    .chat-box {
+      margin: 4px 12px 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .chat-messages {
+      display: none;
+    }
+
+    .chat-input {
+      display: flex;
+      gap: 6px;
+      padding: 6px 8px;
+      background: rgba(0, 0, 0, 0.25);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .chat-input button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 153, 255, 0.35);
+      background: linear-gradient(145deg, rgba(0, 153, 255, 0.20), rgba(0, 153, 255, 0.06));
+      color: #9fd3ff;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .msg {
+      display: flex;
+    }
+
+    .msg.you {
+      justify-content: flex-end;
+    }
+
+    .msg.ai {
+      justify-content: flex-start;
+    }
+
+    .bubble {
+      max-width: 78%;
+      padding: 8px 10px;
+      border-radius: 14px;
+      font-size: 12.5px;
+      line-height: 1.35;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .you .bubble {
+      background: linear-gradient(145deg, rgba(0, 153, 255, 0.25), rgba(0, 153, 255, 0.12));
+      border: 1px solid rgba(0, 153, 255, 0.35);
+      color: #e8f6ff;
+      border-top-right-radius: 4px;
+    }
+
+    .ai .bubble {
+      background: linear-gradient(145deg, rgba(0, 255, 170, 0.20), rgba(0, 255, 170, 0.10));
+      border: 1px solid rgba(0, 255, 170, 0.30);
+      color: #eafff5;
+      border-top-left-radius: 4px;
+    }
+
+    .meta {
+      display: block;
+      margin-top: 4px;
+      font-size: 10px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="stage">
+      <div class="main-row">
+        <div class="avatar-wrap">
+          <div class="avatar" id="avatar">
+            <canvas id="viz"></canvas>
+            <div class="orb"></div>
+            <div class="orb o2"></div>
+            <div class="orb o3"></div>
+            <img id="avatar-img" src="../assets/images/cubeCentral.png" alt="Avatar" />
+            <div id="avatar-fallback" class="fallback">🙂</div>
+          </div>
+        </div>
+        <div class="portrait" id="portrait" aria-hidden="true">
+          <img id="portrait-img" alt="Portrait" />
+        </div>
+        <div id="conversation" class="conversation"></div>
+      </div>
+    </div>
+    <div class="log" id="log" aria-hidden="true"></div>
+    <div class="voice-controls">
+      <label for="mode-select" style="opacity:0.85">Style</label>
+      <select id="mode-select">
+        <option value="visualizer">No.1 Visualizer</option>
+        <option value="portrait">No.2 Portrait</option>
+      </select>
+      <input id="mode-image" type="text" placeholder="Image URL (for Portrait)" style="min-width:180px" />
+      <button id="mode-apply" title="Apply Style">Apply</button>
+      <span style="opacity:.35">|</span>
+      <button id="voice-toggle" title="Mute/Unmute">Unmute</button>
+      <label for="voice-select" style="opacity:0.85">Voice</label>
+      <select id="voice-select"></select>
+      <label for="voice-rate" style="opacity:0.85">Rate</label>
+      <input id="voice-rate" type="range" min="0.6" max="1.4" step="0.05" value="1.0" />
+    </div>
+    <div class="chat-box">
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input">
+        <input id="chat-input" type="text" placeholder="Type a message..." />
+        <button id="chat-send">Send</button>
+      </div>
+    </div>
+    <div class="tts" id="status">Ready</div>
+  </div>
+  <script>
+    (function () {
+      const { ipcRenderer } = require('electron');
+      const params = new URLSearchParams(location.search);
+      const text = params.get('q') || 'Hello, how can I help?';
+      const status = document.getElementById('status');
+      const fb = document.getElementById('avatar-fallback');
+      const canvas = document.getElementById('viz');
+      const ctx = canvas.getContext('2d');
+      const portrait = document.getElementById('portrait');
+      const portraitImg = document.getElementById('portrait-img');
+      const modeSelect = document.getElementById('mode-select');
+      const modeImage = document.getElementById('mode-image');
+      const modeApply = document.getElementById('mode-apply');
+      function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      let speakLevel = 0.25;
+      let targetLevel = 0.25;
+      let t = 0;
+      const bars = 48;
+
+      function draw() {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        ctx.clearRect(0, 0, w, h);
+
+        // Smooth level transition
+        speakLevel += (targetLevel - speakLevel) * 0.08;
+
+        // Center and base radius
+        const cx = w / 2;
+        const cy = h / 2;
+        const baseR = Math.min(w, h) * 0.30;
+        const maxR = Math.min(w, h) * 0.45;
+
+        // Halo
+        const grd = ctx.createRadialGradient(cx, cy, baseR * 0.6, cx, cy, maxR);
+        grd.addColorStop(0, 'rgba(130,180,255,0.15)');
+        grd.addColorStop(1, 'rgba(130,180,255,0.02)');
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(cx, cy, maxR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Radial equalizer bars
+        for (let i = 0; i < bars; i++) {
+          const a = (i / bars) * Math.PI * 2;
+          const n = Math.sin(t * 0.03 + i * 0.45) * 0.5 + 0.5; // 0..1
+          const amp = 0.15 + speakLevel * 0.85;
+          const r = baseR + n * (maxR - baseR) * amp;
+          const x0 = cx + Math.cos(a) * baseR;
+          const y0 = cy + Math.sin(a) * baseR;
+          const x1 = cx + Math.cos(a) * r;
+          const y1 = cy + Math.sin(a) * r;
+
+          const lg = ctx.createLinearGradient(x0, y0, x1, y1);
+          lg.addColorStop(0, 'rgba(127,140,255,0.00)');
+          lg.addColorStop(0.7, 'rgba(127,220,255,0.75)');
+          lg.addColorStop(1, 'rgba(127,255,212,0.95)');
+          ctx.strokeStyle = lg;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(x0, y0);
+          ctx.lineTo(x1, y1);
+          ctx.stroke();
+        }
+
+        // Core pulse
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, baseR * (0.92 + 0.06 * Math.sin(t * 0.05)), 0, Math.PI * 2);
+        ctx.fill();
+
+        t += 1;
+        requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+      // Voice controls state and helpers
+      const voiceToggleBtn = document.getElementById('voice-toggle');
+      const voiceSelect = document.getElementById('voice-select');
+      const voiceRate = document.getElementById('voice-rate');
+      let voiceEnabled = JSON.parse(localStorage.getItem('ai_voice_enabled') || 'true');
+      let preferredVoice = localStorage.getItem('ai_voice_name') || '';
+      let preferredRate = parseFloat(localStorage.getItem('ai_voice_rate') || '1.0');
+      if (!isFinite(preferredRate)) preferredRate = 1.0;
+      voiceRate.value = String(preferredRate);
+      voiceToggleBtn.textContent = voiceEnabled ? 'Unmute' : 'Muted';
+
+      function populateVoices() {
+        const voices = speechSynthesis.getVoices();
+        voiceSelect.innerHTML = '';
+        const enVoices = voices.filter(v => /en[-_]/i.test(v.lang));
+        const list = enVoices.length ? enVoices : voices;
+        list.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v.name;
+          opt.textContent = `${v.name} (${v.lang})`;
+          if (preferredVoice && preferredVoice === v.name) opt.selected = true;
+          voiceSelect.appendChild(opt);
+        });
+        if (!preferredVoice && list[0]) {
+          preferredVoice = list[0].name;
+        }
+      }
+      if (speechSynthesis.getVoices().length === 0) {
+        speechSynthesis.onvoiceschanged = populateVoices;
+      } else {
+        populateVoices();
+      }
+
+      voiceToggleBtn.addEventListener('click', () => {
+        voiceEnabled = !voiceEnabled;
+        localStorage.setItem('ai_voice_enabled', JSON.stringify(voiceEnabled));
+        voiceToggleBtn.textContent = voiceEnabled ? 'Unmute' : 'Muted';
+        if (!voiceEnabled) {
+          try { speechSynthesis.cancel(); } catch (_) { }
+          targetLevel = 0.25;
+          status.textContent = 'Voice off';
+        }
+      });
+      voiceSelect.addEventListener('change', () => {
+        preferredVoice = voiceSelect.value;
+        localStorage.setItem('ai_voice_name', preferredVoice);
+      });
+      voiceRate.addEventListener('input', () => {
+        preferredRate = parseFloat(voiceRate.value || '1.0');
+        localStorage.setItem('ai_voice_rate', String(preferredRate));
+      });
+
+      function speak(line) {
+        if (!voiceEnabled) { status.textContent = 'Voice off'; return; }
+        if (!('speechSynthesis' in window)) { status.textContent = 'Speech not available'; return; }
+        const utter = new SpeechSynthesisUtterance(line);
+        utter.rate = preferredRate || 1.0;
+        utter.pitch = 1.0;
+        utter.volume = 1.0;
+        const voices = speechSynthesis.getVoices();
+        const selected = voices.find(v => v.name === preferredVoice);
+        if (selected) utter.voice = selected; else if (voices[0]) utter.voice = voices[0];
+        utter.onstart = () => { status.textContent = `Speaking… (${utter.voice ? utter.voice.name : 'default'})`; targetLevel = 1.0; };
+        utter.onend = () => { status.textContent = 'Done'; targetLevel = 0.25; };
+        try { speechSynthesis.cancel(); } catch (_) { }
+        speechSynthesis.speak(utter);
+      }
+      function generateReply(userText) {
+        const u = (userText || '').toLowerCase().trim();
+        if (!u) return 'How can I help?';
+        // Simple intent rules
+        if (/^(hi|hello|hey)\b/.test(u)) return "Hi! What would you like to do?";
+        if (/your name|who are you/.test(u)) return "I'm your companion here to help with panels and controls.";
+        if (/what (can|do) (you|u) do/.test(u)) return "I can open panels, switch styles, and answer quick questions.";
+        if (/open|show|launch/.test(u) && /lara|portrait|image/.test(u)) return "Switching to Portrait mode. Paste an image URL and press Apply.";
+        if (/mute|unmute|voice/.test(u)) return "Use the Voice controls below to toggle or change the voice.";
+        if (/help|how/.test(u)) return "Try: ‘open portrait’, ‘mute voice’, or ask any question.";
+        // Reflective fallback
+        return `You said: “${userText}”. I’m here if you want me to take an action.`;
+      }
+      const logEl = document.getElementById('log');
+      const history = [];
+      const chatMessages = document.getElementById('chat-messages');
+      const conversation = document.getElementById('conversation');
+      const chatInput = document.getElementById('chat-input');
+      const chatSend = document.getElementById('chat-send');
+
+      function renderLog() { /* disabled duplicate log area */ }
+
+      function appendChat(role, text) {
+        const row = document.createElement('div');
+        row.className = `msg ${role === 'me' ? 'you' : 'ai'}`;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = text;
+        row.appendChild(bubble);
+        if (conversation) {
+          conversation.appendChild(row);
+          conversation.scrollTop = conversation.scrollHeight;
+          setTimeout(() => { row.classList.add('fade-out'); setTimeout(() => row.remove(), 1000); }, 20000);
+        }
+      }
+
+      function handleUserMessage(text) {
+        const t = (text || '').trim();
+        if (!t) return;
+        history.push({ role: 'me', text: t });
+        appendChat('me', t);
+        const response = generateReply(t);
+        history.push({ role: 'ai', text: response });
+        appendChat('ai', response);
+        speak(response);
+        if (chatInput) { chatInput.value = ''; }
+      }
+
+      if (chatSend) chatSend.addEventListener('click', () => handleUserMessage(chatInput.value));
+      if (chatInput) chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleUserMessage(chatInput.value); } });
+
+      const reply = generateReply('hello');
+      history.push({ role: 'ai', text: reply });
+      speak(reply);
+
+      // Listen for messages from the main window to continue conversation
+      ipcRenderer.on('ai-companion-message', (_evt, userText) => {
+        const u = (userText || '').trim();
+        if (u) { history.push({ role: 'me', text: u }); appendChat('me', u); }
+        const response = generateReply(u);
+        history.push({ role: 'ai', text: response });
+        appendChat('ai', response);
+        speak(response);
+      });
+
+      // Image mode: switch to portrait view and resize visuals
+      ipcRenderer.on('ai-set-image', (_evt, payload) => {
+        try {
+          const { src } = payload || {};
+          if (!src) return;
+          portraitImg.src = src;
+          document.getElementById('avatar').style.display = 'none';
+          portrait.style.display = 'block';
+          portrait.setAttribute('aria-hidden', 'false');
+          localStorage.setItem('ai_mode', 'portrait');
+          localStorage.setItem('ai_mode_image', src);
+          if (modeSelect) modeSelect.value = 'portrait';
+          if (modeImage) modeImage.value = src;
+        } catch (e) {
+          console.error('ai-set-image error:', e);
+        }
+      });
+
+      // Mode switching logic
+      function applyMode(mode, src) {
+        if (mode === 'portrait') {
+          if (src) portraitImg.src = src;
+          document.getElementById('avatar').style.display = 'none';
+          portrait.style.display = 'block';
+          portrait.setAttribute('aria-hidden', 'false');
+        } else {
+          portrait.style.display = 'none';
+          portrait.setAttribute('aria-hidden', 'true');
+          document.getElementById('avatar').style.display = 'flex';
+        }
+        localStorage.setItem('ai_mode', mode);
+        if (src) localStorage.setItem('ai_mode_image', src);
+      }
+
+      // Restore saved mode
+      (function restoreMode() {
+        const savedMode = localStorage.getItem('ai_mode') || 'visualizer';
+        const savedSrc = localStorage.getItem('ai_mode_image') || '';
+        if (modeSelect) modeSelect.value = savedMode;
+        if (modeImage) modeImage.value = savedSrc;
+        applyMode(savedMode, savedSrc);
+      })();
+
+      if (modeApply) {
+        modeApply.addEventListener('click', () => {
+          applyMode(modeSelect.value, (modeImage.value || '').trim());
+        });
+      }
+
+      // Allow external control
+      ipcRenderer.on('ai-set-mode', (_evt, payload) => {
+        const { mode, src } = payload || {};
+        if (!mode) return;
+        if (modeSelect) modeSelect.value = mode;
+        if (src && modeImage) modeImage.value = src;
+        applyMode(mode, src);
+      });
+    })();
+  </script>
+</body>
+
+</html>

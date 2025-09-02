@@ -171,15 +171,13 @@
   </div>
 
   <div id="streamspace-display-container"
-    style="display: block; position: absolute; top: 105px; left: 31px; z-index: 2001; width: 1260px; height: 1015px; background: transparent; border-radius: 0px; overflow: auto; border: none; cursor: grab;">
-    <div id="streamspace-drag-handle"
-      style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; cursor: grab; z-index: 1000; background: linear-gradient(145deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05)); border-bottom: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.6); font-size: 18px; user-select: none;">
-      ⋮⋮⋮</div>
+    style="display: none; position: absolute; top: 105px; left: 31px; z-index: 1500; width: 1260px; height: 1015px; background: transparent; border-radius: 0px; overflow: hidden; border: none; cursor: default; pointer-events: none;">
+
     <div id="streamspace-close-btn"
       style="position: absolute; top: 10px; right: 10px; color: white; font-size: 20px; cursor: pointer; z-index: 1001;">
       X</div>
     <iframe id="streamspace-iframe" src="" frameborder="0"
-      style="width: 100%; height: calc(100% - 30px); margin-top: 30px; border: none;"></iframe>
+      style="width: 100%; height: 100%; margin-top: 0px; border: none;"></iframe>
     <div id="streamspace-overlay"
       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 999; display: none;">
     </div>

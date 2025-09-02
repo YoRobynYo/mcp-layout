@@ -1169,3 +1169,4 @@ new PanelManager();
 WE NOW HAVE A BLOCK SETUP for each of the cubes 
 the cubes 1 & 2 themselves so far I have like a front panel and on mouseover that will eventually show the main centre face which so far will be youtube ... we haven't built that yet, but I am now looking at not just the single face, I am now looking at each of the (as an example) there is four faces on the front of say cube-1 so instead of just one face , we can now incorporate the other faces too, so cube-1 has FRONT face A, B,C, D then on the BACK again A, B, C, D, and the same for LEFT A, B, C, D, then RIGHT A, B, C, D, and the same for cube-2
 
+

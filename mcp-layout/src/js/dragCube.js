@@ -156,6 +156,23 @@ class CubeDragger {
                     } else {
                         console.warn("Electron API for System Monitor not available.");
                     }
+                } else if (faceName === 'front' || faceName === 'left' || faceName === 'right' || faceName === 'back') {
+                    // For LRBF faces without assigned content, show Coming Soon inside app
+                    if (window.electronAPI?.openComingSoon) {
+                        window.electronAPI.openComingSoon();
+                    } else if (window.electronAPI?.openContent) {
+                        window.electronAPI.openContent({
+                            kind: 'file',
+                            target: require('path').join(__dirname, '..', '..', 'streamspace', 'waiting.html'),
+                            width: 300,
+                            height: 300,
+                            minWidth: 200,
+                            minHeight: 200,
+                            title: 'Coming Soon'
+                        });
+                    } else {
+                        console.warn('Electron API not available to open Coming Soon');
+                    }
                 } else {
                     if (window.streamspaceIntegration) {
                         window.streamspaceIntegration.showStreamspace(smallCubeId, faceName);

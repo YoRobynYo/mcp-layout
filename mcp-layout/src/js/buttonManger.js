@@ -1,298 +1,52 @@
-// buttonManagerjs setting
-
-// console.log("Independent Panel System loaded!");
-
-// if (typeof PanelManager === 'undefined') {
-//     class PanelManager {
-//         constructor() {
-//             this.draggedPanel = null;
-//             this.panelOffset = { x: 0, y: 0 };
-//             this.isPanelDragging = false;
-//             this.selectedCube = 'center';
-//             this.currentRotation = { x: 0, y: 0 };
-//             this.init();
-//         }
-
-//         init() {
-//             this.addGlobalListeners();
-//             this.createPanel('screen-4', 'AI Panel', 100, 100, this.createAIContent.bind(this));
-//             this.createPanel('screen-4a', 'Button Controls', 450, 100, this.createButtonControls.bind(this));
-//         }
-
-//         addGlobalListeners() {
-//             ['mousemove', 'mouseup', 'touchmove', 'touchend'].forEach(event => {
-//                 document.addEventListener(event, event.includes('move') ? 
-//                     this.handlePanelMove.bind(this) : this.stopPanelDrag.bind(this));
-//             });
-//         }
-
-//         createPanel(id, title, left, top, contentFn) {
-//             let panel = document.getElementById(id);
-//             if (panel) return this.addPanelListeners(panel);
-
-//             panel = Object.assign(document.createElement('div'), {
-//                 id, className: 'panel',
-//                 innerHTML: `<h3 style="margin:0 0 20px 0;color:#fff;font-size:16px;text-align:center;pointer-events:none">${title}</h3>`
-//             });
-
-//             panel.style.cssText = `position:absolute;left:${left}px;top:${top}px;width:210px;height:220px;
-//                 background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;
-//                 box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);
-//                 user-select:none;transition:box-shadow 0.2s ease;z-index:10;cursor:grab;
-//                 display:flex;flex-direction:column;justify-content:flex-start;align-items:center;
-//                 backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)`;
-
-//             contentFn(panel);
-//             document.body.appendChild(panel);
-//             this.addPanelListeners(panel);
-//             console.log(`Created panel: ${id}`);
-//         }
-
-//         createButton(text, className, special = false) {
-//             const btn = Object.assign(document.createElement('button'), {
-//                 textContent: text, className: `glassy-btn ${className}`
-//             });
-            
-//             const baseStyle = `padding:8px 12px;background:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));
-//                 border-radius:12px;border:1px solid rgba(255,255,255,0.25);color:#e8f0f0;font-weight:500;
-//                 font-size:12px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s ease;
-//                 box-shadow:6px 6px 12px rgba(0,0,0,0.25),-6px -6px 12px rgba(255,255,255,0.05);
-//                 pointer-events:auto;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center`;
-            
-//             btn.style.cssText = baseStyle + (special ? special : '');
-
-//             ['mouseenter', 'mouseleave', 'mousedown', 'mouseup'].forEach((event, i) => {
-//                 btn.addEventListener(event, () => {
-//                     const transforms = ['translateY(-2px)', 'translateY(0)', 'translateY(0)', 'translateY(0)'];
-//                     const shadows = [
-//                         '8px 8px 16px rgba(0,0,0,0.3),-4px -4px 8px rgba(255,255,255,0.08)',
-//                         baseStyle.match(/box-shadow:[^;]+/)[0].replace('box-shadow:', ''),
-//                         'inset 4px 4px 6px rgba(0,0,0,0.25),inset -2px -2px 6px rgba(255,255,255,0.1)',
-//                         baseStyle.match(/box-shadow:[^;]+/)[0].replace('box-shadow:', '')
-//                     ];
-//                     btn.style.transform = transforms[i];
-//                     btn.style.boxShadow = shadows[i];
-//                 });
-//             });
-//             return btn;
-//         }
-
-//         createButtonControls(panel) {
-//             const container = Object.assign(document.createElement('div'), {
-//                 innerHTML: `
-//                     <div class="screen-selector" style="display:flex;gap:8px;justify-content:center;align-items:center;padding:4px;pointer-events:auto"></div>
-//                     <div class="rotation-controls" style="display:flex;gap:8px;justify-content:center;padding:4px;flex-wrap:wrap;pointer-events:auto"></div>
-//                     <div class="action-controls" style="display:flex;gap:8px;justify-content:center;padding:4px;pointer-events:auto"></div>`
-//             });
-
-//             // Screen buttons
-//             const screenSelector = container.querySelector('.screen-selector');
-            
-//             // Add Screen label positioned above the first button
-//             const screenLabel = Object.assign(document.createElement('div'), {
-//                 textContent: 'Screen',
-//                 style: 'font-size:14px;color:#f0f0f0;font-weight:500;position:absolute;top:-20px;left:0'
-//             });
-//             screenSelector.style.position = 'relative';
-//             screenSelector.appendChild(screenLabel);
-            
-//             ['centre', '1', '2', '3'].forEach((screen, i) => {
-//                 const btn = this.createButton(screen, 'screen-btn');
-//                 btn.dataset.screen = screen === 'centre' ? 'center' : screen;
-//                 if (i === 0) btn.classList.add('active');
-//                 screenSelector.appendChild(btn);
-//             });
-
-//             // Rotation buttons
-//             const rotationControls = container.querySelector('.rotation-controls');
-//             [['← Left', 'left'], ['Right →', 'right'], ['↑ Up', 'up'], ['Down ↓', 'down']].forEach(([text, dir]) => {
-//                 const btn = this.createButton(text, 'rotate-btn');
-//                 btn.dataset.direction = dir;
-//                 rotationControls.appendChild(btn);
-//             });
-
-//             // Action buttons
-//             const actionControls = container.querySelector('.action-controls');
-//             const applyBtn = this.createButton('Apply', 'action-btn', 'background:linear-gradient(145deg,rgba(0,255,136,0.15),rgba(0,255,136,0.05));color:#00ff88;border-color:rgba(0,255,136,0.3)');
-//             const resetBtn = this.createButton('Reset', 'action-btn', 'background:linear-gradient(145deg,rgba(255,100,100,0.15),rgba(255,100,100,0.05));color:#ff6464;border-color:rgba(255,100,100,0.3)');
-//             applyBtn.id = 'apply-btn';
-//             resetBtn.id = 'reset-btn';
-//             actionControls.append(applyBtn, resetBtn);
-
-//             panel.appendChild(container);
-//             this.addButtonListeners(panel);
-//         }
-
-//         createAIContent(panel) {
-//             panel.innerHTML += `
-//                 <div class="ai-interface" style="display:flex;flex-direction:column;gap:15px;width:100%;height:100%;pointer-events:none">
-//                     <div style="display:flex;align-items:center;gap:8px;padding:10px;background:rgba(0,255,136,0.1);border-radius:8px;border:1px solid rgba(0,255,136,0.2)">
-//                         <div style="width:8px;height:8px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite"></div>
-//                         <span style="color:#00ff88;font-size:12px;font-weight:500">AI Ready</span>
-//                     </div>
-//                     <div style="display:flex;flex-direction:column;gap:10px;flex:1;pointer-events:auto">
-//                         <div class="chat-messages" style="flex:1;padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.1);overflow-y:auto;max-height:150px">
-//                             <div style="padding:8px;background:rgba(0,255,247,0.1);border-radius:6px;font-size:12px;color:#00fff7">Hello! I'm ready to help with your cube controls.</div>
-//                         </div>
-//                         <div style="display:flex;gap:8px">
-//                             <input type="text" placeholder="Ask me anything..." style="flex:1;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:#fff;font-size:12px">
-//                             ${this.createButton('Send', 'send-btn').outerHTML}
-//                         </div>
-//                     </div>
-//                 </div>`;
-
-//             if (!document.querySelector('style[data-pulse]')) {
-//                 const style = Object.assign(document.createElement('style'), {
-//                     textContent: '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}'
-//                 });
-//                 style.dataset.pulse = 'true';
-//                 document.head.appendChild(style);
-//             }
-//         }
-
-//         addButtonListeners(panel) {
-//             panel.addEventListener('click', e => {
-//                 const btn = e.target.closest('button');
-//                 if (!btn) return;
-//                 e.stopPropagation();
-
-//                 if (btn.classList.contains('rotate-btn')) {
-//                     this.rotateCube(btn.dataset.direction);
-//                 } else if (btn.classList.contains('screen-btn')) {
-//                     if (btn.dataset.screen !== 'center') {
-//                         console.log(`Screen ${btn.dataset.screen} not available yet`);
-//                         return;
-//                     }
-//                     panel.querySelectorAll('.screen-btn').forEach(b => {
-//                         b.classList.toggle('active', b === btn);
-//                         b.style.cssText += b === btn ? 
-//                             'background:linear-gradient(145deg,rgba(0,255,247,0.15),rgba(0,255,247,0.08));color:#00fff7;border-color:rgba(0,255,247,0.2)' :
-//                             'background:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));color:#e8f0f0;border-color:rgba(255,255,255,0.25)';
-//                     });
-//                     this.selectedCube = btn.dataset.screen;
-//                 } else if (btn.id === 'apply-btn') {
-//                     console.log(`✅ Applied cube state - Face: ${this.getCurrentFace().name}`);
-//                 } else if (btn.id === 'reset-btn') {
-//                     this.resetCube();
-//                 }
-//             });
-//         }
-
-//         rotateCube(direction) {
-//             const cube = document.querySelector('.centreCube');
-//             if (!cube) return console.warn('No .centreCube found');
-
-//             const rotations = { left: [0, -90], right: [0, 90], up: [-90, 0], down: [90, 0] };
-//             const [x, y] = rotations[direction];
-//             this.currentRotation.x += x;
-//             this.currentRotation.y += y;
-
-//             cube.style.cssText += `transform:rotateX(${this.currentRotation.x}deg) rotateY(${this.currentRotation.y}deg);transition:transform 0.5s ease`;
-//             console.log(`🔄 Current face: ${this.getCurrentFace().name} (${this.getCurrentFace().topic})`);
-//         }
-
-//         getCurrentFace() {
-//             const x = ((this.currentRotation.x % 360) + 360) % 360;
-//             const y = ((this.currentRotation.y % 360) + 360) % 360;
-//             const faces = {
-//                 '0,0': { name: 'Front', topic: 'Dashboard/Home' },
-//                 '0,90': { name: 'Right', topic: 'News Feed' },
-//                 '0,180': { name: 'Back', topic: 'Bitcoin/Crypto' },
-//                 '0,270': { name: 'Left', topic: 'Blog Posts' },
-//                 '90,0': { name: 'Top', topic: 'Weather' },
-//                 '270,0': { name: 'Bottom', topic: 'Social Media' }
-//             };
-//             return faces[`${x},${y}`] || { name: 'Unknown', topic: 'Mixed View' };
-//         }
-
-//         resetCube() {
-//             const cube = document.querySelector('.centreCube');
-//             if (!cube) return;
-//             this.currentRotation = { x: 0, y: 0 };
-//             cube.style.cssText += 'transform:rotateX(0deg) rotateY(0deg);transition:transform 0.5s ease';
-//             console.log('🔄 Cube reset to Front face');
-//         }
-
-//         addPanelListeners(panel) {
-//             ['mousedown', 'touchstart'].forEach(event => 
-//                 panel.addEventListener(event, this.startPanelDrag.bind(this)));
-//         }
-
-//         startPanelDrag(e) {
-//             const panel = e.target.closest('.panel');
-//             if (!panel || e.target.matches('button, input') || e.target.closest('button, input, .chat-input, .rotation-controls, .action-controls, .screen-selector')) return;
-
-//             e.preventDefault();
-//             e.stopPropagation();
-//             this.isPanelDragging = true;
-//             this.draggedPanel = panel;
-//             panel.style.cssText += 'cursor:grabbing;z-index:1000';
-
-//             const rect = panel.getBoundingClientRect();
-//             const clientX = e.clientX || e.touches?.[0]?.clientX;
-//             const clientY = e.clientY || e.touches?.[0]?.clientY;
-//             this.panelOffset = { x: clientX - rect.left, y: clientY - rect.top };
-//         }
-
-//         handlePanelMove(e) {
-//             if (!this.isPanelDragging || !this.draggedPanel) return;
-//             e.preventDefault();
-
-//             const clientX = e.clientX || e.touches?.[0]?.clientX;
-//             const clientY = e.clientY || e.touches?.[0]?.clientY;
-//             const newX = Math.max(0, Math.min(clientX - this.panelOffset.x, window.innerWidth - this.draggedPanel.offsetWidth));
-//             const newY = Math.max(0, Math.min(clientY - this.panelOffset.y, window.innerHeight - this.draggedPanel.offsetHeight));
-
-//             this.draggedPanel.style.cssText += `left:${newX}px;top:${newY}px`;
-//         }
-
-//         stopPanelDrag() {
-//             if (!this.isPanelDragging || !this.draggedPanel) return;
-//             this.draggedPanel.style.cssText += 'cursor:grab;z-index:10';
-//             this.draggedPanel = null;
-//             this.isPanelDragging = false;
-//         }
-//     }
-
-//     window.PanelManager = PanelManager;
-// }
-
-// // Initialize when DOM is ready
-// const init = () => new PanelManager();
-// document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
-
-
-// 
-
+// Independent Panel System for MCP Layout
+// Manages draggable panels, button controls, and AI interactions
 console.log("Independent Panel System loaded!");
+
 if (typeof PanelManager === 'undefined') {
     class PanelManager {
         constructor() {
+            // Properties for panel dragging
             this.draggedPanel = null;
             this.panelOffset = { x: 0, y: 0 };
             this.isPanelDragging = false;
+            
+            // Properties for cube selection and rotation
             this.selectedCube = 'center';
             this.currentRotation = { x: 0, y: 0 };
             
+            // Initialize the panel system
             this.init();
         }
+        
+        // Main initialization method
         init() {
+            // Prevent multiple initializations
             if (window.panelManagerInitialized) return;
             window.panelManagerInitialized = true;
 
+            // Set up global event listeners for dragging
             this.addGlobalListeners();
+            
+            // Create the AI Panel (Panel 4)
             this.createPanel('screen-4', 'AI Panel', 100, 100, this.createAIContent.bind(this));
+            
+            // Create the Button Controls Panel
             this.createPanel('screen-4a', 'Button Controls', 350, 100, this.createButtonControls.bind(this));
         }
+        
+        // Add listeners for mouse/touch events to handle panel dragging globally
         addGlobalListeners() {
             ['mousemove', 'mouseup', 'touchmove', 'touchend'].forEach(event => {
                 document.addEventListener(event, event.includes('move') ?
                     this.handlePanelMove.bind(this) : this.stopPanelDrag.bind(this));
             });
         }
+        
+        // Asynchronously create a panel with saved position
         async createPanel(id, title, defaultLeft, defaultTop, contentFn) {
             let panel = document.getElementById(id);
             if (panel) {
+                // If panel exists but not initialized, add listeners
                 if (!panel.dataset.initialized) {
                     this.addPanelListeners(panel);
                     panel.dataset.initialized = 'true';
@@ -300,21 +54,23 @@ if (typeof PanelManager === 'undefined') {
                 return;
             }
 
+            // Create the panel element
             panel = Object.assign(document.createElement('div'), {
                 id,
                 className: 'panel',
                 innerHTML: `<h3 style="margin:0 0 20px 0;color:#fff;font-size:16px;text-align:center;pointer-events:none">${title}</h3>`
             });
 
-            // Hide panel initially
+            // Hide panel initially for fade-in effect
             panel.style.visibility = 'hidden';
             panel.style.opacity = 0;
 
-            // Get saved position
+            // Get saved position from storage or use defaults
             const savedPos = await window.electronAPI.getItem(`${id}-position`);
             const left = savedPos ? savedPos.left : `${defaultLeft}px`;
             const top = savedPos ? savedPos.top : `${defaultTop}px`;
 
+            // Apply panel styles (glassy, draggable)
             panel.style.cssText += `position:absolute;left:${left};top:${top};width:200px;height:220px;` +
                 `background:transparent;border:none;border-radius:14px;padding:15px;color:#fff;` +
                 `box-shadow:0 4px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);` +
@@ -322,6 +78,7 @@ if (typeof PanelManager === 'undefined') {
                 `display:flex;flex-direction:column;justify-content:flex-start;align-items:center;` +
                 `backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)`;
 
+            // Call the content function to populate the panel
             contentFn(panel);
             document.body.appendChild(panel);
             this.addPanelListeners(panel);
@@ -334,12 +91,15 @@ if (typeof PanelManager === 'undefined') {
                 panel.style.opacity = 1;
             });
         }
+        
+        // Create a styled button with hover effects
         createButton(text, className, special = false) {
             const btn = Object.assign(document.createElement('button'), {
                 textContent: text,
                 className: `glassy-btn ${className}`
             });
 
+            // Base styles for glassy button
             const baseStyle = `padding:8px 12px;background:linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));
                 border-radius:12px;border:1px solid rgba(255,255,255,0.25);color:#e8f0f0;font-weight:500;
                 font-size:12px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s ease;
@@ -348,6 +108,7 @@ if (typeof PanelManager === 'undefined') {
 
             btn.style.cssText = baseStyle + (special ? special : '');
 
+            // Add hover/press effects
             ['mouseenter', 'mouseleave', 'mousedown', 'mouseup'].forEach((event, i) => {
                 btn.addEventListener(event, () => {
                     const transforms = ['translateY(-2px)', 'translateY(0)', 'translateY(0)', 'translateY(0)'];
@@ -363,6 +124,8 @@ if (typeof PanelManager === 'undefined') {
             });
             return btn;
         }
+        
+        // Populate the Button Controls panel with screen/rotation/action buttons
         createButtonControls(panel) {
             const container = Object.assign(document.createElement('div'), {
                 innerHTML: `
@@ -370,7 +133,8 @@ if (typeof PanelManager === 'undefined') {
                     <div class="rotation-controls" style="display:flex;gap:8px;justify-content:center;padding:4px;flex-wrap:wrap;pointer-events:auto"></div>
                     <div class="action-controls" style="display:flex;gap:8px;justify-content:center;padding:4px;pointer-events:auto"></div>`
             });
-            // Screen buttons
+            
+            // Screen selection buttons
             const screenSelector = container.querySelector('.screen-selector');
             const screenLabel = Object.assign(document.createElement('div'), {
                 textContent: 'Screen',
@@ -385,7 +149,7 @@ if (typeof PanelManager === 'undefined') {
                 screenSelector.appendChild(btn);
             });
 
-            // Rotation buttons
+            // Rotation control buttons
             const rotationControls = container.querySelector('.rotation-controls');
             [['← Left', 'left'], ['Right →', 'right'], ['↑ Up', 'up'], ['Down ↓', 'down']].forEach(([text, dir]) => {
                 const btn = this.createButton(text, 'rotate-btn');
@@ -393,7 +157,7 @@ if (typeof PanelManager === 'undefined') {
                 rotationControls.appendChild(btn);
             });
 
-            // Action buttons
+            // Action buttons (Apply and Reset)
             const actionControls = container.querySelector('.action-controls');
             const applyBtn = this.createButton('Apply', 'action-btn', 'background:linear-gradient(145deg,rgba(0,255,136,0.15),rgba(0,255,136,0.05));color:#00ff88;border-color:rgba(0,255,136,0.3)');
             const resetBtn = this.createButton('Reset', 'action-btn', 'background:linear-gradient(145deg,rgba(255,100,100,0.15),rgba(255,100,100,0.05));color:#ff6464;border-color:rgba(255,100,100,0.3)');
@@ -404,61 +168,58 @@ if (typeof PanelManager === 'undefined') {
             panel.appendChild(container);
             this.addButtonListeners(panel);
         }
+        
+        // Populate the AI Panel with status, input, and Send button
+        // Updated: Bigger status area with Send button inside for compact layout
         createAIContent(panel) {
-            panel.innerHTML += `
-                <div class="ai-interface" style="display:flex;flex-direction:column;gap:10px;width:100%;height:100%;pointer-events:auto">
-                    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,255,136,0.1);border-radius:8px;border:1px solid rgba(0,255,136,0.2)">
-                        <div style="width:8px;height:8px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite"></div>
-                        <span style="color:#00ff88;font-size:12px;font-weight:500">AI Ready</span>
-                    </div>
-                    <div style="display:flex;flex-direction:column;gap:8px;flex:1;pointer-events:auto">
-                        <div class="chat-messages" style="flex:1;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.1);overflow-y:auto;max-height:140px">
-                            <div style="padding:6px;background:rgba(0,255,247,0.1);border-radius:6px;font-size:12px;color:#00fff7">Hello! I'm ready to help.</div>
+            try {
+                panel.innerHTML += `
+                    <div class="ai-interface" style="display:flex;flex-direction:column;gap:15px;width:100%;height:100%;pointer-events:auto">
+                        <!-- Status area with bigger gaps -->
+                        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:30px;background:rgba(0,255,136,0.1);border-radius:8px;border:1px solid rgba(0,255,136,0.2);flex:1;justify-content:center;text-align:center;margin:20px 0;">
+                            <!-- Pulsing indicator -->
+                            <div style="width:12px;height:12px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite"></div>
+                            <!-- Larger status text with Georgia font -->
+                            <span style="color:#3CB371;font-size:16px;font-weight:500;font-family:'Georgia', serif;margin:15px 0;">AI</span>
+                            <!-- Wider Send button -->
+                            <button id="ai-send-btn" class="glassy-btn send-btn" style="padding:10px 30px;background:linear-gradient(145deg,rgba(0,153,255,0.15),rgba(0,153,255,0.05));border-radius:12px;border:1px solid rgba(0,153,255,0.3);color:#66b3ff;font-weight:500;font-size:14px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s ease;box-shadow:6px 6px 12px rgba(0,0,0,0.25),-6px -6px 12px rgba(255,255,255,0.05);pointer-events:auto;">Send</button>
                         </div>
-                        <div style="display:flex;gap:8px">
-                            <input id="ai-input" type="text" placeholder="Type a message..." style="flex:1;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:6px;color:#fff;font-size:12px">
-                            <button id="ai-send-btn" class="glassy-btn send-btn" style="padding:8px 12px;background:linear-gradient(145deg,rgba(0,153,255,0.15),rgba(0,153,255,0.05));border-radius:12px;border:1px solid rgba(0,153,255,0.3);color:#66b3ff;font-weight:500;font-size:12px;cursor:pointer;backdrop-filter:blur(8px);transition:all 0.2s ease;box-shadow:6px 6px 12px rgba(0,0,0,0.25),-6px -6px 12px rgba(255,255,255,0.05);pointer-events:auto;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center">Send</button>
-                        </div>
-                    </div>
-                </div>`;
-            // Bind direct click handler to avoid delegation issues
-            const sendBtn = panel.querySelector('#ai-send-btn');
-            if (sendBtn) {
-                sendBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    console.log('AI Send (direct) clicked in panel', panel.id);
-                    const inputEl = panel.querySelector('#ai-input') || panel.querySelector('input[type="text"]');
-                    const text = inputEl ? inputEl.value.trim() : '';
-                    if (window.electronAPI?.openAICompanion) {
-                        const p = window.electronAPI.openAICompanion(text);
-                        if (p && typeof p.then === 'function') {
-                            p.then(res => console.log('openAICompanion resolve (direct):', res)).catch(err => console.error('openAICompanion error (direct):', err));
+                    </div>`;
+                
+                // Bind click handler to the Send button
+                const sendBtn = panel.querySelector('#ai-send-btn');
+                if (sendBtn) {
+                    sendBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        console.log('AI Send clicked in panel', panel.id);
+                        // Open AI Companion and send default message
+                        const text = 'Hello';
+                        if (window.electronAPI?.openAICompanion) {
+                            const p = window.electronAPI.openAICompanion(text);
+                            if (p && typeof p.then === 'function') {
+                                p.then(res => console.log('openAICompanion resolve (direct):', res)).catch(err => console.error('openAICompanion error (direct):', err));
+                            }
                         }
-                    }
-                    if (text && window.electronAPI?.aiSend) {
-                        window.electronAPI.aiSend(text);
-                    }
-                });
-                // Enter-to-send
-                const inputEl = panel.querySelector('#ai-input');
-                if (inputEl) {
-                    inputEl.addEventListener('keydown', (ev) => {
-                        if (ev.key === 'Enter') {
-                            ev.preventDefault();
-                            sendBtn.click();
+                        if (window.electronAPI?.aiSend) {
+                            window.electronAPI.aiSend(text);
                         }
                     });
                 }
-            }
-            // No extra open button in panel; all controls live inside AI Companion now.
-            if (!document.querySelector('style[data-pulse]')) {
-                const style = Object.assign(document.createElement('style'), {
-                    textContent: '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}'
-                });
-                style.dataset.pulse = 'true';
-                document.head.appendChild(style);
+                
+                // Add pulse animation styles if not already present
+                if (!document.querySelector('style[data-pulse]')) {
+                    const style = Object.assign(document.createElement('style'), {
+                        textContent: '@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}'
+                    });
+                    style.dataset.pulse = 'true';
+                    document.head.appendChild(style);
+                }
+            } catch (error) {
+                console.error('Error in createAIContent:', error);
             }
         }
+        
+        // Handle button clicks in panels (e.g., rotation, screen selection, AI send)
         addButtonListeners(panel) {
             panel.addEventListener('click', e => {
                 const btn = e.target.closest('button');
@@ -467,10 +228,13 @@ if (typeof PanelManager === 'undefined') {
 
                 console.log('Before click handling - Panel display:', panel.style.display, 'visibility:', panel.style.visibility);
 
+                // Handle rotation buttons
                 if (btn.classList.contains('rotate-btn')) {
                     console.log(`Rotate button clicked. Direction: ${btn.dataset.direction}, Selected Cube: ${this.selectedCube}`);
                     this.rotateCube(btn.dataset.direction);
-                } else if (btn.classList.contains('screen-btn')) {
+                } 
+                // Handle screen selection buttons
+                else if (btn.classList.contains('screen-btn')) {
                     panel.querySelectorAll('.screen-btn').forEach(b => {
                         b.classList.toggle('active', b === btn);
                         b.style.cssText += b === btn ?
@@ -485,10 +249,11 @@ if (typeof PanelManager === 'undefined') {
                         this.selectedCube = 'cube-2';
                     } else if (screen === 'centre') {
                         console.log("'centre' screen button clicked. Functionality disabled for now.");
-                        // Do nothing for now
                     }
                     console.log(`Selected cube: ${this.selectedCube}`);
-                } else if (btn.id === 'apply-btn') {
+                } 
+                // Handle Apply button
+                else if (btn.id === 'apply-btn') {
                     const dragger = window.cubeDraggers[this.selectedCube];
                     if (dragger) {
                         dragger.setCubeRotation(this.currentRotation.x, this.currentRotation.y, 'transform 0.5s ease');
@@ -496,9 +261,13 @@ if (typeof PanelManager === 'undefined') {
                     } else {
                         console.warn(`CubeDragger instance not found for #${this.selectedCube}`);
                     }
-                } else if (btn.id === 'reset-btn') {
+                } 
+                // Handle Reset button
+                else if (btn.id === 'reset-btn') {
                     this.resetCube();
-                } else if (btn.id === 'ai-send-btn') {
+                } 
+                // Handle AI Send button (fallback)
+                else if (btn.id === 'ai-send-btn') {
                     console.log('AI Send clicked in panel', panel.id);
                     const inputEl = panel.querySelector('#ai-input') || panel.querySelector('input[type="text"]');
                     const text = inputEl ? inputEl.value.trim() : '';
@@ -511,29 +280,36 @@ if (typeof PanelManager === 'undefined') {
                         console.warn('electronAPI.openAICompanion not available');
                     }
                 }
+                
                 console.log('After click handling - Panel display:', panel.style.display, 'visibility:', panel.style.visibility);
             });
         }
+        
+        // Rotate the selected cube based on direction
         rotateCube(direction) {
-        console.log(`rotateCube called. Selected Cube: ${this.selectedCube}`);
-        console.log("window.cubeDraggers:", window.cubeDraggers);
+            console.log(`rotateCube called. Selected Cube: ${this.selectedCube}`);
+            console.log("window.cubeDraggers:", window.cubeDraggers);
 
-        const dragger = window.cubeDraggers[this.selectedCube];
-        if (!dragger) {
-            return console.warn(`CubeDragger instance not found for #${this.selectedCube}`);
+            const dragger = window.cubeDraggers[this.selectedCube];
+            if (!dragger) {
+                return console.warn(`CubeDragger instance not found for #${this.selectedCube}`);
+            }
+
+            // Define rotation deltas for each direction
+            const rotations = { left: [0, -90], right: [0, 90], up: [-90, 0], down: [90, 0] };
+            const [deltaX, deltaY] = rotations[direction];
+
+            // Update current rotation
+            this.currentRotation.x += deltaX;
+            this.currentRotation.y += deltaY;
+
+            // Apply rotation to the cube
+            dragger.setCubeRotation(this.currentRotation.x, this.currentRotation.y, 'transform 0.5s ease');
+
+            console.log(`🔄 Current face: ${this.getCurrentFace().name} (${this.getCurrentFace().topic})`);
         }
 
-        const rotations = { left: [0, -90], right: [0, 90], up: [-90, 0], down: [90, 0] };
-        const [deltaX, deltaY] = rotations[direction];
-
-        this.currentRotation.x += deltaX;
-        this.currentRotation.y += deltaY;
-
-        dragger.setCubeRotation(this.currentRotation.x, this.currentRotation.y, 'transform 0.5s ease');
-
-        console.log(`🔄 Current face: ${this.getCurrentFace().name} (${this.getCurrentFace().topic})`);
-        }
-
+        // Get the current face of the cube based on rotation
         getCurrentFace() {
             const x = ((this.currentRotation.x % 360) + 360) % 360;
             const y = ((this.currentRotation.y % 360) + 360) % 360;
@@ -547,6 +323,8 @@ if (typeof PanelManager === 'undefined') {
             };
             return faces[`${x},${y}`] || { name: 'Unknown', topic: 'Mixed View' };
         }
+        
+        // Reset the cube to front face
         resetCube() {
             const dragger = window.cubeDraggers[this.selectedCube];
             if (!dragger) {
@@ -557,10 +335,12 @@ if (typeof PanelManager === 'undefined') {
             dragger.setCubeRotation(0, 0, 'transform 0.5s ease');
             console.log('🔄 Cube reset to Front face');
         }
+        
+        // Add event listeners for panel dragging
         addPanelListeners(panel) {
             ['mousedown', 'touchstart'].forEach(event =>
                 panel.addEventListener(event, this.startPanelDrag.bind(this)));
-            // Delegated fallback for AI send in case direct binding missed after reload
+            // Fallback click handler for AI send
             panel.addEventListener('click', (ev) => {
                 const t = ev.target;
                 if (t && t.id === 'ai-send-btn') {
@@ -573,11 +353,13 @@ if (typeof PanelManager === 'undefined') {
                 }
             });
         }
+        
+        // Start dragging a panel
         startPanelDrag(e) {
             const panel = e.target.closest('.panel');
             console.log('startPanelDrag called. Panel found:', panel);
             if (!panel) return;
-            // Avoid dragging on buttons or inputs inside panel
+            // Prevent dragging on interactive elements
             if (e.target.matches('button, input') || e.target.closest('button, input, .chat-input, .rotation-controls, .action-controls, .screen-selector')) return;
             e.preventDefault();
             e.stopPropagation();
@@ -590,6 +372,8 @@ if (typeof PanelManager === 'undefined') {
             const clientY = e.clientY || e.touches?.[0]?.clientY;
             this.panelOffset = { x: clientX - rect.left, y: clientY - rect.top };
         }
+        
+        // Handle panel movement during drag
         handlePanelMove(e) {
             if (!this.isPanelDragging || !this.draggedPanel) return;
             e.preventDefault();
@@ -600,6 +384,8 @@ if (typeof PanelManager === 'undefined') {
             this.draggedPanel.style.left = `${newX}px`;
             this.draggedPanel.style.top = `${newY}px`;
         }
+        
+        // Stop dragging and save panel position
         async stopPanelDrag() {
             if (!this.isPanelDragging || !this.draggedPanel) return;
 
@@ -622,8 +408,168 @@ if (typeof PanelManager === 'undefined') {
     }
     window.PanelManager = PanelManager;
 }
-// Initialize when DOM is ready
+
+// Initialize the PanelManager when DOM is ready
 const init = () => new PanelManager();
 document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+
+// Add these variables and functions for button wiring
+let voiceEnabled = JSON.parse(localStorage.getItem('ai_voice_enabled') || 'true');
+let preferredVoice = localStorage.getItem('ai_voice_name') || '';
+let preferredRate = parseFloat(localStorage.getItem('ai_voice_rate') || '1.0');
+
+if (!isFinite(preferredRate)) preferredRate = 1.0;
+
+// Function to populate voice options
+function populateVoices() {
+  const voiceSelect = document.getElementById('voice-select');
+  if (!voiceSelect) return;
+  const voices = speechSynthesis.getVoices();
+  voiceSelect.innerHTML = '';
+  const enVoices = voices.filter(v => /en[-_]/i.test(v.lang));
+  const list = enVoices.length ? enVoices : voices;
+  list.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    opt.textContent = `${v.name} (${v.lang})`;
+    if (preferredVoice && preferredVoice === v.name) opt.selected = true;
+    voiceSelect.appendChild(opt);
+  });
+  if (!preferredVoice && list[0]) {
+    preferredVoice = list[0].name;
+  }
+}
+
+// Function to speak text
+function speak(line) {
+  if (!voiceEnabled) return;
+  if (!('speechSynthesis' in window)) return;
+  const utter = new SpeechSynthesisUtterance(line);
+  utter.rate = preferredRate || 1.0;
+  utter.pitch = 1.0;
+  utter.volume = 1.0;
+  const voices = speechSynthesis.getVoices();
+  const selected = voices.find(v => v.name === preferredVoice);
+  if (selected) utter.voice = selected;
+  else if (voices[0]) utter.voice = voices[0];
+  utter.onstart = () => { /* Optional: update status */ };
+  utter.onend = () => { /* Optional: update status */ };
+  speechSynthesis.speak(utter);
+}
+
+// Function to apply mode
+function applyMode(mode, src) {
+  const avatar = document.getElementById('avatar');
+  const portrait = document.getElementById('portrait');
+  if (mode === 'portrait') {
+    if (src && portrait) portrait.src = src;
+    if (avatar) avatar.style.display = 'none';
+    if (portrait) {
+      portrait.style.display = 'block';
+      portrait.setAttribute('aria-hidden', 'false');
+    }
+  } else {
+    if (portrait) portrait.style.display = 'none';
+    if (avatar) avatar.style.display = 'flex';
+  }
+  localStorage.setItem('ai_mode', mode);
+  if (src) localStorage.setItem('ai_mode_image', src);
+}
+
+// Function to toggle setting options
+function toggleSetting(id) {
+  const options = document.getElementById(id + '-options');
+  if (options) {
+    options.style.display = options.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// Wire up all buttons on DOM load
+document.addEventListener('DOMContentLoaded', () => {
+  const voiceToggle = document.getElementById('voice-toggle');
+  const modeApply = document.getElementById('mode-apply');
+  const voiceSelect = document.getElementById('voice-select');
+  const voiceRate = document.getElementById('voice-rate');
+  const modeSelect = document.getElementById('mode-select');
+  const modeImage = document.getElementById('mode-image');
+
+  // Voice toggle
+  if (voiceToggle) {
+    voiceToggle.textContent = voiceEnabled ? 'Unmute' : 'Muted';
+    voiceToggle.addEventListener('click', () => {
+      voiceEnabled = !voiceEnabled;
+      localStorage.setItem('ai_voice_enabled', JSON.stringify(voiceEnabled));
+      voiceToggle.textContent = voiceEnabled ? 'Unmute' : 'Muted';
+      if (!voiceEnabled) {
+        speechSynthesis.cancel();
+      }
+    });
+  }
+
+  // Mode apply
+  if (modeApply) {
+    modeApply.addEventListener('click', () => {
+      const mode = modeSelect ? modeSelect.value : 'visualizer';
+      const src = modeImage ? modeImage.value.trim() : '';
+      applyMode(mode, src);
+    });
+  }
+
+  // Voice select change
+  if (voiceSelect) {
+    voiceSelect.addEventListener('change', () => {
+      preferredVoice = voiceSelect.value;
+      localStorage.setItem('ai_voice_name', preferredVoice);
+    });
+  }
+
+  // Voice rate change
+  if (voiceRate) {
+    voiceRate.value = String(preferredRate);
+    voiceRate.addEventListener('input', () => {
+      preferredRate = parseFloat(voiceRate.value || '1.0');
+      localStorage.setItem('ai_voice_rate', String(preferredRate));
+    });
+  }
+
+  // Populate voices on load
+  if (speechSynthesis.getVoices().length === 0) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+  } else {
+    populateVoices();
+  }
+
+  // Restore saved mode
+  const savedMode = localStorage.getItem('ai_mode') || 'visualizer';
+  const savedSrc = localStorage.getItem('ai_mode_image') || '';
+  if (modeSelect) modeSelect.value = savedMode;
+  if (modeImage) modeImage.value = savedSrc;
+  applyMode(savedMode, savedSrc);
+
+  // Add hover effects (as before)
+  const buttons = document.querySelectorAll('.voice-toggle, #mode-apply, .setting-toggle');
+  buttons.forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      btn.style.transform = 'scale(1.05)';
+      btn.style.transition = 'transform 0.2s ease';
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = 'scale(1)';
+    });
+  });
+});
+
+// Original handleUserMessage
+function handleUserMessage(text) {
+  const t = (text || '').trim();
+  if (!t) return;
+  history.push({ role: 'me', text: t });
+  appendChat('me', t);
+  const response = generateReply(t);
+  history.push({ role: 'ai', text: response });
+  appendChat('ai', response);
+  speak(response);
+  chatInput.value = '';
+}
 
 

@@ -6,25 +6,318 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Companion</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     html,
     body {
       height: 100%;
-      margin: 0;
-      background: rgba(0, 0, 0, 0.18);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #ffffff;
+      overflow: hidden;
     }
 
-    .wrap {
+    .app-container {
+      display: grid;
+      grid-template-columns: 240px 420px 1fr;
+      grid-gap: 30px;
+      height: 100vh;
+      padding: 20px;
+      position: relative;
+    }
+
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1), transparent),
+        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1), transparent),
+        radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.05), transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Left Settings Panel */
+    .settings-panel {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .settings-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(45deg, rgba(120, 180, 255, 0.3), rgba(255, 120, 180, 0.3));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: exclude;
+      mask-composite: exclude;
+      z-index: -1;
+    }
+
+    .settings-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #64b5ff, #9c88ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .setting-group {
+      margin-bottom: 20px;
+    }
+
+    .setting-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .setting-select,
+    .setting-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      word-wrap: break-word;
+    }
+
+    .setting-select:focus,
+    .setting-input:focus {
+      outline: none;
+      border-color: #64b5ff;
+      box-shadow: 0 0 0 3px rgba(100, 181, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .setting-button {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .setting-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+
+    .setting-button:active {
+      transform: translateY(0);
+    }
+
+    .voice-toggle {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    .voice-toggle:hover {
+      box-shadow: 0 8px 25px rgba(17, 153, 142, 0.6);
+    }
+
+    /* Chat Panel */
+    .chat-panel {
       display: flex;
       flex-direction: column;
-      height: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
     }
 
-    .stage {
+    .chat-header {
+      padding: 20px 24px;
+      background: linear-gradient(135deg, rgba(100, 181, 255, 0.2), rgba(156, 136, 255, 0.2));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-title {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #64b5ff, #9c88ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .chat-messages {
       flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      min-height: 300px;
+      max-height: 400px;
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 16px;
+      animation: messageSlide 0.3s ease-out;
+    }
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.ai {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 80%;
+      padding: 12px 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      word-wrap: break-word;
+    }
+
+    .user .message-bubble {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .ai .message-bubble {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+      color: white;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-input-container {
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      color: white;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: #64b5ff;
+      box-shadow: 0 0 0 3px rgba(100, 181, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .chat-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .send-button {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 25px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .send-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+    }
+
+    .send-button:active {
+      transform: translateY(0);
+    }
+
+    /* Avatar Panel */
+    .avatar-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    .avatar-container {
+      width: 220px;
+      height: 220px;
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.0);
+      margin-bottom: 24px;
     }
 
     .avatar {
@@ -40,31 +333,8 @@
       border: 1px solid rgba(255, 255, 255, 0.14);
       position: relative;
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35), inset 0 0 28px rgba(255, 255, 255, 0.06);
-      contain: content;
     }
 
-    .avatar img {
-      width: 170px;
-      height: 170px;
-      object-fit: cover;
-      animation: breath 3s ease-in-out infinite;
-      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
-      display: none;
-    }
-
-    @keyframes breath {
-
-      0%,
-      100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.02);
-      }
-    }
-
-    /* Animated gradient ring */
     .avatar::before {
       content: '';
       position: absolute;
@@ -80,7 +350,6 @@
       opacity: 0.7;
     }
 
-    /* Soft inner glow that pulses when speaking */
     .avatar::after {
       content: '';
       position: absolute;
@@ -110,7 +379,6 @@
       }
     }
 
-    /* Canvas fills avatar */
     #viz {
       position: absolute;
       inset: 0;
@@ -118,7 +386,6 @@
       height: 100%;
     }
 
-    /* Orbiting particles */
     .orb {
       position: absolute;
       width: 10px;
@@ -157,65 +424,17 @@
       }
     }
 
-    .fallback {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #7f8cff, #58d5ff);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 72px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      animation: breath 3s ease-in-out infinite;
-    }
-
-    .log {
-      display: none;
-    }
-
-    .log .me {
-      color: #9fd3ff;
-    }
-
-    .log .ai {
-      color: #b2f0c2;
-    }
-
-    .tts {
-      padding: 6px;
+    .status-display {
       text-align: center;
-      color: #e6f2ff;
-      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      font-size: 12px;
-      opacity: 0.85;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
     }
 
-    /* Voice controls */
-    .voice-controls {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      align-items: center;
-      padding: 2px 8px;
-      color: #e6f2ff;
-      font-size: 11px;
-    }
-
-    .voice-controls select,
-    .voice-controls input[type="range"],
-    .voice-controls button {
-      background: rgba(255, 255, 255, 0.06);
-      color: #e6f2ff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      padding: 4px 6px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    /* Portrait mode (for custom tall images) */
     .portrait {
       width: 60%;
       height: 50%;
@@ -238,204 +457,134 @@
       filter: contrast(1.03) saturate(1.06);
     }
 
-    .portrait::after {
-      content: '';
-      position: absolute;
-      inset: -8% -4%;
-      pointer-events: none;
-      background: radial-gradient(40% 25% at 50% 0%, rgba(120, 180, 255, 0.25), rgba(120, 180, 255, 0));
-      animation: floatGlow 6s ease-in-out infinite;
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
     }
 
-    @keyframes floatGlow {
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
 
-      0%,
-      100% {
-        transform: translateY(0);
-        opacity: 0.55;
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #764ba2, #667eea);
+    }
+
+    /* Responsive design */
+    @media (max-width: 1200px) {
+      .app-container {
+        grid-template-columns: 200px 380px 1fr;
+        grid-gap: 20px;
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        overflow-y: auto;
       }
 
-      50% {
-        transform: translateY(-10px);
-        opacity: 0.95;
+      .avatar-container {
+        width: 180px;
+        height: 180px;
       }
-    }
 
-    /* Layout: avatar + conversation side by side */
-    .main-row {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      /* Fixed left column so avatar never drifts off */
-      align-items: center;
-      gap: 16px;
-      padding: 10px 18px;
-      /* extra horizontal padding so right side isn't flush */
-      width: 100%;
-      box-sizing: border-box;
-    }
-
-    .avatar-wrap {
-      width: 220px;
-      height: 220px;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      /* hard constraint */
-    }
-
-    .conversation {
-      width: 320px;
-      max-height: 380px;
-      overflow-y: auto;
-      padding: 10px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.03);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-right: 8px;
-      /* space from the window edge */
-    }
-
-    .chat-box {
-      margin: 4px 12px 6px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      background: rgba(0, 0, 0, 0.35);
-      overflow: hidden;
-    }
-
-    .chat-messages {
-      display: none;
-    }
-
-    .chat-input {
-      display: flex;
-      gap: 6px;
-      padding: 6px 8px;
-      background: rgba(0, 0, 0, 0.25);
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      background: rgba(255, 255, 255, 0.06);
-      color: #fff;
-      font-size: 12px;
-    }
-
-    .chat-input button {
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(0, 153, 255, 0.35);
-      background: linear-gradient(145deg, rgba(0, 153, 255, 0.20), rgba(0, 153, 255, 0.06));
-      color: #9fd3ff;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .msg {
-      display: flex;
-    }
-
-    .msg.you {
-      justify-content: flex-end;
-    }
-
-    .msg.ai {
-      justify-content: flex-start;
-    }
-
-    .bubble {
-      max-width: 78%;
-      padding: 8px 10px;
-      border-radius: 14px;
-      font-size: 12.5px;
-      line-height: 1.35;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-
-    .you .bubble {
-      background: linear-gradient(145deg, rgba(0, 153, 255, 0.25), rgba(0, 153, 255, 0.12));
-      border: 1px solid rgba(0, 153, 255, 0.35);
-      color: #e8f6ff;
-      border-top-right-radius: 4px;
-    }
-
-    .ai .bubble {
-      background: linear-gradient(145deg, rgba(0, 255, 170, 0.20), rgba(0, 255, 170, 0.10));
-      border: 1px solid rgba(0, 255, 170, 0.30);
-      color: #eafff5;
-      border-top-left-radius: 4px;
-    }
-
-    .meta {
-      display: block;
-      margin-top: 4px;
-      font-size: 10px;
-      opacity: 0.6;
+      .avatar {
+        width: 160px;
+        height: 160px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="stage">
-      <div class="main-row">
-        <div class="avatar-wrap">
-          <div class="avatar" id="avatar">
-            <canvas id="viz"></canvas>
-            <div class="orb"></div>
-            <div class="orb o2"></div>
-            <div class="orb o3"></div>
-            <img id="avatar-img" src="../assets/images/cubeCentral.png" alt="Avatar" />
-            <div id="avatar-fallback" class="fallback">🙂</div>
-          </div>
-        </div>
-        <div class="portrait" id="portrait" aria-hidden="true">
-          <img id="portrait-img" alt="Portrait" />
-        </div>
-        <div id="conversation" class="conversation"></div>
+  <div class="app-container">
+    <!-- Settings Panel -->
+    <div class="settings-panel">
+      <h2 class="settings-title">Settings</h2>
+
+      <div class="setting-group">
+        <label class="setting-label" for="mode-select">Style Mode</label>
+        <select id="mode-select" class="setting-select">
+          <option value="visualizer">Visualizer</option>
+          <option value="portrait">Portrait</option>
+        </select>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label" for="mode-image">Image URL (Portrait)</label>
+        <input id="mode-image" type="text" class="setting-input" placeholder="Enter image URL...">
+      </div>
+
+      <div class="setting-group">
+        <button id="mode-apply" class="setting-button">Apply Style</button>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label" for="voice-select">Voice</label>
+        <select id="voice-select" class="setting-select"></select>
+      </div>
+
+      <div class="setting-group">
+        <label class="setting-label" for="voice-rate">Speech Rate</label>
+        <input id="voice-rate" type="range" class="setting-input" min="0.6" max="1.4" step="0.05" value="1.0">
+      </div>
+
+      <div class="setting-group">
+        <button id="voice-toggle" class="setting-button voice-toggle">Unmute</button>
       </div>
     </div>
-    <div class="log" id="log" aria-hidden="true"></div>
-    <div class="voice-controls">
-      <label for="mode-select" style="opacity:0.85">Style</label>
-      <select id="mode-select">
-        <option value="visualizer">No.1 Visualizer</option>
-        <option value="portrait">No.2 Portrait</option>
-      </select>
-      <input id="mode-image" type="text" placeholder="Image URL (for Portrait)" style="min-width:180px" />
-      <button id="mode-apply" title="Apply Style">Apply</button>
-      <span style="opacity:.35">|</span>
-      <button id="voice-toggle" title="Mute/Unmute">Unmute</button>
-      <label for="voice-select" style="opacity:0.85">Voice</label>
-      <select id="voice-select"></select>
-      <label for="voice-rate" style="opacity:0.85">Rate</label>
-      <input id="voice-rate" type="range" min="0.6" max="1.4" step="0.05" value="1.0" />
-    </div>
-    <div class="chat-box">
-      <div id="chat-messages" class="chat-messages"></div>
-      <div class="chat-input">
-        <input id="chat-input" type="text" placeholder="Type a message..." />
-        <button id="chat-send">Send</button>
+
+    <!-- Chat Panel -->
+    <div class="chat-panel">
+      <div class="chat-header">
+        <h3 class="chat-title">AI Companion</h3>
+      </div>
+
+      <div id="conversation" class="chat-messages">
+        <!-- Messages will be added here dynamically -->
+      </div>
+
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <input id="chat-input" type="text" class="chat-input" placeholder="Type your message...">
+          <button id="send-btn" class="send-button">Send</button>
+        </div>
       </div>
     </div>
-    <div class="tts" id="status">Ready</div>
+
+    <!-- Avatar Panel -->
+    <div class="avatar-panel">
+      <div class="avatar-container">
+        <div class="avatar" id="avatar">
+          <canvas id="viz"></canvas>
+          <div class="orb"></div>
+          <div class="orb o2"></div>
+          <div class="orb o3"></div>
+        </div>
+        <div class="portrait" id="portrait">
+          <img id="portrait-img" alt="Portrait">
+        </div>
+      </div>
+
+      <div id="status" class="status-display">Ready</div>
+    </div>
   </div>
+
   <script>
     (function () {
       const { ipcRenderer } = require('electron');
-      const params = new URLSearchParams(location.search);
-      const text = params.get('q') || 'Hello, how can I help?';
+
+      // Get DOM elements
       const status = document.getElementById('status');
-      const fb = document.getElementById('avatar-fallback');
       const canvas = document.getElementById('viz');
       const ctx = canvas.getContext('2d');
       const portrait = document.getElementById('portrait');
@@ -443,6 +592,14 @@
       const modeSelect = document.getElementById('mode-select');
       const modeImage = document.getElementById('mode-image');
       const modeApply = document.getElementById('mode-apply');
+      const conversation = document.getElementById('conversation');
+      const chatInput = document.getElementById('chat-input');
+      const sendBtn = document.getElementById('send-btn');
+      const voiceToggleBtn = document.getElementById('voice-toggle');
+      const voiceSelect = document.getElementById('voice-select');
+      const voiceRate = document.getElementById('voice-rate');
+
+      // Canvas setup
       function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
         const rect = canvas.getBoundingClientRect();
@@ -450,23 +607,24 @@
         canvas.height = Math.round(rect.height * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
+
       resizeCanvas();
       window.addEventListener('resize', resizeCanvas);
 
+      // Visualization variables
       let speakLevel = 0.25;
       let targetLevel = 0.25;
       let t = 0;
       const bars = 48;
 
+      // Animation loop
       function draw() {
         const w = canvas.clientWidth;
         const h = canvas.clientHeight;
         ctx.clearRect(0, 0, w, h);
 
-        // Smooth level transition
         speakLevel += (targetLevel - speakLevel) * 0.08;
 
-        // Center and base radius
         const cx = w / 2;
         const cy = h / 2;
         const baseR = Math.min(w, h) * 0.30;
@@ -481,10 +639,10 @@
         ctx.arc(cx, cy, maxR, 0, Math.PI * 2);
         ctx.fill();
 
-        // Radial equalizer bars
+        // Radial bars
         for (let i = 0; i < bars; i++) {
           const a = (i / bars) * Math.PI * 2;
-          const n = Math.sin(t * 0.03 + i * 0.45) * 0.5 + 0.5; // 0..1
+          const n = Math.sin(t * 0.03 + i * 0.45) * 0.5 + 0.5;
           const amp = 0.15 + speakLevel * 0.85;
           const r = baseR + n * (maxR - baseR) * amp;
           const x0 = cx + Math.cos(a) * baseR;
@@ -513,14 +671,14 @@
         t += 1;
         requestAnimationFrame(draw);
       }
+
       requestAnimationFrame(draw);
-      // Voice controls state and helpers
-      const voiceToggleBtn = document.getElementById('voice-toggle');
-      const voiceSelect = document.getElementById('voice-select');
-      const voiceRate = document.getElementById('voice-rate');
+
+      // Voice functionality
       let voiceEnabled = JSON.parse(localStorage.getItem('ai_voice_enabled') || 'true');
       let preferredVoice = localStorage.getItem('ai_voice_name') || '';
       let preferredRate = parseFloat(localStorage.getItem('ai_voice_rate') || '1.0');
+
       if (!isFinite(preferredRate)) preferredRate = 1.0;
       voiceRate.value = String(preferredRate);
       voiceToggleBtn.textContent = voiceEnabled ? 'Unmute' : 'Muted';
@@ -530,6 +688,7 @@
         voiceSelect.innerHTML = '';
         const enVoices = voices.filter(v => /en[-_]/i.test(v.lang));
         const list = enVoices.length ? enVoices : voices;
+
         list.forEach(v => {
           const opt = document.createElement('option');
           opt.value = v.name;
@@ -537,16 +696,19 @@
           if (preferredVoice && preferredVoice === v.name) opt.selected = true;
           voiceSelect.appendChild(opt);
         });
+
         if (!preferredVoice && list[0]) {
           preferredVoice = list[0].name;
         }
       }
+
       if (speechSynthesis.getVoices().length === 0) {
         speechSynthesis.onvoiceschanged = populateVoices;
       } else {
         populateVoices();
       }
 
+      // Voice controls
       voiceToggleBtn.addEventListener('click', () => {
         voiceEnabled = !voiceEnabled;
         localStorage.setItem('ai_voice_enabled', JSON.stringify(voiceEnabled));
@@ -557,114 +719,114 @@
           status.textContent = 'Voice off';
         }
       });
+
       voiceSelect.addEventListener('change', () => {
         preferredVoice = voiceSelect.value;
         localStorage.setItem('ai_voice_name', preferredVoice);
       });
+
       voiceRate.addEventListener('input', () => {
         preferredRate = parseFloat(voiceRate.value || '1.0');
         localStorage.setItem('ai_voice_rate', String(preferredRate));
       });
 
       function speak(line) {
-        if (!voiceEnabled) { status.textContent = 'Voice off'; return; }
-        if (!('speechSynthesis' in window)) { status.textContent = 'Speech not available'; return; }
+        if (!voiceEnabled) {
+          status.textContent = 'Voice off';
+          return;
+        }
+        if (!('speechSynthesis' in window)) {
+          status.textContent = 'Speech not available';
+          return;
+        }
+
         const utter = new SpeechSynthesisUtterance(line);
         utter.rate = preferredRate || 1.0;
         utter.pitch = 1.0;
         utter.volume = 1.0;
+
         const voices = speechSynthesis.getVoices();
         const selected = voices.find(v => v.name === preferredVoice);
-        if (selected) utter.voice = selected; else if (voices[0]) utter.voice = voices[0];
-        utter.onstart = () => { status.textContent = `Speaking… (${utter.voice ? utter.voice.name : 'default'})`; targetLevel = 1.0; };
-        utter.onend = () => { status.textContent = 'Done'; targetLevel = 0.25; };
+        if (selected) utter.voice = selected;
+        else if (voices[0]) utter.voice = voices[0];
+
+        utter.onstart = () => {
+          status.textContent = `Speaking... (${utter.voice ? utter.voice.name : 'default'})`;
+          targetLevel = 1.0;
+        };
+        utter.onend = () => {
+          status.textContent = 'Ready';
+          targetLevel = 0.25;
+        };
+
         try { speechSynthesis.cancel(); } catch (_) { }
         speechSynthesis.speak(utter);
       }
+
+      // AI Response function
       function generateReply(userText) {
         const u = (userText || '').toLowerCase().trim();
         if (!u) return 'How can I help?';
-        // Simple intent rules
-        if (/^(hi|hello|hey)\b/.test(u)) return "Hi! What would you like to do?";
-        if (/your name|who are you/.test(u)) return "I'm your companion here to help with panels and controls.";
-        if (/what (can|do) (you|u) do/.test(u)) return "I can open panels, switch styles, and answer quick questions.";
-        if (/open|show|launch/.test(u) && /lara|portrait|image/.test(u)) return "Switching to Portrait mode. Paste an image URL and press Apply.";
-        if (/mute|unmute|voice/.test(u)) return "Use the Voice controls below to toggle or change the voice.";
-        if (/help|how/.test(u)) return "Try: ‘open portrait’, ‘mute voice’, or ask any question.";
-        // Reflective fallback
-        return `You said: “${userText}”. I’m here if you want me to take an action.`;
+
+        if (/^(hi|hello|hey)\b/.test(u)) return "Hello! What would you like to do today?";
+        if (/your name|who are you/.test(u)) return "I'm your AI companion, here to help with various tasks.";
+        if (/what (can|do) (you|u) do/.test(u)) return "I can chat with you, control my appearance modes, and provide assistance.";
+        if (/mute|unmute|voice/.test(u)) return "You can control my voice using the settings panel.";
+        if (/help|how/.test(u)) return "Try asking me questions or use the settings to customize my appearance!";
+
+        return `You said: "${userText}". I'm here to help with whatever you need!`;
       }
-      const logEl = document.getElementById('log');
+
+      // Chat functionality
       const history = [];
-      const chatMessages = document.getElementById('chat-messages');
-      const conversation = document.getElementById('conversation');
-      const chatInput = document.getElementById('chat-input');
-      const chatSend = document.getElementById('chat-send');
 
-      function renderLog() { /* disabled duplicate log area */ }
+      function appendMessage(role, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${role}`;
 
-      function appendChat(role, text) {
-        const row = document.createElement('div');
-        row.className = `msg ${role === 'me' ? 'you' : 'ai'}`;
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.textContent = text;
-        row.appendChild(bubble);
-        if (conversation) {
-          conversation.appendChild(row);
-          conversation.scrollTop = conversation.scrollHeight;
-          setTimeout(() => { row.classList.add('fade-out'); setTimeout(() => row.remove(), 1000); }, 20000);
-        }
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.textContent = text;
+
+        messageDiv.appendChild(bubbleDiv);
+        conversation.appendChild(messageDiv);
+        conversation.scrollTop = conversation.scrollHeight;
+
+        // Auto-remove messages after 30 seconds
+        setTimeout(() => {
+          if (messageDiv.parentNode) {
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => messageDiv.remove(), 300);
+          }
+        }, 30000);
       }
 
       function handleUserMessage(text) {
         const t = (text || '').trim();
         if (!t) return;
-        history.push({ role: 'me', text: t });
-        appendChat('me', t);
+
+        history.push({ role: 'user', text: t });
+        appendMessage('user', t);
+
         const response = generateReply(t);
         history.push({ role: 'ai', text: response });
-        appendChat('ai', response);
+        appendMessage('ai', response);
         speak(response);
-        if (chatInput) { chatInput.value = ''; }
+
+        chatInput.value = '';
       }
 
-      if (chatSend) chatSend.addEventListener('click', () => handleUserMessage(chatInput.value));
-      if (chatInput) chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); handleUserMessage(chatInput.value); } });
-
-      const reply = generateReply('hello');
-      history.push({ role: 'ai', text: reply });
-      speak(reply);
-
-      // Listen for messages from the main window to continue conversation
-      ipcRenderer.on('ai-companion-message', (_evt, userText) => {
-        const u = (userText || '').trim();
-        if (u) { history.push({ role: 'me', text: u }); appendChat('me', u); }
-        const response = generateReply(u);
-        history.push({ role: 'ai', text: response });
-        appendChat('ai', response);
-        speak(response);
-      });
-
-      // Image mode: switch to portrait view and resize visuals
-      ipcRenderer.on('ai-set-image', (_evt, payload) => {
-        try {
-          const { src } = payload || {};
-          if (!src) return;
-          portraitImg.src = src;
-          document.getElementById('avatar').style.display = 'none';
-          portrait.style.display = 'block';
-          portrait.setAttribute('aria-hidden', 'false');
-          localStorage.setItem('ai_mode', 'portrait');
-          localStorage.setItem('ai_mode_image', src);
-          if (modeSelect) modeSelect.value = 'portrait';
-          if (modeImage) modeImage.value = src;
-        } catch (e) {
-          console.error('ai-set-image error:', e);
+      // Event listeners
+      sendBtn.addEventListener('click', () => handleUserMessage(chatInput.value));
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleUserMessage(chatInput.value);
         }
       });
 
-      // Mode switching logic
+      // Mode switching
       function applyMode(mode, src) {
         if (mode === 'portrait') {
           if (src) portraitImg.src = src;
@@ -703,6 +865,38 @@
         if (src && modeImage) modeImage.value = src;
         applyMode(mode, src);
       });
+
+      function toggleSetting(id) {
+        const options = document.getElementById(id + '-options');
+        options.style.display = options.style.display === 'none' ? 'block' : 'none';
+      }
+
+      // Add hover animations and voice toggle
+      function enhanceButtons() {
+        const buttons = document.querySelectorAll('.btn'); // Assuming your buttons have class 'btn'
+        buttons.forEach(btn => {
+          btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'scale(1.05)'; // Slight scale on hover
+            btn.style.transition = 'transform 0.2s ease';
+          });
+          btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'scale(1)'; // Reset
+          });
+        });
+
+        // Voice toggle button (add to HTML if missing)
+        const voiceToggle = document.getElementById('voice-toggle');
+        if (voiceToggle) {
+          voiceToggle.addEventListener('click', () => {
+            // Toggle voice input/output (integrate with your TTS server)
+            const isEnabled = voiceToggle.classList.toggle('enabled');
+            // Add logic to enable/disable voice features
+          });
+        }
+      }
+
+      // Call on page load
+      document.addEventListener('DOMContentLoaded', enhanceButtons);
     })();
   </script>
 </body>

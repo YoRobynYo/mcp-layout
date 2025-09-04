@@ -7,7 +7,15 @@ sass css/style.scss css/style.css
 this will link the style.scss with the css for the scss to run 
 
     in the terminal run :: 
-cd mcp-layout / npx sass src/modules/style.scss css/style.css --watch
+cd mcp-layout 
+then run 
+npx sass src/modules/style.scss css/style.css --watch
+
+then in a new terminal 
+npm start ~ this will start the electron browser
+
+
+
 
     to setup package.json 
 in a new terminal :: npm init -y

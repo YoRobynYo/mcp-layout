@@ -18,7 +18,9 @@
   "homepage": "https://github.com/YoRobynYo/Dashboard#readme",
   "description": "",
   "dependencies": {
+    "debug": "^4.4.1",
     "electron-store": "^10.1.0",
-    "systeminformation": "^5.27.7"
+    "systeminformation": "^5.27.7",
+    "youtube-dl-exec": "^3.0.25"
   }
 }

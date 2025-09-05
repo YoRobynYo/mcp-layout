@@ -14,6 +14,7 @@ if (process.contextIsolated) {
     openAICompanion: (text) => ipcRenderer.invoke('open-ai-companion', text),
     aiSend: (text) => ipcRenderer.invoke('ai-companion-send', text),
     openAICompanionImage: (payload) => ipcRenderer.invoke('open-ai-companion-image', payload),
+    downloadYouTubeVideo: (url, outputPath) => ipcRenderer.invoke('download-youtube-video', url, outputPath),
   });
 } else {
   // For windows with contextIsolation: false (like the System Monitor window)
@@ -28,5 +29,6 @@ if (process.contextIsolated) {
     openAICompanion: (text) => ipcRenderer.invoke('open-ai-companion', text),
     aiSend: (text) => ipcRenderer.invoke('ai-companion-send', text),
     openAICompanionImage: (payload) => ipcRenderer.invoke('open-ai-companion-image', payload),
+    downloadYouTubeVideo: (url, outputPath) => ipcRenderer.invoke('download-youtube-video', url, outputPath),
   };
 }

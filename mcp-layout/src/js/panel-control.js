@@ -119,4 +119,28 @@ document.addEventListener('DOMContentLoaded', () => {
   updateButtonHighlights(rotationStates[currentPanelId].selectedFace);
 });
 
+// YouTube Downloader functionality
+const youtubeUrlInput = document.getElementById("youtube-url");
+const downloadButton = document.getElementById("download-button");
+const downloadStatus = document.getElementById("download-status");
+
+if (downloadButton) {
+  downloadButton.addEventListener("click", async () => {
+    const url = youtubeUrlInput.value;
+    if (!url) {
+      downloadStatus.textContent = "Please enter a YouTube URL.";
+      return;
+    }
+
+    downloadStatus.textContent = "Downloading...";
+    const result = await window.electronAPI.downloadYouTubeVideo(url, "."); // Download to current directory
+
+    if (result.success) {
+      downloadStatus.textContent = "Download complete!";
+    } else {
+      downloadStatus.textContent = `Download failed: ${result.message}`;
+    }
+  });
+}
+
 

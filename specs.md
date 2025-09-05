@@ -14,7 +14,10 @@ npx sass src/modules/style.scss css/style.css --watch
 then in a new terminal 
 npm start ~ this will start the electron browser
 
+a hard reset to the last saved point in Github 
+git reset --hard origin/feature/youtube-container
 
+last save made 4th sept 
 
 
     to setup package.json 
@@ -1176,5 +1179,9 @@ new PanelManager();
 
 WE NOW HAVE A BLOCK SETUP for each of the cubes 
 the cubes 1 & 2 themselves so far I have like a front panel and on mouseover that will eventually show the main centre face which so far will be youtube ... we haven't built that yet, but I am now looking at not just the single face, I am now looking at each of the (as an example) there is four faces on the front of say cube-1 so instead of just one face , we can now incorporate the other faces too, so cube-1 has FRONT face A, B,C, D then on the BACK again A, B, C, D, and the same for LEFT A, B, C, D, then RIGHT A, B, C, D, and the same for cube-2
+
+
+##### setting up the third face #####
+ok plse wait I will get the link ... https://github.com/YoRobynYo/mcp-layout ... so here's the thing, I have a 3d cube when you click the one of the 4 faces (on the front) first you get a container open then you get the build, on this occassion we couldn't do that for youtube, but an ai managed to get youtube to open within the electron browser so I canhave music while I work, after youtube, the second face gives you system status, this shows basic info about the mac (will be improved later on) now we are on the third face on the front of the 3d cube, here we want a youtube downloader (so I can download whale noises for when I sleep because I have trouble sleeping) and just youtube gives out ads that wake me up during the night. so my question is , can you help with this ...
 
 

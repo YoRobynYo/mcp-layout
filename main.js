@@ -446,6 +446,11 @@ async function getCpuUsage() {
   });
 }
 
+ipcMain.handle("download-youtube-video", async (event, url, outputPath) => {
+  const { downloadYouTubeVideo } = require("./src/js/youtubeDownloader");
+  return await downloadYouTubeVideo(url, outputPath);
+});
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 1200,

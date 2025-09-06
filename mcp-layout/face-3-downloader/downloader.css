@@ -1,0 +1,57 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  margin: 0;
+}
+
+header {
+  background: #ff0000;
+  color: white;
+  padding: 10px 20px;
+  font-size: 24px;
+}
+
+.container {
+  padding: 20px;
+}
+
+input[type=text] {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #cc0000;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.progress {
+  margin-top: 10px;
+  height: 20px;
+  background: #ddd;
+  width: 80%;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #ff0000;
+  transition: width 0.2s;
+}
+
+video {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 720px;
+  display: none;
+}
+
+/*# sourceMappingURL=downloader.css.map */

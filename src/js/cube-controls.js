@@ -26,12 +26,12 @@ function generateAppContent(cubeId, faceName, label, value) {
   }
 
   const themes = {
-    'cube-tl': { title: 'System Core', color: '#9f8045' },
-    'cube-tr': { title: 'Network Hub', color: '#4682b4' },
-    'cube-bl': { title: 'Security Matrix', color: '#dc143c' }
+    'cube-tl': { title: 'System Core', color: '#64b4ff' },
+    'cube-tr': { title: 'Network Hub', color: '#64b4ff' },
+    'cube-bl': { title: 'Security Matrix', color: '#64b4ff' }
   };
 
-  const theme = themes[cubeId] || { title: 'Module', color: '#9f8045' };
+  const theme = themes[cubeId] || { title: 'Module', color: '#64b4ff' };
 
   centerPanel.innerHTML = `
     <div class="active-app-container" style="border-top: 4px solid ${theme.color}">
@@ -90,13 +90,13 @@ function renderYoutubePlayer() {
 function renderSystemsControl() {
   const centerPanel = document.getElementById('center-panel');
   centerPanel.innerHTML = `
-    <div class="active-app-container" style="border-top: 4px solid #00ff00">
+    <div class="active-app-container" style="border-top: 4px solid #64b4ff">
       <div class="app-header">
         <span class="app-title">Systems Control</span>
         <button class="close-app-btn" onclick="resetCenterStage()">CLOSE</button>
       </div>
       <div class="app-body" style="padding: 20px; flex-direction: column; overflow-y: auto;">
-        <h3 style="color: #9f8045; margin-bottom: 20px;">SYSTEM PERFORMANCE</h3>
+        <h3 style="color: #64b4ff; margin-bottom: 20px;">SYSTEM PERFORMANCE</h3>
         <div class="detail-grid">
           <div class="detail-card"><div class="detail-label">CPU USAGE</div><div class="detail-value">14%</div></div>
           <div class="detail-card"><div class="detail-label">RAM FREE</div><div class="detail-value">12.4 GB</div></div>

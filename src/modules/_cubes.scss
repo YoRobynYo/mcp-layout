@@ -6,6 +6,14 @@
   height: 100vh;
   overflow: hidden;
   background: #050505;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(60, 110, 160, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(60, 110, 160, 0.05) 0%, transparent 40%);
+  pointer-events: none;
+
+  & > * {
+    pointer-events: auto;
+  }
 }
 
 .center-stage {
@@ -15,13 +23,16 @@
   transform: translate(-50%, -50%);
   width: 600px;
   height: 400px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid vars.$border-color-center;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 5;
   pointer-events: none;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
 }
 
 .cube-container {
@@ -31,9 +42,9 @@
   position: absolute;
   z-index: 10;
 
-  &.tl { top: 20px; left: 20px; }
-  &.tr { top: 20px; right: 20px; }
-  &.bl { bottom: 20px; left: 20px; }
+  &.tl { top: 40px; left: 40px; }
+  &.tr { top: 40px; right: 40px; }
+  &.bl { bottom: 40px; left: 40px; }
 }
 
 .cube {
@@ -48,91 +59,115 @@
   position: absolute;
   width: 200px;
   height: 200px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(100, 180, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow: hidden;
   backface-visibility: hidden;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
+  background: vars.$color-front;
   cursor: pointer;
   transition: all 0.3s ease;
   pointer-events: auto;
   transform-style: preserve-3d;
 
-  .face-content {
+  .face-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    width: 100%;
+    height: 100%;
+    transform: translateZ(1px); // Prevent flickering
+  }
+
+  .grid-cell {
+    border: 1px solid rgba(100, 180, 255, 0.15);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    pointer-events: auto;
-    transform: translateZ(10px); // Pop content out slightly
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+    background: rgba(0, 0, 0, 0.05);
+    transition: background 0.3s;
+
+    &:hover {
+      background: rgba(100, 180, 255, 0.1);
+    }
   }
 
   .face-label {
-    font-size: 14px;
-    color: #9f8045;
+    font-size: 11px;
+    color: vars.$border-color-light;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
   }
 
   .face-value {
-    font-size: 24px;
+    font-size: 18px;
     color: #fff;
-    text-shadow: 0 0 10px rgba(159, 128, 69, 0.5);
+    font-weight: 300;
+    text-shadow: 0 0 10px vars.$border-color-glow;
   }
 
   .face-btn {
-    padding: 5px 15px;
-    background: rgba(159, 128, 69, 0.2);
-    border: 1px solid #9f8045;
+    padding: 4px 10px;
+    background: rgba(100, 180, 255, 0.1);
+    border: 1px solid vars.$border-color-main;
     color: #fff;
-    border-radius: 4px;
+    border-radius: 2px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 9px;
+    letter-spacing: 1px;
     pointer-events: auto;
+    transition: all 0.2s;
 
     &:hover {
-      background: rgba(159, 128, 69, 0.4);
+      background: vars.$border-color-main;
+      box-shadow: 0 0 10px vars.$border-color-glow;
     }
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    border-color: vars.$border-color-main;
+    box-shadow: inset 0 0 20px rgba(100, 180, 255, 0.2);
   }
 
   &.active {
-    background: rgba(0, 123, 255, 0.3);
-    border-color: #007bff;
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+    background: rgba(40, 90, 140, 0.95);
+    border-color: vars.$border-color-light;
+    box-shadow: 0 0 20px vars.$border-color-glow;
+
+    .grid-cell {
+        border-color: rgba(100, 180, 255, 0.3);
+    }
   }
 }
 
-.front  { transform: rotateY(  0deg) translateZ(100px); background: vars.$color-front; }
-.back   { transform: rotateY(180deg) translateZ(100px); background: vars.$color-back; }
-.right  { transform: rotateY( 90deg) translateZ(100px); background: vars.$color-right; }
-.left   { transform: rotateY(-90deg) translateZ(100px); background: vars.$color-left; }
-.top    { transform: rotateX( 90deg) translateZ(100px); background: vars.$color-top; }
-.bottom { transform: rotateX(-90deg) translateZ(100px); background: vars.$color-bottom; }
+.front  { transform: rotateY(  0deg) translateZ(100px); }
+.back   { transform: rotateY(180deg) translateZ(100px); }
+.right  { transform: rotateY( 90deg) translateZ(100px); }
+.left   { transform: rotateY(-90deg) translateZ(100px); }
+.top    { transform: rotateX( 90deg) translateZ(100px); }
+.bottom { transform: rotateX(-90deg) translateZ(100px); }
 
 .controls {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(10, 20, 30, 0.85);
   padding: 15px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  border: 1px solid vars.$border-color-main;
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
   z-index: 100;
   backdrop-filter: blur(10px);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
 }
 
 .cube-selection, .rotation-controls {
@@ -141,14 +176,24 @@
 }
 
 button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(100, 180, 255, 0.05);
+  border: 1px solid rgba(100, 180, 255, 0.2);
   color: white;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  font-size: 11px;
 
-  &:hover { background: rgba(255, 255, 255, 0.2); }
-  &.active { background: #007bff; border-color: #007bff; }
+  &:hover {
+    background: rgba(100, 180, 255, 0.15);
+    border-color: vars.$border-color-main;
+  }
+
+  &.active {
+    background: vars.$border-color-main;
+    border-color: vars.$border-color-light;
+    color: #fff;
+    box-shadow: 0 0 10px vars.$border-color-glow;
+  }
 }

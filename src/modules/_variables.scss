@@ -1,18 +1,18 @@
 // src/modules/_variables.scss
 // Cube face colors
-$color-front: rgba(70, 130, 180, 0.9); // Steel blue
-$color-back: rgba(220, 20, 60, 0.9); // Crimson red
-$color-right: rgba(50, 205, 50, 0.9); // Lime green
-$color-left: rgba(255, 140, 0, 0.9); // Dark orange
-$color-top: rgba(147, 112, 219, 0.9); // Medium purple
-$color-bottom: rgba(255, 215, 0, 0.9); // Gold
+$color-front: rgba(60, 110, 160, 0.95); // Steel blue
+$color-back: rgba(60, 110, 160, 0.95);
+$color-right: rgba(60, 110, 160, 0.95);
+$color-left: rgba(60, 110, 160, 0.95);
+$color-top: rgba(60, 110, 160, 0.95);
+$color-bottom: rgba(60, 110, 160, 0.95);
 
-// Border colors
-$border-color-main: #9f8045;
-$border-color-light: #bfa368;
-$border-color-dark: #6e5b32;
-$border-color-glow: #ffc34d;
-$border-color-center: #9f8045; // Center cube border (brass/golden-brown)
+// Border colors (replacing Gold with Steel Blue/Cyan palette)
+$border-color-main: rgba(100, 180, 255, 0.8);
+$border-color-light: rgba(140, 210, 255, 1);
+$border-color-dark: rgba(40, 80, 120, 1);
+$border-color-glow: rgba(100, 200, 255, 0.6);
+$border-color-center: rgba(80, 150, 220, 0.5);
 
 // Default panel size
 $panel-default-width: 100px;
@@ -32,10 +32,10 @@ $screen2-height: 100px;
 $screen3-width: 100px;
 $screen3-height: 100px;
 
-$screen4-width: 100px; // e.g. AI assistant panel
+$screen4-width: 100px;
 $screen4-height: 100px;
 
-$screen4a-width: 100px; // e.g. navigation buttons panel
+$screen4a-width: 100px;
 $screen4a-height: 100px;
 
 $screen5-width: 200px;

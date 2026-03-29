@@ -1,4 +1,6 @@
-/* Panel base styles */
+@use 'variables' as vars;
+
+// Base panel style
 .panel {
   position: absolute;
   cursor: grab;
@@ -6,82 +8,195 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 220px;
-  min-height: 120px;
-
-  background: rgba(255, 255, 255, 0.08); // translucent white for see-through
-  border: 1.5px solid #9f8045; // gold border
-  border-radius: 12px;
+  width: vars.$panel-default-width;
+  height: vars.$panel-default-height;
+  background: transparent;
+  border: 1.5px solid vars.$border-color-main;
+  border-radius: 14px;
   padding: 15px;
-  color: #fff;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   user-select: none;
-
-  /* blur behind */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
   transition: box-shadow 0.2s ease;
+  z-index: 1;
 }
 
-.panel.dragging {
-  cursor: grabbing;
-  z-index: 999;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* Center panel - larger and scaled */
+// panels
 #center-panel {
-  top: 200px;
-  left: 400px;
-  min-width: 320px;
-  min-height: 320px;
-  border: 2px solid #9f8045;
-  box-shadow: 0 0 30px rgba(159, 128, 69, 0.8);
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
+  width: vars.$center-panel-width;
+  height: vars.$center-panel-height;
+  perspective: 1000px;
+  perspective-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
 }
 
-#center-panel:hover {
-  transform: scale(1.15);
-}
-
-/* Individual panel positions */
-#screen-1 {
-  top: 40px;
-  left: 40px;
-}
-
-#screen-2 {
-  top: 400px;
-  left: 40px;
-}
-
-#screen-3 {
-  top: 40px;
-  left: 800px;
-}
-
-#screen-4 {
-  top: 400px;
-  left: 800px;
-}
-
-#screen-4a {
-  top: 600px;
-  left: 800px;
-}
-
-#screen-5 {
-  top: 600px;
-  left: 400px;
-}
-
-/* Dashboard container */
-.dashboard-layout {
-  position: relative;
+// Active App Container Styles
+.active-app-container {
   width: 100%;
-  height: 100vh;
-  padding: 2rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 10, 10, 0.9);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
 }
+
+.app-header {
+  height: 60px;
+  padding: 0 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-title {
+  color: vars.$border-color-light;
+  font-size: 12px;
+  letter-spacing: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.close-app-btn {
+  background: rgba(220, 20, 60, 0.1);
+  border: 1px solid rgba(220, 20, 60, 0.3);
+  color: #dc143c;
+  font-size: 9px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  font-weight: bold;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #dc143c;
+    color: #fff;
+  }
+}
+
+.app-body {
+  flex: 1;
+  display: flex;
+}
+
+.app-sidebar {
+  width: 140px;
+  background: rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.sidebar-item {
+  padding: 12px 20px;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  &:hover {
+    color: #aaa;
+  }
+
+  &.active {
+    color: vars.$border-color-light;
+    background: rgba(100, 180, 255, 0.05);
+    border-left: 3px solid vars.$border-color-main;
+  }
+}
+
+.app-main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detail-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 12px;
+  transition: all 0.3s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(100, 180, 255, 0.2);
+  }
+
+  &.full-width {
+    grid-column: span 2;
+  }
+}
+
+.detail-label {
+  font-size: 9px;
+  color: #555;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.detail-value {
+  font-size: 24px;
+  font-weight: 100;
+  letter-spacing: 1px;
+}
+
+.log-output {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+  color: #4db8ff;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 15px;
+  border-radius: 8px;
+  height: 120px;
+  overflow-y: auto;
+  line-height: 1.6;
+  border: 1px solid rgba(77, 184, 255, 0.1);
+}
+
+.welcome-msg {
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+
+  h2 {
+    font-weight: 100;
+    letter-spacing: 8px;
+    color: vars.$border-color-light;
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-weight: 300;
+    color: #777;
+    letter-spacing: 2px;
+  }
+}
+
+#screen-1 { width: vars.$screen1-width; height: vars.$screen1-height; }
+#screen-2 { width: vars.$screen2-width; height: vars.$screen2-height; }
+#screen-3 { width: vars.$screen3-width; height: vars.$screen3-height; }
+#screen-4 { width: vars.$screen4-width; height: vars.$screen4-height; }
+#screen-4a { width: vars.$screen4a-width; height: vars.$screen4a-height; }
+#screen-5 { width: vars.$screen5-width; height: vars.$screen5-height; }

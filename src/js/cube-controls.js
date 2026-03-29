@@ -1,103 +1,148 @@
-// Cube rotation state for each cube
+// Cube rotation state for each corner cube
 const cubeRotation = {
-  cube: { x: 0, y: 0, z: 0 },
-  'cube-1': { x: 0, y: 0, z: 0 },
-  'cube-2': { x: 0, y: 0, z: 0 },
-  'cube-3': { x: 0, y: 0, z: 0 }
+  'cube-tl': { x: 0, y: 0, z: 0 },
+  'cube-tr': { x: 0, y: 0, z: 0 },
+  'cube-bl': { x: 0, y: 0, z: 0 }
 };
 
 // Default selected cube
-let currentCubeId = 'cube';
+let currentCubeId = 'cube-tl';
+
+// Function to generate content for center stage based on clicked module
+function generateAppContent(cubeId, faceName, label, value) {
+  const centerPanel = document.getElementById('center-panel');
+  if (!centerPanel) return;
+
+  const cleanLabel = label.trim().toUpperCase();
+
+  if (cleanLabel.includes('YOUTUBE')) {
+    renderYoutubePlayer();
+    return;
+  }
+
+  if (cleanLabel.includes('SYSTEMS CONTROL')) {
+    renderSystemsControl();
+    return;
+  }
+
+  const themes = {
+    'cube-tl': { title: 'System Core', color: '#64b4ff' },
+    'cube-tr': { title: 'Network Hub', color: '#64b4ff' },
+    'cube-bl': { title: 'Security Matrix', color: '#64b4ff' }
+  };
+
+  const theme = themes[cubeId] || { title: 'Module', color: '#64b4ff' };
+
+  centerPanel.innerHTML = `
+    <div class="active-app-container" style="border-top: 4px solid ${theme.color}">
+      <div class="app-header">
+        <span class="app-title">${theme.title}</span>
+        <button class="close-app-btn" onclick="resetCenterStage()">CLOSE</button>
+      </div>
+      <div class="app-body">
+        <div class="app-sidebar">
+           <div class="sidebar-item active">Overview</div>
+           <div class="sidebar-item">Telemetry</div>
+           <div class="sidebar-item">History</div>
+           <div class="sidebar-item">Config</div>
+        </div>
+        <div class="app-main">
+          <div class="detail-grid">
+            <div class="detail-card">
+              <div class="detail-label">${label}</div>
+              <div class="detail-value" style="color: ${theme.color}">${value}</div>
+            </div>
+            <div class="detail-card">
+              <div class="detail-label">ACTIVE THREADS</div>
+              <div class="detail-value">256</div>
+            </div>
+            <div class="detail-card full-width">
+              <div class="detail-label">LIVE STATUS LOG</div>
+              <div class="log-output">
+                [${new Date().toLocaleTimeString()}] Accessing ${faceName} protocols...<br>
+                [${new Date().toLocaleTimeString()}] Handshaking with ${cubeId} module...<br>
+                [${new Date().toLocaleTimeString()}] Data stream synchronized.<br>
+                [${new Date().toLocaleTimeString()}] Stability verified at 99.9%.<br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderYoutubePlayer() {
+  const centerPanel = document.getElementById('center-panel');
+  centerPanel.innerHTML = `
+    <div class="active-app-container" style="border-top: 4px solid #ff0000">
+      <div class="app-header">
+        <span class="app-title">YouTube Player</span>
+        <button class="close-app-btn" onclick="resetCenterStage()">CLOSE</button>
+      </div>
+      <div class="app-body">
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+      </div>
+    </div>
+  `;
+}
+
+function renderSystemsControl() {
+  const centerPanel = document.getElementById('center-panel');
+  centerPanel.innerHTML = `
+    <div class="active-app-container" style="border-top: 4px solid #64b4ff">
+      <div class="app-header">
+        <span class="app-title">Systems Control</span>
+        <button class="close-app-btn" onclick="resetCenterStage()">CLOSE</button>
+      </div>
+      <div class="app-body" style="padding: 20px; flex-direction: column; overflow-y: auto;">
+        <h3 style="color: #64b4ff; margin-bottom: 20px;">SYSTEM PERFORMANCE</h3>
+        <div class="detail-grid">
+          <div class="detail-card"><div class="detail-label">CPU USAGE</div><div class="detail-value">14%</div></div>
+          <div class="detail-card"><div class="detail-label">RAM FREE</div><div class="detail-value">12.4 GB</div></div>
+          <div class="detail-card"><div class="detail-label">DISK USAGE</div><div class="detail-value">68%</div></div>
+          <div class="detail-card"><div class="detail-label">BATTERY</div><div class="detail-value">98%</div></div>
+          <div class="detail-card full-width" style="text-align: center;">
+            <button class="face-btn" style="width: 200px; margin-top: 20px;" onclick="alert('Diagnostics Running...')">RUN FULL DIAGNOSTICS</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Global reset for center stage
+window.resetCenterStage = function() {
+  const centerPanel = document.getElementById('center-panel');
+  if (centerPanel) {
+    centerPanel.innerHTML = `
+      <div class="welcome-msg">
+        <h2>SYSTEM ONLINE</h2>
+        <p>Select a module from the corner nodes to begin.</p>
+      </div>
+    `;
+  }
+};
 
 // Function to apply rotation to the selected cube
 function updateCubeRotation() {
-  const cube = document.querySelector(`#${currentCubeId} .cube`);
+  const container = document.getElementById(currentCubeId);
+  if (!container) return;
+
+  const cube = container.querySelector('.cube');
   if (cube) {
     const rot = cubeRotation[currentCubeId];
     cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
   }
 }
 
-// NEW: Panel dragging functionality
-class PanelDragger {
-  constructor() {
-    this.draggedPanel = null;
-    this.offset = { x: 0, y: 0 };
-    this.initializeDragging();
-  }
-
-  initializeDragging() {
-    const panels = document.querySelectorAll('.panel');
-    
-    panels.forEach(panel => {
-      panel.addEventListener('mousedown', this.startDrag.bind(this));
-      panel.addEventListener('touchstart', this.startDrag.bind(this));
-    });
-
-    document.addEventListener('mousemove', this.drag.bind(this));
-    document.addEventListener('touchmove', this.drag.bind(this));
-    document.addEventListener('mouseup', this.stopDrag.bind(this));
-    document.addEventListener('touchend', this.stopDrag.bind(this));
-  }
-
-  startDrag(e) {
-    e.preventDefault();
-    this.draggedPanel = e.target.closest('.panel');
-    
-    if (!this.draggedPanel) return;
-
-    this.draggedPanel.classList.add('dragging');
-    
-    const rect = this.draggedPanel.getBoundingClientRect();
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    
-    this.offset.x = clientX - rect.left;
-    this.offset.y = clientY - rect.top;
-  }
-
-  drag(e) {
-    if (!this.draggedPanel) return;
-    
-    e.preventDefault();
-    
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    
-    const newX = clientX - this.offset.x;
-    const newY = clientY - this.offset.y;
-    
-    // Keep panels within the viewport
-    const maxX = window.innerWidth - this.draggedPanel.offsetWidth;
-    const maxY = window.innerHeight - this.draggedPanel.offsetHeight;
-    
-    const constrainedX = Math.max(0, Math.min(newX, maxX));
-    const constrainedY = Math.max(0, Math.min(newY, maxY));
-    
-    // Update panel position
-    this.draggedPanel.style.left = constrainedX + 'px';
-    this.draggedPanel.style.top = constrainedY + 'px';
-    this.draggedPanel.style.right = 'auto';
-    this.draggedPanel.style.bottom = 'auto';
-    this.draggedPanel.style.transform = 'none';
-  }
-
-  stopDrag() {
-    if (this.draggedPanel) {
-      this.draggedPanel.classList.remove('dragging');
-      this.draggedPanel = null;
-    }
-  }
-}
-
 // Initialize controls when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // NEW: Initialize panel dragging
-  new PanelDragger();
-  
-  // Handle cube selection buttons (if you have them)
+  // Handle cube selection buttons
   document.querySelectorAll('.screen-btn').forEach(btn => {
     btn.addEventListener('click', function() {
+      document.querySelectorAll('.screen-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
       currentCubeId = this.dataset.target;
       updateCubeRotation();
     });
@@ -108,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       const action = this.dataset.action;
       const rot = cubeRotation[currentCubeId];
+      if (!rot) return;
       
       switch(action) {
         case 'left': rot.y -= 90; break;
@@ -123,19 +169,53 @@ document.addEventListener('DOMContentLoaded', function() {
   const resetBtn = document.getElementById('reset-btn');
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-      cubeRotation[currentCubeId] = { x: 0, y: 0, z: 0 };
-      updateCubeRotation();
+      if (cubeRotation[currentCubeId]) {
+        cubeRotation[currentCubeId] = { x: 0, y: 0, z: 0 };
+        updateCubeRotation();
+      }
     });
   }
 
-  // Apply button
-  const applyBtn = document.getElementById('apply-btn');
-  if (applyBtn) {
-    applyBtn.addEventListener('click', function() {
-      console.log('Current rotation:', cubeRotation[currentCubeId]);
-    });
-  }
+  // Handle face clicks (restoring original cube interaction)
+  document.querySelectorAll('.face').forEach(faceEl => {
+    faceEl.addEventListener('click', function(e) {
+      // Get location info
+      const faceName = Array.from(this.classList).find(c => ['front', 'back', 'left', 'right', 'top', 'bottom'].includes(c));
+      const cubeId = this.closest('.cube-container').id;
 
-  // Initialize rotation on page load
-  updateCubeRotation();
+      const labelEl = this.querySelector('.face-label');
+      const valueEl = this.querySelector('.face-value');
+
+      const label = labelEl ? labelEl.innerText : 'Unknown Module';
+      const value = valueEl ? valueEl.innerText : 'N/A';
+
+      // Don't trigger if we clicked an interactive element inside the face
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+        generateAppContent(cubeId, faceName, label, value);
+        return;
+      }
+      e.stopPropagation();
+
+      // Remove active class from all faces
+      document.querySelectorAll('.face').forEach(f => f.classList.remove('active'));
+
+      // Add active class to clicked face
+      this.classList.add('active');
+
+      // Generate rich content in center stage
+      generateAppContent(cubeId, faceName, label, value);
+    });
+  });
+
+  // Initialize rotation for all cubes on page load
+  Object.keys(cubeRotation).forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+          const cube = container.querySelector('.cube');
+          if (cube) {
+              const rot = cubeRotation[id];
+              cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
+          }
+      }
+  });
 });

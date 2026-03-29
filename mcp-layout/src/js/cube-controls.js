@@ -2,8 +2,7 @@
 const cubeRotation = {
   'cube-tl': { x: 0, y: 0, z: 0 },
   'cube-tr': { x: 0, y: 0, z: 0 },
-  'cube-bl': { x: 0, y: 0, z: 0 },
-  'cube-br': { x: 0, y: 0, z: 0 }
+  'cube-bl': { x: 0, y: 0, z: 0 }
 };
 
 // Default selected cube
@@ -60,6 +59,37 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  // Handle slot clicks
+  document.querySelectorAll('.slot').forEach(slot => {
+    slot.addEventListener('click', function(e) {
+      e.stopPropagation();
+
+      // Remove active class from all slots
+      document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+
+      // Add active class to clicked slot
+      this.classList.add('active');
+
+      // Get location info
+      const face = this.closest('.face').classList[1]; // front, back, etc.
+      const cube = this.closest('.cube-container').id;
+      const slotId = this.id || this.innerText;
+
+      // Update center stage
+      const centerPanel = document.getElementById('center-panel');
+      if (centerPanel) {
+        centerPanel.innerHTML = `
+          <div class="active-app-info">
+            <h3>Active Application</h3>
+            <p><strong>Source:</strong> ${cube} (${face} face)</p>
+            <p><strong>Slot:</strong> ${slotId}</p>
+            <button class="close-app-btn" onclick="document.getElementById('center-panel').innerHTML='Center Stage Content - Front'">Close App</button>
+          </div>
+        `;
+      }
+    });
+  });
 
   // Initialize rotation for all cubes on page load
   Object.keys(cubeRotation).forEach(id => {

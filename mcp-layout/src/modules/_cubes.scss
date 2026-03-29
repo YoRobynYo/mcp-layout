@@ -34,7 +34,6 @@
   &.tl { top: 20px; left: 20px; }
   &.tr { top: 20px; right: 20px; }
   &.bl { bottom: 20px; left: 20px; }
-  &.br { bottom: 20px; right: 20px; }
 }
 
 .cube {
@@ -55,7 +54,7 @@
   justify-content: center;
   font-family: sans-serif;
   overflow: hidden;
-  backface-visibility: visible;
+  backface-visibility: hidden;
 }
 
 .face-grid {
@@ -87,6 +86,14 @@
     cursor: pointer;
     transform: translateZ(5px);
   }
+
+  &.active {
+    background: rgba(0, 123, 255, 0.3);
+    border-color: #007bff;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+    color: white;
+    transform: translateZ(10px);
+  }
 }
 
 .front  { transform: rotateY(  0deg) translateZ(100px); background: vars.$color-front; }
@@ -99,8 +106,7 @@
 .controls {
   position: fixed;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 20px;
   background: rgba(0, 0, 0, 0.8);
   padding: 15px;
   border-radius: 10px;

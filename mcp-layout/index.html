@@ -147,53 +147,9 @@
       </div>
     </div>
 
-    <!-- Bottom Right Cube -->
-    <div id="cube-br" class="cube-container br">
-      <div class="cube">
-        <div class="face front">
-          <div class="face-grid">
-            <div class="slot slot--hover" id="slot-br-f1">Slot 1</div>
-            <div class="slot slot--hover" id="slot-br-f2">Slot 2</div>
-            <div class="slot slot--hover" id="slot-br-f3">Slot 3</div>
-            <div class="slot slot--hover" id="slot-br-f4">Slot 4</div>
-          </div>
-        </div>
-        <div class="face back">
-          <div class="face-grid">
-            <div class="slot slot--hover">B1</div><div class="slot slot--hover">B2</div>
-            <div class="slot slot--hover">B3</div><div class="slot slot--hover">B4</div>
-          </div>
-        </div>
-        <div class="face right">
-          <div class="face-grid">
-            <div class="slot slot--hover">R1</div><div class="slot slot--hover">R2</div>
-            <div class="slot slot--hover">R3</div><div class="slot slot--hover">R4</div>
-          </div>
-        </div>
-        <div class="face left">
-          <div class="face-grid">
-            <div class="slot slot--hover">L1</div><div class="slot slot--hover">L2</div>
-            <div class="slot slot--hover">L3</div><div class="slot slot--hover">L4</div>
-          </div>
-        </div>
-        <div class="face top">
-          <div class="face-grid">
-            <div class="slot slot--hover">T1</div><div class="slot slot--hover">T2</div>
-            <div class="slot slot--hover">T3</div><div class="slot slot--hover">T4</div>
-          </div>
-        </div>
-        <div class="face bottom">
-          <div class="face-grid">
-            <div class="slot slot--hover">D1</div><div class="slot slot--hover">D2</div>
-            <div class="slot slot--hover">D3</div><div class="slot slot--hover">D4</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Extra Free Panels -->
-    <div class="panel panel--transparent" id="screen-4">Panel 4</div>
-    <div class="panel panel--transparent" id="screen-5">Panel 5</div>
+    <!-- Extra Free Panels (hidden by default to avoid blocking clicks) -->
+    <div class="panel panel--transparent" id="screen-4" style="display:none">Panel 4</div>
+    <div class="panel panel--transparent" id="screen-5" style="display:none">Panel 5</div>
   </div>
 
   <div class="controls">
@@ -201,7 +157,6 @@
       <button class="screen-btn active" data-target="cube-tl">Top Left</button>
       <button class="screen-btn" data-target="cube-tr">Top Right</button>
       <button class="screen-btn" data-target="cube-bl">Bottom Left</button>
-      <button class="screen-btn" data-target="cube-br">Bottom Right</button>
     </div>
     <div class="rotation-controls">
       <button class="rotate-btn" data-action="up">Up</button>

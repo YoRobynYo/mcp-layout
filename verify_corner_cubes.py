@@ -15,26 +15,22 @@ def run_cuj(page):
         else:
             print(f"Error: {cube_id} is NOT visible.")
 
-    # Verify Bottom Right cube is GONE
-    if not page.locator("#cube-br").is_visible():
-        print("Verified: cube-br is not visible (as requested).")
-
-    # 2. Test "Click-to-Open" Interaction
-    # Click Slot 1 on Top Left cube
-    slot = page.locator("#slot-tl-f1")
-    slot.click()
+    # 2. Test "Click-to-Open" on Cube Face
+    # Click front face on Top Left cube
+    face = page.locator("#cube-tl .front")
+    face.click()
     page.wait_for_timeout(500)
 
     # Verify Center Stage content updated
     center_panel = page.locator("#center-panel")
-    if "Active Application" in center_panel.inner_html():
-        print("Verified: Slot click opens application in center stage.")
+    if "Source: cube-tl" in center_panel.inner_html():
+        print("Verified: Face click opens application in center stage.")
     else:
-        print("Error: Center stage did not update.")
+        print("Error: Center stage did not update correctly.")
 
     # 3. Take screenshot
-    page.screenshot(path="/home/jules/verification/screenshots/3_cube_layout_active_slot.png")
-    print("Screenshot saved to /home/jules/verification/screenshots/3_cube_layout_active_slot.png")
+    page.screenshot(path="/home/jules/verification/screenshots/original_style_cubes.png")
+    print("Screenshot saved to /home/jules/verification/screenshots/original_style_cubes.png")
 
 if __name__ == "__main__":
     with sync_playwright() as p:

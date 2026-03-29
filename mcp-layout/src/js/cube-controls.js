@@ -60,21 +60,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Handle slot clicks
-  document.querySelectorAll('.slot').forEach(slot => {
-    slot.addEventListener('click', function(e) {
+  // Handle face clicks (restoring original cube interaction)
+  document.querySelectorAll('.face').forEach(faceEl => {
+    faceEl.addEventListener('click', function(e) {
       e.stopPropagation();
 
-      // Remove active class from all slots
-      document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+      // Remove active class from all faces
+      document.querySelectorAll('.face').forEach(f => f.classList.remove('active'));
 
-      // Add active class to clicked slot
+      // Add active class to clicked face
       this.classList.add('active');
 
       // Get location info
-      const face = this.closest('.face').classList[1]; // front, back, etc.
-      const cube = this.closest('.cube-container').id;
-      const slotId = this.id || this.innerText;
+      const faceName = this.classList[1]; // front, back, etc.
+      const cubeId = this.closest('.cube-container').id;
+      const faceContent = this.innerText;
 
       // Update center stage
       const centerPanel = document.getElementById('center-panel');
@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
         centerPanel.innerHTML = `
           <div class="active-app-info">
             <h3>Active Application</h3>
-            <p><strong>Source:</strong> ${cube} (${face} face)</p>
-            <p><strong>Slot:</strong> ${slotId}</p>
+            <p><strong>Source:</strong> ${cubeId}</p>
+            <p><strong>Face:</strong> ${faceName} (${faceContent})</p>
             <button class="close-app-btn" onclick="document.getElementById('center-panel').innerHTML='Center Stage Content - Front'">Close App</button>
           </div>
         `;

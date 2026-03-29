@@ -13,6 +13,7 @@ if (typeof PanelDragger === 'undefined') {
       console.log(`Found ${panels.length} panels:`);
 
       for (const panel of panels) {
+        console.log(`Attaching listeners to panel: ${panel.id}`);
         // Ensure panels are interactive and correctly positioned
         panel.style.position = 'absolute';
         panel.style.zIndex = '100';
@@ -48,10 +49,13 @@ if (typeof PanelDragger === 'undefined') {
     }
 
     startDrag(e) {
-      console.log("startDrag function called!");
+      console.log("startDrag function called!", e.target);
 
       // Prevent drag if clicking on something that should be interactive inside the panel
-      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+        console.log("Clicked on button/input, skipping drag");
+        return;
+      }
 
       this.draggedPanel = e.target.closest('.panel');
       if (!this.draggedPanel) return;

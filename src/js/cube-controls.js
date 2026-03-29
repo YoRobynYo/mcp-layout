@@ -1,103 +1,32 @@
-// Cube rotation state for each cube
+// Cube rotation state for each corner cube
 const cubeRotation = {
-  cube: { x: 0, y: 0, z: 0 },
-  'cube-1': { x: 0, y: 0, z: 0 },
-  'cube-2': { x: 0, y: 0, z: 0 },
-  'cube-3': { x: 0, y: 0, z: 0 }
+  'cube-tl': { x: 0, y: 0, z: 0 },
+  'cube-tr': { x: 0, y: 0, z: 0 },
+  'cube-bl': { x: 0, y: 0, z: 0 }
 };
 
 // Default selected cube
-let currentCubeId = 'cube';
+let currentCubeId = 'cube-tl';
 
 // Function to apply rotation to the selected cube
 function updateCubeRotation() {
-  const cube = document.querySelector(`#${currentCubeId} .cube`);
+  const container = document.getElementById(currentCubeId);
+  if (!container) return;
+
+  const cube = container.querySelector('.cube');
   if (cube) {
     const rot = cubeRotation[currentCubeId];
     cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
   }
 }
 
-// NEW: Panel dragging functionality
-class PanelDragger {
-  constructor() {
-    this.draggedPanel = null;
-    this.offset = { x: 0, y: 0 };
-    this.initializeDragging();
-  }
-
-  initializeDragging() {
-    const panels = document.querySelectorAll('.panel');
-    
-    panels.forEach(panel => {
-      panel.addEventListener('mousedown', this.startDrag.bind(this));
-      panel.addEventListener('touchstart', this.startDrag.bind(this));
-    });
-
-    document.addEventListener('mousemove', this.drag.bind(this));
-    document.addEventListener('touchmove', this.drag.bind(this));
-    document.addEventListener('mouseup', this.stopDrag.bind(this));
-    document.addEventListener('touchend', this.stopDrag.bind(this));
-  }
-
-  startDrag(e) {
-    e.preventDefault();
-    this.draggedPanel = e.target.closest('.panel');
-    
-    if (!this.draggedPanel) return;
-
-    this.draggedPanel.classList.add('dragging');
-    
-    const rect = this.draggedPanel.getBoundingClientRect();
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    
-    this.offset.x = clientX - rect.left;
-    this.offset.y = clientY - rect.top;
-  }
-
-  drag(e) {
-    if (!this.draggedPanel) return;
-    
-    e.preventDefault();
-    
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    
-    const newX = clientX - this.offset.x;
-    const newY = clientY - this.offset.y;
-    
-    // Keep panels within the viewport
-    const maxX = window.innerWidth - this.draggedPanel.offsetWidth;
-    const maxY = window.innerHeight - this.draggedPanel.offsetHeight;
-    
-    const constrainedX = Math.max(0, Math.min(newX, maxX));
-    const constrainedY = Math.max(0, Math.min(newY, maxY));
-    
-    // Update panel position
-    this.draggedPanel.style.left = constrainedX + 'px';
-    this.draggedPanel.style.top = constrainedY + 'px';
-    this.draggedPanel.style.right = 'auto';
-    this.draggedPanel.style.bottom = 'auto';
-    this.draggedPanel.style.transform = 'none';
-  }
-
-  stopDrag() {
-    if (this.draggedPanel) {
-      this.draggedPanel.classList.remove('dragging');
-      this.draggedPanel = null;
-    }
-  }
-}
-
 // Initialize controls when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-  // NEW: Initialize panel dragging
-  new PanelDragger();
-  
-  // Handle cube selection buttons (if you have them)
+  // Handle cube selection buttons
   document.querySelectorAll('.screen-btn').forEach(btn => {
     btn.addEventListener('click', function() {
+      document.querySelectorAll('.screen-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
       currentCubeId = this.dataset.target;
       updateCubeRotation();
     });
@@ -108,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', function() {
       const action = this.dataset.action;
       const rot = cubeRotation[currentCubeId];
+      if (!rot) return;
       
       switch(action) {
         case 'left': rot.y -= 90; break;
@@ -123,19 +53,57 @@ document.addEventListener('DOMContentLoaded', function() {
   const resetBtn = document.getElementById('reset-btn');
   if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-      cubeRotation[currentCubeId] = { x: 0, y: 0, z: 0 };
-      updateCubeRotation();
+      if (cubeRotation[currentCubeId]) {
+        cubeRotation[currentCubeId] = { x: 0, y: 0, z: 0 };
+        updateCubeRotation();
+      }
     });
   }
 
-  // Apply button
-  const applyBtn = document.getElementById('apply-btn');
-  if (applyBtn) {
-    applyBtn.addEventListener('click', function() {
-      console.log('Current rotation:', cubeRotation[currentCubeId]);
-    });
-  }
+  // Handle face clicks (restoring original cube interaction)
+  document.querySelectorAll('.face').forEach(faceEl => {
+    faceEl.addEventListener('click', function(e) {
+      // Don't trigger if we clicked an interactive element inside the face
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+        return;
+      }
+      e.stopPropagation();
 
-  // Initialize rotation on page load
-  updateCubeRotation();
+      // Remove active class from all faces
+      document.querySelectorAll('.face').forEach(f => f.classList.remove('active'));
+
+      // Add active class to clicked face
+      this.classList.add('active');
+
+      // Get location info
+      const faceName = this.classList[1]; // front, back, etc.
+      const cubeId = this.closest('.cube-container').id;
+      const faceContent = this.innerText;
+
+      // Update center stage
+      const centerPanel = document.getElementById('center-panel');
+      if (centerPanel) {
+        centerPanel.innerHTML = `
+          <div class="active-app-info">
+            <h3>Active Application</h3>
+            <p><strong>Source:</strong> ${cubeId}</p>
+            <p><strong>Face:</strong> ${faceName} (${faceContent})</p>
+            <button class="close-app-btn" onclick="document.getElementById('center-panel').innerHTML='Center Stage Content - Front'">Close App</button>
+          </div>
+        `;
+      }
+    });
+  });
+
+  // Initialize rotation for all cubes on page load
+  Object.keys(cubeRotation).forEach(id => {
+      const container = document.getElementById(id);
+      if (container) {
+          const cube = container.querySelector('.cube');
+          if (cube) {
+              const rot = cubeRotation[id];
+              cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
+          }
+      }
+  });
 });

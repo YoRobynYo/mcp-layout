@@ -63,6 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
   // Handle face clicks (restoring original cube interaction)
   document.querySelectorAll('.face').forEach(faceEl => {
     faceEl.addEventListener('click', function(e) {
+      // Don't trigger if we clicked an interactive element inside the face
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+        return;
+      }
       e.stopPropagation();
 
       // Remove active class from all faces

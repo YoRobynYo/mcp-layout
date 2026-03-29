@@ -128,6 +128,38 @@
   background: rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
+  pointer-events: auto;
+  transform-style: preserve-3d;
+}
+.face .face-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  transform: translateZ(10px);
+}
+.face .face-label {
+  font-size: 14px;
+  color: #9f8045;
+}
+.face .face-value {
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(159, 128, 69, 0.5);
+}
+.face .face-btn {
+  padding: 5px 15px;
+  background: rgba(159, 128, 69, 0.2);
+  border: 1px solid #9f8045;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  pointer-events: auto;
+}
+.face .face-btn:hover {
+  background: rgba(159, 128, 69, 0.4);
 }
 .face:hover {
   background: rgba(255, 255, 255, 0.2);

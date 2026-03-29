@@ -4,26 +4,215 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MCP-AI-Panel</title>
+  <title>MCP-AI-Panel - 3D Cube Corner Layout</title>
   <link rel="stylesheet" href="./css/style.css" />
 </head>
 
 <body>
-  <div id="center-panel" class="panel"></div>
-  <div class="panel panel--transparent" id="screen-1">Panel 1</div>
-  <div class="panel panel--transparent" id="screen-2">Panel 2</div>
-  <div class="panel panel--transparent" id="screen-3">Panel 3</div>
-  <div class="panel panel--transparent" id="screen-4">Panel 4</div>
-  <div class="panel panel--transparent" id="screen-4a">Panel 4a</div>
-  <div class="panel panel--transparent" id="screen-5">Panel 5</div>
-  <script>
-    document.addEventListener("mousedown", (e) => {
-      console.log("Global mousedown event fired!");
-      console.log("Target element:", e.target);
-    });
-  </script>
-  <!-- 
-   <script src="./src/js/cube-controls.js"></script> -->
+  <div class="dashboard-layout">
+    <!-- Center Stage for Opened Apps -->
+    <div id="center-stage" class="center-stage">
+      <div id="center-panel" class="panel panel--main">Center Stage Content - Front</div>
+    </div>
+
+    <!-- Top Left Cube -->
+    <div id="cube-tl" class="cube-container tl">
+      <div class="cube">
+        <div class="face front">
+          <div class="face-grid">
+            <div class="slot slot--hover" id="slot-tl-f1">Slot 1</div>
+            <div class="slot slot--hover" id="slot-tl-f2">Slot 2</div>
+            <div class="slot slot--hover" id="slot-tl-f3">Slot 3</div>
+            <div class="slot slot--hover" id="slot-tl-f4">Slot 4</div>
+          </div>
+        </div>
+        <div class="face back">
+          <div class="face-grid">
+            <div class="slot slot--hover">B1</div><div class="slot slot--hover">B2</div>
+            <div class="slot slot--hover">B3</div><div class="slot slot--hover">B4</div>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-grid">
+            <div class="slot slot--hover">R1</div><div class="slot slot--hover">R2</div>
+            <div class="slot slot--hover">R3</div><div class="slot slot--hover">R4</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-grid">
+            <div class="slot slot--hover">L1</div><div class="slot slot--hover">L2</div>
+            <div class="slot slot--hover">L3</div><div class="slot slot--hover">L4</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-grid">
+            <div class="slot slot--hover">T1</div><div class="slot slot--hover">T2</div>
+            <div class="slot slot--hover">T3</div><div class="slot slot--hover">T4</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-grid">
+            <div class="slot slot--hover">D1</div><div class="slot slot--hover">D2</div>
+            <div class="slot slot--hover">D3</div><div class="slot slot--hover">D4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Right Cube -->
+    <div id="cube-tr" class="cube-container tr">
+      <div class="cube">
+        <div class="face front">
+          <div class="face-grid">
+            <div class="slot slot--hover" id="slot-tr-f1">Slot 1</div>
+            <div class="slot slot--hover" id="slot-tr-f2">Slot 2</div>
+            <div class="slot slot--hover" id="slot-tr-f3">Slot 3</div>
+            <div class="slot slot--hover" id="slot-tr-f4">Slot 4</div>
+          </div>
+        </div>
+        <div class="face back">
+          <div class="face-grid">
+            <div class="slot slot--hover">B1</div><div class="slot slot--hover">B2</div>
+            <div class="slot slot--hover">B3</div><div class="slot slot--hover">B4</div>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-grid">
+            <div class="slot slot--hover">R1</div><div class="slot slot--hover">R2</div>
+            <div class="slot slot--hover">R3</div><div class="slot slot--hover">R4</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-grid">
+            <div class="slot slot--hover">L1</div><div class="slot slot--hover">L2</div>
+            <div class="slot slot--hover">L3</div><div class="slot slot--hover">L4</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-grid">
+            <div class="slot slot--hover">T1</div><div class="slot slot--hover">T2</div>
+            <div class="slot slot--hover">T3</div><div class="slot slot--hover">T4</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-grid">
+            <div class="slot slot--hover">D1</div><div class="slot slot--hover">D2</div>
+            <div class="slot slot--hover">D3</div><div class="slot slot--hover">D4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Left Cube -->
+    <div id="cube-bl" class="cube-container bl">
+      <div class="cube">
+        <div class="face front">
+          <div class="face-grid">
+            <div class="slot slot--hover" id="slot-bl-f1">Slot 1</div>
+            <div class="slot slot--hover" id="slot-bl-f2">Slot 2</div>
+            <div class="slot slot--hover" id="slot-bl-f3">Slot 3</div>
+            <div class="slot slot--hover" id="slot-bl-f4">Slot 4</div>
+          </div>
+        </div>
+        <div class="face back">
+          <div class="face-grid">
+            <div class="slot slot--hover">B1</div><div class="slot slot--hover">B2</div>
+            <div class="slot slot--hover">B3</div><div class="slot slot--hover">B4</div>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-grid">
+            <div class="slot slot--hover">R1</div><div class="slot slot--hover">R2</div>
+            <div class="slot slot--hover">R3</div><div class="slot slot--hover">R4</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-grid">
+            <div class="slot slot--hover">L1</div><div class="slot slot--hover">L2</div>
+            <div class="slot slot--hover">L3</div><div class="slot slot--hover">L4</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-grid">
+            <div class="slot slot--hover">T1</div><div class="slot slot--hover">T2</div>
+            <div class="slot slot--hover">T3</div><div class="slot slot--hover">T4</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-grid">
+            <div class="slot slot--hover">D1</div><div class="slot slot--hover">D2</div>
+            <div class="slot slot--hover">D3</div><div class="slot slot--hover">D4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Right Cube -->
+    <div id="cube-br" class="cube-container br">
+      <div class="cube">
+        <div class="face front">
+          <div class="face-grid">
+            <div class="slot slot--hover" id="slot-br-f1">Slot 1</div>
+            <div class="slot slot--hover" id="slot-br-f2">Slot 2</div>
+            <div class="slot slot--hover" id="slot-br-f3">Slot 3</div>
+            <div class="slot slot--hover" id="slot-br-f4">Slot 4</div>
+          </div>
+        </div>
+        <div class="face back">
+          <div class="face-grid">
+            <div class="slot slot--hover">B1</div><div class="slot slot--hover">B2</div>
+            <div class="slot slot--hover">B3</div><div class="slot slot--hover">B4</div>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-grid">
+            <div class="slot slot--hover">R1</div><div class="slot slot--hover">R2</div>
+            <div class="slot slot--hover">R3</div><div class="slot slot--hover">R4</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-grid">
+            <div class="slot slot--hover">L1</div><div class="slot slot--hover">L2</div>
+            <div class="slot slot--hover">L3</div><div class="slot slot--hover">L4</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-grid">
+            <div class="slot slot--hover">T1</div><div class="slot slot--hover">T2</div>
+            <div class="slot slot--hover">T3</div><div class="slot slot--hover">T4</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-grid">
+            <div class="slot slot--hover">D1</div><div class="slot slot--hover">D2</div>
+            <div class="slot slot--hover">D3</div><div class="slot slot--hover">D4</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extra Free Panels -->
+    <div class="panel panel--transparent" id="screen-4">Panel 4</div>
+    <div class="panel panel--transparent" id="screen-5">Panel 5</div>
+  </div>
+
+  <div class="controls">
+    <div class="cube-selection">
+      <button class="screen-btn active" data-target="cube-tl">Top Left</button>
+      <button class="screen-btn" data-target="cube-tr">Top Right</button>
+      <button class="screen-btn" data-target="cube-bl">Bottom Left</button>
+      <button class="screen-btn" data-target="cube-br">Bottom Right</button>
+    </div>
+    <div class="rotation-controls">
+      <button class="rotate-btn" data-action="up">Up</button>
+      <button class="rotate-btn" data-action="down">Down</button>
+      <button class="rotate-btn" data-action="left">Left</button>
+      <button class="rotate-btn" data-action="right">Right</button>
+      <button id="reset-btn">Reset</button>
+    </div>
+  </div>
+
+  <script src="./src/js/cube-controls.js"></script>
   <script src="./src/js/dragPanels.js"></script>
 </body>
 

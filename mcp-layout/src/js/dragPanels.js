@@ -1,5 +1,4 @@
 console.log("dragPanels.js script loaded!");
-console.log("TEST: This log should always appear!");
 
 if (typeof PanelDragger === 'undefined') {
   class PanelDragger {
@@ -12,38 +11,23 @@ if (typeof PanelDragger === 'undefined') {
     async initializeDragging() {
       const panels = document.querySelectorAll('.panel');
       console.log(`Found ${panels.length} panels:`);
-      panels.forEach(panel => {
-        console.log(`Panel id="${panel.id}"`, panel);
-      });
 
       for (const panel of panels) {
+        // Ensure panels are interactive and correctly positioned
         panel.style.position = 'absolute';
-        panel.style.zIndex = '1';
+        panel.style.zIndex = '100';
+        panel.style.pointerEvents = 'auto';
 
         try {
           if (window.electronAPI && typeof window.electronAPI.getItem === 'function') {
             const savedPos = await window.electronAPI.getItem(panel.id);
-            console.log(`Raw savedPos for ${panel.id}:`, savedPos);
-
             if (savedPos) {
-              const pos = savedPos;
-              panel.style.removeProperty('inset');
-              panel.style.position = 'absolute';
-              panel.style.left = pos.left;
-              panel.style.top = pos.top;
+              panel.style.left = savedPos.left;
+              panel.style.top = savedPos.top;
               panel.style.right = 'auto';
               panel.style.bottom = 'auto';
-              panel.style.margin = '0';
               panel.style.transform = 'none';
-              panel.setAttribute('style',
-                `position: absolute; left: ${pos.left}; top: ${pos.top}; right: auto; bottom: auto; transform: none; z-index: 1;`
-              );
-              console.log(`FORCE restored position for ${panel.id}:`, pos);
-            } else {
-              console.log(`No saved position for ${panel.id}, using default CSS position`);
             }
-          } else {
-            console.warn('window.electronAPI or getItem function not available. Cannot restore position.');
           }
         } catch (err) {
           console.warn(`Failed to restore position for ${panel.id}:`, err);
@@ -52,10 +36,6 @@ if (typeof PanelDragger === 'undefined') {
         const boundStartDrag = this.startDrag.bind(this);
         panel.addEventListener("mousedown", boundStartDrag);
         panel.addEventListener("touchstart", boundStartDrag);
-        console.log(`Event listeners attached to panel: ${panel.id}`);
-        panel.addEventListener("click", () => {
-          console.log(`Click test for panel: ${panel.id}`);
-        });
       }
 
       const boundDrag = this.drag.bind(this);
@@ -69,22 +49,22 @@ if (typeof PanelDragger === 'undefined') {
 
     startDrag(e) {
       console.log("startDrag function called!");
-      console.log("Event target:", e.target);
-      console.log("Closest panel:", e.target.closest(".panel"));
+
+      // Prevent drag if clicking on something that should be interactive inside the panel
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
 
       this.draggedPanel = e.target.closest('.panel');
-      if (!this.draggedPanel) {
-        console.log("No draggable panel found for event target.");
-        return;
-      }
+      if (!this.draggedPanel) return;
+
+      e.preventDefault();
+      e.stopPropagation(); // Prevent event from bubbling up to parents that might interfere
 
       this.draggedPanel.classList.add('dragging');
       this.draggedPanel.style.zIndex = '1000';
-      document.body.classList.add('dragging-active');
 
       const rect = this.draggedPanel.getBoundingClientRect();
-      const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
-      const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
+      const clientX = (e.clientX !== undefined) ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const clientY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
 
       this.offset.x = clientX - rect.left;
       this.offset.y = clientY - rect.top;
@@ -94,48 +74,46 @@ if (typeof PanelDragger === 'undefined') {
       if (!this.draggedPanel) return;
       e.preventDefault();
 
-      const clientX = e.clientX || (e.touches && e.touches[0]?.clientX);
-      const clientY = e.clientY || (e.touches && e.touches[0]?.clientY);
-      const newX = clientX - this.offset.x;
-      const newY = clientY - this.offset.y;
+      const clientX = (e.clientX !== undefined) ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      const clientY = (e.clientY !== undefined) ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
 
-      const maxX = window.innerWidth - this.draggedPanel.offsetWidth;
-      const maxY = window.innerHeight - this.draggedPanel.offsetHeight;
+      let newX = clientX - this.offset.x;
+      let newY = clientY - this.offset.y;
 
-      const constrainedX = Math.max(0, Math.min(newX, maxX));
-      const constrainedY = Math.max(0, Math.min(newY, maxY));
+      // Implement viewport constraints
+      const rect = this.draggedPanel.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
 
-      this.draggedPanel.style.left = `${constrainedX}px`;
-      this.draggedPanel.style.top = `${constrainedY}px`;
+      if (newX < 0) newX = 0;
+      if (newY < 0) newY = 0;
+      if (newX + rect.width > viewportWidth) newX = viewportWidth - rect.width;
+      if (newY + rect.height > viewportHeight) newY = viewportHeight - rect.height;
+
+      this.draggedPanel.style.left = `${newX}px`;
+      this.draggedPanel.style.top = `${newY}px`;
       this.draggedPanel.style.right = 'auto';
       this.draggedPanel.style.bottom = 'auto';
       this.draggedPanel.style.transform = 'none';
     }
 
     async stopDrag() {
-      console.log("stopDrag function called!");
       if (!this.draggedPanel) return;
+      console.log("stopDrag function called!");
 
       const left = this.draggedPanel.style.left;
       const top = this.draggedPanel.style.top;
-      this.draggedPanel.style.zIndex = '1';
+      this.draggedPanel.style.zIndex = '100';
 
       if (this.draggedPanel.id && window.electronAPI && typeof window.electronAPI.setItem === 'function') {
         try {
-          const position = { left, top };
-          await window.electronAPI.setItem(this.draggedPanel.id, position);
-          console.log(`Saved position for ${this.draggedPanel.id}:`, position);
-          const saved = await window.electronAPI.getItem(this.draggedPanel.id);
-          console.log(`Retrieved back from store for ${this.draggedPanel.id}:`, saved);
+          await window.electronAPI.setItem(this.draggedPanel.id, { left, top });
         } catch (err) {
           console.error(`Failed to save position for ${this.draggedPanel.id}:`, err);
         }
-      } else {
-        console.warn('Panel has no ID or electronAPI.setItem not available. Cannot save position.');
       }
 
       this.draggedPanel.classList.remove('dragging');
-      document.body.classList.remove('dragging-active');
       this.draggedPanel = null;
     }
   }
@@ -144,6 +122,5 @@ if (typeof PanelDragger === 'undefined') {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("DOMContentLoaded event fired, initializing PanelDragger...");
   new PanelDragger();
 });

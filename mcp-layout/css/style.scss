@@ -1,19 +1,6 @@
 @use '../src/modules/variables' as vars;
 @use '../src/modules/panel' as panel;
-// @use '../src/modules/cubes' as cubes;
-
-// Import other partials here, e.g. cube, controls, responsive, etc.
-// @use '../src/modules/cube' as *;
-// @use '../src/modules/controls' as *;
-// @use '../src/modules/responsive' as *;
-
-// @use 'modules/variables';   // Loads variables like colors, sizes, font sizes
-// @use 'modules/base';        // General reset + typography + body styles
-// @use 'modules/cube';        // 3D cube styling and face layouts
-// @use 'modules/controls';    // Styles for control panel, buttons, etc.
-// @use 'modules/status';      // The status display (current face + rotation)
-// @use 'modules/responsive';  // Media queries for mobile/tablet responsiveness
-
+@use '../src/modules/cubes' as cubes;
 
 // Global HTML, body styles
 html,
@@ -22,16 +9,16 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: url('../assets/images/background-1.png') no-repeat center center fixed;
-  background-size: cover;
+  background: #050505;
   color: #eee;
 }
 
-// Optional: global layout container
+// Global dashboard layout settings are now in _cubes.scss
 .dashboard-layout {
   position: relative;
   width: 100vw;
   height: 100vh;
-  padding: 2rem;
   overflow: hidden;
 }
+
+// Control styles are now handled in _cubes.scss for a cleaner modular approach

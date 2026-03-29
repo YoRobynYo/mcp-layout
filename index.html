@@ -12,48 +12,141 @@
   <div class="dashboard-layout">
     <!-- Center Stage for Opened Apps -->
     <div id="center-stage" class="center-stage">
-      <div id="center-panel" class="panel panel--main">Center Stage Content - Front</div>
+      <div id="center-panel" class="panel panel--main">
+        <div class="welcome-msg">
+          <h2>SYSTEM ONLINE</h2>
+          <p>Select a module from the corner nodes to begin.</p>
+        </div>
+      </div>
     </div>
 
-    <!-- Top Left Cube (Original Style) -->
+    <!-- Top Left Cube: SYSTEM & APPS -->
     <div id="cube-tl" class="cube-container tl">
       <div class="screen-1-cube cube">
         <div class="face front">
           <div class="face-content">
-            <div class="face-label">SYSTEM STATUS</div>
+            <div class="face-label">SYSTEMS CONTROL</div>
             <div class="face-value">ACTIVE</div>
-            <button class="face-btn" onclick="alert('Button clicked!')">REBOOT</button>
+            <button class="face-btn">MONITOR</button>
           </div>
         </div>
-        <div class="face back">Screen 1 - Back</div>
-        <div class="face right">Screen 1 - Right</div>
-        <div class="face left">Screen 1 - Left</div>
-        <div class="face top">Screen 1 - Top</div>
-        <div class="face bottom">Screen 1 - Bottom</div>
+        <div class="face back">
+          <div class="face-content">
+            <div class="face-label">YOUTUBE</div>
+            <div class="face-value">READY</div>
+            <button class="face-btn">LAUNCH</button>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-content">
+            <div class="face-label">CORE TEMP</div>
+            <div class="face-value">42°C</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-content">
+            <div class="face-label">UPTIME</div>
+            <div class="face-value">24:12:05</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-content">
+            <div class="face-label">MEM LOAD</div>
+            <div class="face-value">32%</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-content">
+            <div class="face-label">OS KERNEL</div>
+            <div class="face-value">v4.2.0</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Top Right Cube (Original Style) -->
+    <!-- Top Right Cube: NETWORK & COMMS -->
     <div id="cube-tr" class="cube-container tr">
       <div class="screen-2-cube cube">
-        <div class="face front">Screen 2 - Front</div>
-        <div class="face back">Screen 2 - Back</div>
-        <div class="face right">Screen 2 - Right</div>
-        <div class="face left">Screen 2 - Left</div>
-        <div class="face top">Screen 2 - Top</div>
-        <div class="face bottom">Screen 2 - Bottom</div>
+        <div class="face front">
+          <div class="face-content">
+            <div class="face-label">NETWORK</div>
+            <div class="face-value">CONNECTED</div>
+            <button class="face-btn">SCAN</button>
+          </div>
+        </div>
+        <div class="face back">
+          <div class="face-content">
+            <div class="face-label">LATENCY</div>
+            <div class="face-value">12ms</div>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-content">
+            <div class="face-label">INBOUND</div>
+            <div class="face-value">1.2 GB/s</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-content">
+            <div class="face-label">OUTBOUND</div>
+            <div class="face-value">0.8 GB/s</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-content">
+            <div class="face-label">IP ADDR</div>
+            <div class="face-value">192.168.1.1</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-content">
+            <div class="face-label">DNS</div>
+            <div class="face-value">PRIMARY</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Bottom Left Cube (Original Style) -->
+    <!-- Bottom Left Cube: SECURITY & DEFENSE -->
     <div id="cube-bl" class="cube-container bl">
       <div class="screen-3-cube cube">
-        <div class="face front">Screen 3 - Front</div>
-        <div class="face back">Screen 3 - Back</div>
-        <div class="face right">Screen 3 - Right</div>
-        <div class="face left">Screen 3 - Left</div>
-        <div class="face top">Screen 3 - Top</div>
-        <div class="face bottom">Screen 3 - Bottom</div>
+        <div class="face front">
+          <div class="face-content">
+            <div class="face-label">SECURITY</div>
+            <div class="face-value">SECURE</div>
+            <button class="face-btn">LOCKDOWN</button>
+          </div>
+        </div>
+        <div class="face back">
+          <div class="face-content">
+            <div class="face-label">FIREWALL</div>
+            <div class="face-value">ACTIVE</div>
+          </div>
+        </div>
+        <div class="face right">
+          <div class="face-content">
+            <div class="face-label">THREATS</div>
+            <div class="face-value">0</div>
+          </div>
+        </div>
+        <div class="face left">
+          <div class="face-content">
+            <div class="face-label">ENCRYPTION</div>
+            <div class="face-value">AES-256</div>
+          </div>
+        </div>
+        <div class="face top">
+          <div class="face-content">
+            <div class="face-label">AUTH</div>
+            <div class="face-value">BIO-M</div>
+          </div>
+        </div>
+        <div class="face bottom">
+          <div class="face-content">
+            <div class="face-label">LOGS</div>
+            <div class="face-value">CLEAN</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -64,9 +157,9 @@
 
   <div class="controls">
     <div class="cube-selection">
-      <button class="screen-btn active" data-target="cube-tl">Top Left</button>
-      <button class="screen-btn" data-target="cube-tr">Top Right</button>
-      <button class="screen-btn" data-target="cube-bl">Bottom Left</button>
+      <button class="screen-btn active" data-target="cube-tl">System</button>
+      <button class="screen-btn" data-target="cube-tr">Network</button>
+      <button class="screen-btn" data-target="cube-bl">Security</button>
     </div>
     <div class="rotation-controls">
       <button class="rotate-btn" data-action="up">Up</button>

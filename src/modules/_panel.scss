@@ -1,4 +1,6 @@
-/* Panel base styles */
+@use 'variables' as *;
+
+// Base panel style
 .panel {
   position: absolute;
   cursor: grab;
@@ -6,82 +8,59 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-width: 220px;
-  min-height: 120px;
-
-  background: rgba(255, 255, 255, 0.08); // translucent white for see-through
-  border: 1.5px solid #9f8045; // gold border
-  border-radius: 12px;
+  width: $panel-default-width;
+  height: $panel-default-height;
+  background: transparent;
+  border: 1.5px solid $border-color-main;
+  border-radius: 14px;
   padding: 15px;
-  color: #fff;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  color: #ffffff;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   user-select: none;
-
-  /* blur behind */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
   transition: box-shadow 0.2s ease;
+  z-index: 1;
 }
 
-.panel.dragging {
-  cursor: grabbing;
-  z-index: 999;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-/* Center panel - larger and scaled */
+// panels
 #center-panel {
-  top: 200px;
-  left: 400px;
-  min-width: 320px;
-  min-height: 320px;
-  border: 2px solid #9f8045;
-  box-shadow: 0 0 30px rgba(159, 128, 69, 0.8);
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
+  width: $center-panel-width;
+  height: $center-panel-height;
+  perspective: 1000px;
+  perspective-origin: center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
 }
 
-#center-panel:hover {
-  transform: scale(1.15);
-}
-
-/* Individual panel positions */
 #screen-1 {
-  top: 40px;
-  left: 40px;
+  width: $screen1-width;
+  height: $screen1-height;
 }
 
 #screen-2 {
-  top: 400px;
-  left: 40px;
+  width: $screen2-width;
+  height: $screen2-height;
 }
 
 #screen-3 {
-  top: 40px;
-  left: 800px;
+  width: $screen3-width;
+  height: $screen3-height;
 }
 
 #screen-4 {
-  top: 400px;
-  left: 800px;
+  width: $screen4-width;
+  height: $screen4-height;
 }
 
 #screen-4a {
-  top: 600px;
-  left: 800px;
+  width: $screen4a-width;
+  height: $screen4a-height;
 }
 
 #screen-5 {
-  top: 600px;
-  left: 400px;
-}
-
-/* Dashboard container */
-.dashboard-layout {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  padding: 2rem;
+  width: $screen5-width;
+  height: $screen5-height;
 }

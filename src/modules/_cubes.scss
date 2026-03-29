@@ -1,200 +1,154 @@
-@use 'variables' as *;
+@use 'variables' as vars;
 
-// Main centered cube
-#centerBoardImage {
+.dashboard-layout {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #050505;
+}
+
+.center-stage {
   position: absolute;
   top: 50%;
   left: 50%;
-  // transform: translate(-50%, -50%);
-  transform: translate(-50%, calc(-50% - 100px)); // Changed this line
+  transform: translate(-50%, -50%);
   width: 600px;
   height: 400px;
-  background: #ffffff1a;
-  border: 1.5px solid #9f8045;
-  border-radius: 8px;
-  color: #f0f0f0;
-  font-weight: bold;
-  padding: 10px;
-  user-select: none;
-  z-index: 3;
-  pointer-events: auto;
-  // Added to center the cube
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
 
-  // Add these for 3D perspective:
+.cube-container {
+  width: 200px;
+  height: 200px;
   perspective: 1000px;
-  perspective-origin: center center;
+  position: absolute;
+  z-index: 10;
+
+  &.tl { top: 20px; left: 20px; }
+  &.tr { top: 20px; right: 20px; }
+  &.bl { bottom: 20px; left: 20px; }
 }
 
-
-.screen-1-cube {
-  width: $cube-small;
-  height: $cube-small;
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
   transform-style: preserve-3d;
-  transform: rotateX(0deg) rotateY(0deg);
-  transition: transform 0.6s ease-in-out;
-  margin: 0 auto;
-
-  .face {
-    position: absolute;
-    width: $cube-small;
-    height: $cube-small;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    font-size: $font-size-small;
-    text-align: center;
-    padding: 1rem;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    color: white;
-  }
-
-  .front {
-    background-color: $color-front;
-    transform: translateZ($cube-small-depth);
-  }
-
-  .back {
-    background-color: $color-back;
-    transform: rotateY(180deg) translateZ($cube-small-depth);
-  }
-
-  .right {
-    background-color: $color-right;
-    transform: rotateY(90deg) translateZ($cube-small-depth);
-  }
-
-  .left {
-    background-color: $color-left;
-    transform: rotateY(-90deg) translateZ($cube-small-depth);
-  }
-
-  .top {
-    background-color: $color-top;
-    transform: rotateX(90deg) translateZ($cube-small-depth);
-  }
-
-  .bottom {
-    background-color: $color-bottom;
-    transform: rotateX(-90deg) translateZ($cube-small-depth);
-  }
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-
-// cube-2 
-@use 'variables' as *;
-
-.screen-2-cube {
-  width: $cube-small;
-  height: $cube-small;
+.face {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+  overflow: hidden;
+  backface-visibility: hidden;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  pointer-events: auto;
   transform-style: preserve-3d;
-  transform: rotateX(0deg) rotateY(0deg);
-  transition: transform 0.6s ease-in-out;
-  margin: 0 auto;
 
-  .face {
-    position: absolute;
-    width: $cube-small;
-    height: $cube-small;
+  .face-content {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    border-radius: 8px;
-    font-size: $font-size-small;
-    text-align: center;
-    padding: 1rem;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    color: white;
+    gap: 10px;
+    pointer-events: auto;
+    transform: translateZ(10px); // Pop content out slightly
   }
 
-  .front {
-    background-color: $color-front;
-    transform: translateZ($cube-small-depth);
+  .face-label {
+    font-size: 14px;
+    color: #9f8045;
   }
 
-  .back {
-    background-color: $color-back;
-    transform: rotateY(180deg) translateZ($cube-small-depth);
+  .face-value {
+    font-size: 24px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(159, 128, 69, 0.5);
   }
 
-  .right {
-    background-color: $color-right;
-    transform: rotateY(90deg) translateZ($cube-small-depth);
+  .face-btn {
+    padding: 5px 15px;
+    background: rgba(159, 128, 69, 0.2);
+    border: 1px solid #9f8045;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    pointer-events: auto;
+
+    &:hover {
+      background: rgba(159, 128, 69, 0.4);
+    }
   }
 
-  .left {
-    background-color: $color-left;
-    transform: rotateY(-90deg) translateZ($cube-small-depth);
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
   }
 
-  .top {
-    background-color: $color-top;
-    transform: rotateX(90deg) translateZ($cube-small-depth);
-  }
-
-  .bottom {
-    background-color: $color-bottom;
-    transform: rotateX(-90deg) translateZ($cube-small-depth);
+  &.active {
+    background: rgba(0, 123, 255, 0.3);
+    border-color: #007bff;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
   }
 }
 
+.front  { transform: rotateY(  0deg) translateZ(100px); background: vars.$color-front; }
+.back   { transform: rotateY(180deg) translateZ(100px); background: vars.$color-back; }
+.right  { transform: rotateY( 90deg) translateZ(100px); background: vars.$color-right; }
+.left   { transform: rotateY(-90deg) translateZ(100px); background: vars.$color-left; }
+.top    { transform: rotateX( 90deg) translateZ(100px); background: vars.$color-top; }
+.bottom { transform: rotateX(-90deg) translateZ(100px); background: vars.$color-bottom; }
 
-// cube-3
-@use 'variables' as *;
+.controls {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
 
-.screen-3-cube {
-  width: $cube-small;
-  height: $cube-small;
-  transform-style: preserve-3d;
-  transform: rotateX(0deg) rotateY(0deg);
-  transition: transform 0.6s ease-in-out;
-  margin: 0 auto;
+.cube-selection, .rotation-controls {
+  display: flex;
+  gap: 5px;
+}
 
-  .face {
-    position: absolute;
-    width: $cube-small;
-    height: $cube-small;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    font-size: $font-size-small;
-    text-align: center;
-    padding: 1rem;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    color: white;
-  }
+button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
 
-  .front {
-    background-color: $color-front;
-    transform: translateZ($cube-small-depth);
-  }
-
-  .back {
-    background-color: $color-back;
-    transform: rotateY(180deg) translateZ($cube-small-depth);
-  }
-
-  .right {
-    background-color: $color-right;
-    transform: rotateY(90deg) translateZ($cube-small-depth);
-  }
-
-  .left {
-    background-color: $color-left;
-    transform: rotateY(-90deg) translateZ($cube-small-depth);
-  }
-
-  .top {
-    background-color: $color-top;
-    transform: rotateX(90deg) translateZ($cube-small-depth);
-  }
-
-  .bottom {
-    background-color: $color-bottom;
-    transform: rotateX(-90deg) translateZ($cube-small-depth);
-  }
+  &:hover { background: rgba(255, 255, 255, 0.2); }
+  &.active { background: #007bff; border-color: #007bff; }
 }
